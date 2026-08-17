@@ -7,21 +7,15 @@ import {
 import NotificationDropdown from "./NotificationDropdown";
 
 import {
-  useNotifications,
+  useUnreadNotificationCount,
 } from "../../hooks/useNotification";
 
 const NotificationBell = () => {
   const [open, setOpen] =
     useState(false);
 
-  const { data } =
-    useNotifications();
-
-  const unreadCount =
-    data?.filter(
-      (notification) =>
-        !notification.is_read
-    ).length ?? 0;
+  const { data: unreadCount = 0 } =
+  useUnreadNotificationCount();
 
   return (
     <div className="relative">

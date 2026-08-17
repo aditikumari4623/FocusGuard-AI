@@ -94,6 +94,32 @@ def get_notifications(
 
 
 # ---------------------------------------
+# Get Unread Notification Count
+# ---------------------------------------
+
+@router.get("/unread-count")
+def get_unread_notification_count(
+
+    db: Session = Depends(get_db),
+
+    current_user=Depends(get_current_user)
+
+):
+
+    count = notification_service.get_unread_count(
+
+        db=db,
+
+        user_id=current_user.id
+
+    )
+
+    return {
+        "unread_count": count
+    }
+
+
+# ---------------------------------------
 # Get Latest Unread Notification
 # ---------------------------------------
 

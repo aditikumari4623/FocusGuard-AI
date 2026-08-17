@@ -6,6 +6,7 @@ import {
 
 import {
   getNotifications,
+  getUnreadNotificationCount,
   getLatestNotification,
   markNotificationAsRead,
   markAllNotificationsAsRead,
@@ -17,6 +18,14 @@ export const useNotifications = () =>
     queryFn: getNotifications,
     refetchInterval: 30000,
   });
+
+export const useUnreadNotificationCount =
+  () =>
+    useQuery({
+      queryKey: ["notifications-unread-count"],
+      queryFn: getUnreadNotificationCount,
+      refetchInterval: 30000,
+    });
 
 export const useLatestNotification =
   () =>
@@ -50,6 +59,12 @@ export const useMarkNotificationAsRead =
             "latest-notification",
           ],
         });
+
+        queryClient.invalidateQueries({
+          queryKey: [
+            "notifications-unread-count",
+          ],
+        });
       },
     });
   };
@@ -73,6 +88,12 @@ export const useMarkAllNotificationsAsRead =
         queryClient.invalidateQueries({
           queryKey: [
             "latest-notification",
+          ],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: [
+            "notifications-unread-count",
           ],
         });
       },

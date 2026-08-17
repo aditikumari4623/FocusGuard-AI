@@ -65,6 +65,22 @@ class NotificationService:
             .all()
         )
 
+
+    @staticmethod
+    def get_unread_count(
+        db: Session,
+        user_id: int
+    ):
+
+        return (
+            db.query(Notification)
+            .filter(
+                Notification.user_id == user_id,
+                Notification.is_read == False
+            )
+            .count()
+        )
+
     @staticmethod
     def get_latest_unread_notification(
         db: Session,

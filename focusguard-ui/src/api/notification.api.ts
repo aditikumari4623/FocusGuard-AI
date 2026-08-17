@@ -4,6 +4,7 @@ export interface Notification {
   id: number;
   title: string;
   message: string;
+  notification_type: string;
   is_read: boolean;
   created_at: string;
 }
@@ -17,6 +18,15 @@ export const getNotifications = async (): Promise<
 
   return response.data;
 };
+
+export const getUnreadNotificationCount =
+  async (): Promise<number> => {
+    const response = await api.get(
+      "/notifications/unread-count"
+    );
+
+    return response.data.unread_count;
+  };
 
 export const getLatestNotification =
   async (): Promise<Notification> => {
