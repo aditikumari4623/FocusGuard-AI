@@ -1,0 +1,321 @@
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from app.database import SessionLocal
+from app.models import User, Organization
+
+from app.schemas import (
+    UserRegister,
+    UserLogin,
+    Token,
+    Message,
+    RefreshTokenRequest
+)
+
+from app.security import (
+    hash_password,
+    verify_password,
+    create_access_token,
+    create_refresh_token,
+    verify_refresh_token
+)
+
+router = APIRouter(
+    prefix="/auth",
+    tags=["Authentication"]
+)
+
+
+# ---------------------------------------------------
+# Database Dependency
+# ---------------------------------------------------
+
+def get_db():
+
+    db = SessionLocal()
+
+    try:
+        yield db
+
+    finally:
+        db.close()
+
+
+# ---------------------------------------------------
+# Register
+# ---------------------------------------------------
+
+@router.post(
+    "/register",
+    response_model=Message
+)
+def register_user(
+
+    user: UserRegister,
+
+    db: Session = Depends(get_db)
+
+):
+
+    existing_user = db.query(User).filter(
+
+        User.email == user.email
+
+    ).first()
+
+    if existing_user:
+
+        raise HTTPException(
+
+            status_code=400,
+
+            detail="Email already registered."
+
+        )
+
+    user_count = db.query(User).count()
+
+    # Only allow registration if no users exist
+    if user_count > 0:
+
+        raise HTTPException(
+
+            status_code=403,
+
+            detail="Public registration is disabled. Contact your administrator."
+
+        )
+
+    new_user = User(
+
+        full_name=user.full_name,
+
+        email=user.email,
+
+        hashed_password=hash_password(user.password),
+
+        age=user.age,
+
+        occupation=user.occupation,
+
+        role="SUPER_ADMIN"
+
+    )
+
+    db.add(new_user)
+
+    db.commit()
+
+    db.refresh(new_user)
+
+    return {
+
+        "message": "Super Admin registered successfully."
+
+    }
+
+
+# ---------------------------------------------------
+# Login
+# ---------------------------------------------------
+
+@router.post(
+    "/login",
+    response_model=Token
+)
+def login_user(
+
+    user: UserLogin,
+
+    db: Session = Depends(get_db)
+
+):
+
+    db_user = db.query(User).filter(
+
+        User.email == user.email
+
+    ).first()
+
+    if db_user is None:
+
+        raise HTTPException(
+
+            status_code=401,
+
+            detail="Invalid Email"
+
+        )
+
+    if not verify_password(
+
+        user.password,
+
+        db_user.hashed_password
+
+    ):
+
+        raise HTTPException(
+
+            status_code=401,
+
+            detail="Invalid Password"
+
+        )
+
+    # ---------------------------------------------------
+    # Check Organization Status
+    # ---------------------------------------------------
+
+    if db_user.organization_id is not None:
+
+        organization = db.query(
+
+            Organization
+
+        ).filter(
+
+            Organization.id == db_user.organization_id
+
+        ).first()
+
+        if organization is None:
+
+            raise HTTPException(
+
+                status_code=404,
+
+                detail="Organization not found."
+
+            )
+
+        if organization.is_active is False:
+
+            raise HTTPException(
+
+                status_code=403,
+
+                detail="Your organization has been deactivated. Please contact the Super Admin."
+
+            )
+
+    # ---------------------------------------------------
+    # Check User Status
+    # ---------------------------------------------------
+
+    if not db_user.is_active:
+
+        raise HTTPException(
+
+            status_code=403,
+
+            detail="Your account has been deactivated."
+
+        )
+
+    access_token = create_access_token(
+
+        {
+
+            "sub": db_user.email,
+
+            "role": db_user.role
+
+        }
+
+    )
+
+    refresh_token = create_refresh_token(
+
+        {
+
+            "sub": db_user.email
+
+        }
+
+    )
+
+    return {
+
+        "access_token": access_token,
+
+        "refresh_token": refresh_token,
+
+        "token_type": "Bearer"
+
+    }
+
+
+# ---------------------------------------------------
+# Refresh Token
+# ---------------------------------------------------
+
+@router.post("/refresh-token")
+def refresh_access_token(
+
+    request: RefreshTokenRequest
+
+):
+
+    try:
+
+        payload = verify_refresh_token(
+
+            request.refresh_token
+
+        )
+
+    except Exception as e:
+
+        if str(e) == "REFRESH_TOKEN_EXPIRED":
+
+            raise HTTPException(
+
+                status_code=401,
+
+                detail="Refresh token expired. Please login again."
+
+            )
+
+        raise HTTPException(
+
+            status_code=401,
+
+            detail="Invalid refresh token."
+
+        )
+
+    access_token = create_access_token(
+
+        {
+
+            "sub": payload["sub"]
+
+        }
+
+    )
+
+    return {
+
+        "access_token": access_token,
+
+        "token_type": "Bearer"
+
+    }
+
+
+# ---------------------------------------------------
+# Logout
+# ---------------------------------------------------
+
+@router.post(
+    "/logout",
+    response_model=Message
+)
+def logout():
+
+    return {
+
+        "message": "Logout successful. Remove JWT from client."
+
+    }
