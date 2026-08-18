@@ -32,10 +32,6 @@ const WeeklyActivityChart = () => {
     isLoading,
   } = useWeeklyReport();
 
-  /* =========================
-     Loading State
-  ========================= */
-
   if (isLoading) {
     return (
       <Card>
@@ -48,30 +44,60 @@ const WeeklyActivityChart = () => {
 
   return (
     <Card>
-      {/* =========================
-          Header
-      ========================= */}
+      {/* Header */}
 
       <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
 
-        {/* Title */}
-
         <div className="flex min-w-0 items-center gap-3">
 
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-green-100 sm:h-12 sm:w-12">
+          <div
+            className="
+              flex
+              h-11
+              w-11
+              shrink-0
+              items-center
+              justify-center
+              rounded-xl
+              bg-green-100
+              dark:bg-green-950/50
+              sm:h-12
+              sm:w-12
+            "
+          >
             <BarChart3
               size={21}
-              className="text-green-600 sm:h-[22px] sm:w-[22px]"
+              className="
+                text-green-600
+                dark:text-green-400
+                sm:h-[22px]
+                sm:w-[22px]
+              "
             />
           </div>
 
           <div className="min-w-0">
 
-            <h2 className="truncate text-base font-semibold text-slate-900 sm:text-lg">
+            <h2
+              className="
+                truncate
+                text-base
+                font-semibold
+                text-slate-900
+                dark:text-white
+                sm:text-lg
+              "
+            >
               Weekly Activity
             </h2>
 
-            <p className="text-sm text-slate-500">
+            <p
+              className="
+                text-sm
+                text-slate-500
+                dark:text-slate-400
+              "
+            >
               Last 7 Days
             </p>
 
@@ -81,13 +107,45 @@ const WeeklyActivityChart = () => {
 
         {/* Focus */}
 
-        <div className="w-full rounded-2xl bg-green-50 px-4 py-3 text-center sm:w-auto sm:min-w-[100px]">
+        <div
+          className="
+            w-full
+            rounded-2xl
+            bg-green-50
+            px-4
+            py-3
+            text-center
 
-          <p className="text-xs font-medium uppercase tracking-wide text-green-700">
+            dark:bg-green-950/40
+
+            sm:w-auto
+            sm:min-w-[100px]
+          "
+        >
+
+          <p
+            className="
+              text-xs
+              font-medium
+              uppercase
+              tracking-wide
+              text-green-700
+              dark:text-green-400
+            "
+          >
             Focus
           </p>
 
-          <h3 className="mt-1 text-xl font-bold text-green-700 sm:text-2xl">
+          <h3
+            className="
+              mt-1
+              text-xl
+              font-bold
+              text-green-700
+              dark:text-green-400
+              sm:text-2xl
+            "
+          >
             {(data?.focus_score ?? 0).toFixed(1)}%
           </h3>
 
@@ -95,27 +153,43 @@ const WeeklyActivityChart = () => {
 
       </div>
 
-      {/* =========================
-          Legend
-      ========================= */}
+      {/* Legend */}
 
-      <div className="mb-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-600 sm:gap-6 sm:text-sm">
+      <div
+        className="
+          mb-5
+          flex
+          flex-wrap
+          items-center
+          gap-x-5
+          gap-y-2
+          text-xs
+          text-slate-600
+          dark:text-slate-300
+          sm:gap-6
+          sm:text-sm
+        "
+      >
 
         <div className="flex items-center gap-2">
+
           <div className="h-3 w-3 shrink-0 rounded-full bg-green-500" />
+
           <span>Active</span>
+
         </div>
 
         <div className="flex items-center gap-2">
+
           <div className="h-3 w-3 shrink-0 rounded-full bg-orange-500" />
+
           <span>Idle</span>
+
         </div>
 
       </div>
 
-      {/* =========================
-          Chart
-      ========================= */}
+      {/* Chart */}
 
       <div className="w-full min-w-0 overflow-hidden">
 
@@ -133,8 +207,10 @@ const WeeklyActivityChart = () => {
               bottom: 5,
             }}
           >
+
             <CartesianGrid
-              stroke="#E5E7EB"
+              stroke="#64748B"
+              strokeOpacity={0.25}
               vertical={false}
             />
 
@@ -142,6 +218,7 @@ const WeeklyActivityChart = () => {
               dataKey="day"
               tick={{
                 fontSize: 11,
+                fill: "#64748B",
               }}
               tickLine={false}
               axisLine={false}
@@ -152,6 +229,7 @@ const WeeklyActivityChart = () => {
               tickFormatter={formatMinutes}
               tick={{
                 fontSize: 11,
+                fill: "#64748B",
               }}
               tickLine={false}
               axisLine={false}
@@ -160,11 +238,14 @@ const WeeklyActivityChart = () => {
 
             <Tooltip
               cursor={{
-                fill: "#F8FAFC",
+                fill: "#94A3B8",
+                fillOpacity: 0.12,
               }}
               contentStyle={{
                 borderRadius: 12,
-                border: "1px solid #E2E8F0",
+                border: "1px solid #CBD5E1",
+                backgroundColor: "#FFFFFF",
+                color: "#0F172A",
                 fontSize: 13,
               }}
               formatter={(value, name) => {
@@ -199,11 +280,24 @@ const WeeklyActivityChart = () => {
 
       </div>
 
-      {/* =========================
-          Footer
-      ========================= */}
+      {/* Footer */}
 
-      <div className="mt-5 flex items-start gap-2 border-t pt-4 text-xs text-slate-500 sm:text-sm">
+      <div
+        className="
+          mt-5
+          flex
+          items-start
+          gap-2
+          border-t
+          border-slate-200
+          pt-4
+          text-xs
+          text-slate-500
+          dark:border-slate-700
+          dark:text-slate-400
+          sm:text-sm
+        "
+      >
 
         <TrendingUp
           size={16}
