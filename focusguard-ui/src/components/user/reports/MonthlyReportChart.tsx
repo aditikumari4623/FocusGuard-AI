@@ -13,11 +13,28 @@ import {
   useMonthlyReport,
 } from "../../../hooks/useReports";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 const MonthlyReportChart = () => {
   const {
     data,
     isLoading,
   } = useMonthlyReport();
+
+  const loadingText = useTranslation(
+    "Loading monthly report..."
+  );
+
+  const noDataText = useTranslation(
+    "No monthly data available."
+  );
+
+  const titleText = useTranslation(
+    "Monthly Activity"
+  );
+
+  const activeText = useTranslation("Active");
+  const idleText = useTranslation("Idle");
 
   if (isLoading) {
     return (
@@ -35,7 +52,7 @@ const MonthlyReportChart = () => {
         "
       >
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Loading monthly report...
+          {loadingText}
         </p>
       </div>
     );
@@ -58,7 +75,7 @@ const MonthlyReportChart = () => {
         "
       >
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          No monthly data available.
+          {noDataText}
         </p>
       </div>
     );
@@ -81,7 +98,7 @@ const MonthlyReportChart = () => {
       "
     >
       <h2 className="mb-5 text-lg font-bold text-slate-900 dark:text-white sm:mb-6 sm:text-xl">
-        Monthly Activity
+        {titleText}
       </h2>
 
       <div className="h-[280px] w-full min-w-0 sm:h-[320px]">
@@ -123,6 +140,17 @@ const MonthlyReportChart = () => {
             <Tooltip />
 
             <Legend
+              formatter={(value) => {
+                if (value === "Active") {
+                  return activeText;
+                }
+
+                if (value === "Idle") {
+                  return idleText;
+                }
+
+                return value;
+              }}
               wrapperStyle={{
                 fontSize: "12px",
               }}

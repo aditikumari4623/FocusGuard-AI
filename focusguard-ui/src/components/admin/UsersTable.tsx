@@ -3,63 +3,77 @@ import { Search } from "lucide-react";
 
 import { useAllUsers } from "../../hooks/useAdmin";
 import { useOrganizations } from "../../hooks/useOrganization";
+import { useTranslation } from "../../hooks/useTranslation";
 
 import UserStatusBadge from "./UserStatusBadge";
 import AssignOrganizationModal from "../organization/AssignOrganizationModal";
 
 const UsersTable = () => {
-  const {
-    data,
-    isLoading,
-  } = useAllUsers();
+  const { data, isLoading } = useAllUsers();
 
-  const {
-    data: organizations,
-  } = useOrganizations();
+  const { data: organizations } = useOrganizations();
 
   const [search, setSearch] = useState("");
 
-  const [openAssign, setOpenAssign] =
-    useState(false);
+  const [openAssign, setOpenAssign] = useState(false);
 
-  const [selectedUser, setSelectedUser] =
-    useState<{
-      id: number;
-      full_name: string;
-    } | null>(null);
+  const [selectedUser, setSelectedUser] = useState<{
+    id: number;
+    full_name: string;
+  } | null>(null);
+
+  /* =========================
+     Translations
+  ========================= */
+
+  const loadingUsersText = useTranslation("Loading users...");
+  const searchUsersText = useTranslation("Search users...");
+  const showingText = useTranslation("Showing");
+  const userText = useTranslation("user");
+  const usersText = useTranslation("users");
+
+  const nameText = useTranslation("Name");
+  const emailText = useTranslation("Email");
+  const roleText = useTranslation("Role");
+  const organizationText = useTranslation("Organization");
+  const statusText = useTranslation("Status");
+  const actionsText = useTranslation("Actions");
+
+  const noUsersFoundText = useTranslation("No users found.");
+
+  const assignText = useTranslation("Assign");
+  const assignedText = useTranslation("Assigned");
 
   if (isLoading) {
     return (
       <div
         className="
+          min-w-0
           rounded-3xl
-          border border-slate-200
+          border
+          border-slate-200
           bg-white
-          p-6
+          p-5
           text-slate-700
           shadow-sm
           dark:border-slate-700
           dark:bg-slate-900
           dark:text-slate-200
+          sm:p-6
         "
       >
-        Loading users...
+        {loadingUsersText}
       </div>
     );
   }
 
   const filteredUsers =
     data?.filter((user) => {
-      const value =
-        search.trim().toLowerCase();
+      const value = search.trim().toLowerCase();
 
       return (
-        user.full_name
-          .toLowerCase()
-          .includes(value) ||
-        user.email
-          .toLowerCase()
-          .includes(value)
+        user.full_name.toLowerCase().includes(value) ||
+        user.email.toLowerCase().includes(value)
       );
     }) ?? [];
 
@@ -70,7 +84,8 @@ const UsersTable = () => {
           min-w-0
           overflow-hidden
           rounded-3xl
-          border border-slate-200
+          border
+          border-slate-200
           bg-white
           shadow-sm
           dark:border-slate-700
@@ -102,11 +117,9 @@ const UsersTable = () => {
             />
 
             <input
-              placeholder="Search users..."
+              placeholder={searchUsersText}
               value={search}
-              onChange={(e) =>
-                setSearch(e.target.value)
-              }
+              onChange={(e) => setSearch(e.target.value)}
               className="
                 h-12
                 w-full
@@ -121,13 +134,10 @@ const UsersTable = () => {
                 text-slate-900
                 outline-none
                 transition
-
                 placeholder:text-slate-400
-
                 focus:border-indigo-500
                 focus:ring-4
                 focus:ring-indigo-100
-
                 dark:border-slate-600
                 dark:bg-slate-800
                 dark:text-white
@@ -143,15 +153,16 @@ const UsersTable = () => {
           <p
             className="
               mt-3
+              break-words
               text-xs
               text-slate-500
               dark:text-slate-400
             "
           >
-            Showing {filteredUsers.length}{" "}
+            {showingText} {filteredUsers.length}{" "}
             {filteredUsers.length === 1
-              ? "user"
-              : "users"}
+              ? userText
+              : usersText}
           </p>
         </div>
 
@@ -181,7 +192,7 @@ const UsersTable = () => {
                     dark:text-slate-200
                   "
                 >
-                  Name
+                  {nameText}
                 </th>
 
                 <th
@@ -196,7 +207,7 @@ const UsersTable = () => {
                     dark:text-slate-200
                   "
                 >
-                  Email
+                  {emailText}
                 </th>
 
                 <th
@@ -211,7 +222,7 @@ const UsersTable = () => {
                     dark:text-slate-200
                   "
                 >
-                  Role
+                  {roleText}
                 </th>
 
                 <th
@@ -226,7 +237,7 @@ const UsersTable = () => {
                     dark:text-slate-200
                   "
                 >
-                  Organization
+                  {organizationText}
                 </th>
 
                 <th
@@ -241,7 +252,7 @@ const UsersTable = () => {
                     dark:text-slate-200
                   "
                 >
-                  Status
+                  {statusText}
                 </th>
 
                 <th
@@ -256,7 +267,7 @@ const UsersTable = () => {
                     dark:text-slate-200
                   "
                 >
-                  Actions
+                  {actionsText}
                 </th>
               </tr>
             </thead>
@@ -275,17 +286,15 @@ const UsersTable = () => {
                       dark:text-slate-400
                     "
                   >
-                    No users found.
+                    {noUsersFoundText}
                   </td>
                 </tr>
               ) : (
                 filteredUsers.map((user) => {
-                  const organization =
-                    organizations?.find(
-                      (org) =>
-                        org.id ===
-                        user.organization_id
-                    );
+                  const organization = organizations?.find(
+                    (org) =>
+                      org.id === user.organization_id
+                  );
 
                   return (
                     <tr
@@ -295,7 +304,6 @@ const UsersTable = () => {
                         border-slate-100
                         transition
                         hover:bg-slate-50
-
                         dark:border-slate-800
                         dark:hover:bg-slate-800/60
                       "
@@ -309,7 +317,9 @@ const UsersTable = () => {
                           dark:text-slate-100
                         "
                       >
-                        {user.full_name}
+                        <span className="break-words">
+                          {user.full_name}
+                        </span>
                       </td>
 
                       <td
@@ -321,7 +331,9 @@ const UsersTable = () => {
                           dark:text-slate-300
                         "
                       >
-                        {user.email}
+                        <span className="break-words">
+                          {user.email}
+                        </span>
                       </td>
 
                       <td className="px-6 py-4">
@@ -336,7 +348,6 @@ const UsersTable = () => {
                             text-xs
                             font-semibold
                             text-indigo-700
-
                             dark:bg-indigo-950/70
                             dark:text-indigo-300
                           "
@@ -369,16 +380,13 @@ const UsersTable = () => {
                       </td>
 
                       <td className="px-6 py-4">
-                        {user.role ===
-                          "SUB_ADMIN" &&
-                        user.organization_id ===
-                          null ? (
+                        {user.role === "SUB_ADMIN" &&
+                        user.organization_id === null ? (
                           <button
                             onClick={() => {
                               setSelectedUser({
                                 id: user.id,
-                                full_name:
-                                  user.full_name,
+                                full_name: user.full_name,
                               });
 
                               setOpenAssign(true);
@@ -398,10 +406,9 @@ const UsersTable = () => {
                               dark:hover:bg-indigo-600
                             "
                           >
-                            Assign
+                            {assignText}
                           </button>
-                        ) : user.role ===
-                          "SUB_ADMIN" ? (
+                        ) : user.role === "SUB_ADMIN" ? (
                           <span
                             className="
                               whitespace-nowrap
@@ -416,7 +423,7 @@ const UsersTable = () => {
                               dark:text-green-300
                             "
                           >
-                            Assigned
+                            {assignedText}
                           </span>
                         ) : (
                           <span

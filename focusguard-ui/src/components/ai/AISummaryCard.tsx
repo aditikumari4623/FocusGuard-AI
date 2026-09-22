@@ -7,6 +7,8 @@ import {
 
 import { useAIRecommendation } from "../../hooks/useAIRecommendation";
 
+import { useTranslation } from "../../hooks/useTranslation";
+
 import Card from "../common/Card";
 import Skeleton from "../common/Skeleton";
 
@@ -16,6 +18,67 @@ const AISummaryCard = () => {
     isLoading,
     isError,
   } = useAIRecommendation();
+
+  const unableToGenerateText =
+    useTranslation(
+      "Unable to generate AI summary."
+    );
+
+  const noRecommendationText =
+    useTranslation(
+      "No AI recommendation is available yet."
+    );
+
+  const summaryTitle =
+    useTranslation(
+      "AI Productivity Summary"
+    );
+
+  const generatedFromActivityText =
+    useTranslation(
+      "Generated from your recent activity"
+    );
+
+  const aiGeneratedText =
+    useTranslation("AI Generated");
+
+  const currentFocusScoreText =
+    useTranslation(
+      "Current Focus Score"
+    );
+
+  const basedOnRecentActivityText =
+    useTranslation(
+      "Based on recent activity"
+    );
+
+  const aiRecommendationText =
+    useTranslation(
+      "AI Recommendation"
+    );
+
+  const productiveWebsitesText =
+    useTranslation(
+      "Productive Websites"
+    );
+
+  const distractingWebsitesText =
+    useTranslation(
+      "Distracting Websites"
+    );
+
+  const identifiedByAIText =
+    useTranslation(
+      "Identified by AI"
+    );
+
+  /*
+   * Dynamic AI recommendation.
+   */
+  const translatedRecommendation =
+    useTranslation(
+      data?.recommendation ?? ""
+    );
 
   if (isLoading) {
     return (
@@ -58,17 +121,17 @@ const AISummaryCard = () => {
             dark:text-slate-400
           "
         >
-          Unable to generate AI summary.
+          {unableToGenerateText}
         </p>
       </Card>
     );
   }
 
   const cleanedRecommendation =
-    data.recommendation
+    translatedRecommendation
       ?.replaceAll("**", "")
       .trim() ||
-    "No AI recommendation is available yet.";
+    noRecommendationText;
 
   return (
     <Card
@@ -134,7 +197,7 @@ const AISummaryCard = () => {
                 sm:text-xl
               "
             >
-              AI Productivity Summary
+              {summaryTitle}
             </h2>
 
             <p
@@ -145,7 +208,7 @@ const AISummaryCard = () => {
                 dark:text-slate-400
               "
             >
-              Generated from your recent activity
+              {generatedFromActivityText}
             </p>
           </div>
         </div>
@@ -170,7 +233,7 @@ const AISummaryCard = () => {
         >
           <Sparkles size={16} />
 
-          AI Generated
+          {aiGeneratedText}
         </div>
       </div>
 
@@ -208,7 +271,7 @@ const AISummaryCard = () => {
                 dark:text-indigo-300
               "
             >
-              Current Focus Score
+              {currentFocusScoreText}
             </p>
 
             <p
@@ -219,7 +282,7 @@ const AISummaryCard = () => {
                 dark:text-indigo-400
               "
             >
-              Based on recent activity
+              {basedOnRecentActivityText}
             </p>
           </div>
 
@@ -282,7 +345,7 @@ const AISummaryCard = () => {
               dark:text-slate-200
             "
           >
-            AI Recommendation
+            {aiRecommendationText}
           </h3>
         </div>
 
@@ -351,7 +414,7 @@ const AISummaryCard = () => {
                 dark:text-green-300
               "
             >
-              Productive Websites
+              {productiveWebsitesText}
             </p>
           </div>
 
@@ -375,7 +438,7 @@ const AISummaryCard = () => {
               dark:text-green-400
             "
           >
-            Identified by AI
+            {identifiedByAIText}
           </p>
         </div>
 
@@ -405,7 +468,7 @@ const AISummaryCard = () => {
                 dark:text-orange-300
               "
             >
-              Distracting Websites
+              {distractingWebsitesText}
             </p>
           </div>
 
@@ -429,7 +492,7 @@ const AISummaryCard = () => {
               dark:text-orange-400
             "
           >
-            Identified by AI
+            {identifiedByAIText}
           </p>
         </div>
       </div>

@@ -11,15 +11,46 @@ import {
   useOrganizations,
 } from "../../hooks/useOrganization";
 
+import {
+  useTranslation,
+} from "../../hooks/useTranslation";
+
 const OrganizationHeader = () => {
-  const [open, setOpen] =
-    useState(false);
+  const [
+    open,
+    setOpen,
+  ] = useState(false);
 
   const { data } =
     useOrganizations();
 
   const total =
     data?.length ?? 0;
+
+  const organizationsText =
+    useTranslation(
+      "Organizations"
+    );
+
+  const manageOrganizationsText =
+    useTranslation(
+      "Manage organizations, assign sub-admins and monitor organization status."
+    );
+
+  const organizationSingularText =
+    useTranslation(
+      "Organization"
+    );
+
+  const organizationPluralText =
+    useTranslation(
+      "Organizations"
+    );
+
+  const createOrganizationText =
+    useTranslation(
+      "Create Organization"
+    );
 
   return (
     <>
@@ -40,7 +71,14 @@ const OrganizationHeader = () => {
       >
         {/* Title */}
 
-        <div className="flex min-w-0 items-start gap-4">
+        <div
+          className="
+            flex
+            min-w-0
+            items-start
+            gap-4
+          "
+        >
           <div
             className="
               flex
@@ -57,13 +95,17 @@ const OrganizationHeader = () => {
           >
             <Building2
               size={30}
-              className="text-indigo-600 dark:text-indigo-400"
+              className="
+                text-indigo-600
+                dark:text-indigo-400
+              "
             />
           </div>
 
           <div className="min-w-0">
             <h1
               className="
+                break-words
                 text-2xl
                 font-bold
                 tracking-tight
@@ -75,17 +117,29 @@ const OrganizationHeader = () => {
                 lg:text-4xl
               "
             >
-              Organizations
+              {organizationsText}
             </h1>
 
-            <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400 sm:text-base">
-              Manage organizations, assign sub-admins and monitor organization status.
+            <p
+              className="
+                mt-2
+                max-w-2xl
+                text-sm
+                leading-6
+                text-slate-500
+                dark:text-slate-400
+
+                sm:text-base
+              "
+            >
+              {manageOrganizationsText}
             </p>
 
             <div
               className="
                 mt-4
                 inline-flex
+                max-w-full
                 rounded-full
                 bg-indigo-50
                 px-4
@@ -98,8 +152,10 @@ const OrganizationHeader = () => {
                 dark:text-indigo-300
               "
             >
-              {total} Organization
-              {total !== 1 && "s"}
+              {total}{" "}
+              {total === 1
+                ? organizationSingularText
+                : organizationPluralText}
             </div>
           </div>
         </div>
@@ -108,7 +164,9 @@ const OrganizationHeader = () => {
 
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={() =>
+            setOpen(true)
+          }
           className="
             flex
             h-12
@@ -134,13 +192,15 @@ const OrganizationHeader = () => {
         >
           <Plus size={20} />
 
-          Create Organization
+          {createOrganizationText}
         </button>
       </div>
 
       <CreateOrganizationModal
         open={open}
-        onClose={() => setOpen(false)}
+        onClose={() =>
+          setOpen(false)
+        }
       />
     </>
   );

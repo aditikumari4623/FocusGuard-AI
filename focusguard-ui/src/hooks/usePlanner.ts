@@ -55,9 +55,9 @@ export const usePlannerRecommendation = () =>
     queryFn: getPlannerRecommendation,
   });
 
-
 export const useCreatePlanner = () => {
-  const queryClient = useQueryClient();
+  const queryClient =
+    useQueryClient();
 
   return useMutation({
     mutationFn: createPlanner,
@@ -87,7 +87,8 @@ export const useCreatePlanner = () => {
 };
 
 export const useUpdatePlanner = () => {
-  const queryClient = useQueryClient();
+  const queryClient =
+    useQueryClient();
 
   return useMutation({
     mutationFn: ({
@@ -97,7 +98,10 @@ export const useUpdatePlanner = () => {
       planId: number;
       payload: any;
     }) =>
-      updatePlanner(planId, payload),
+      updatePlanner(
+        planId,
+        payload
+      ),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -122,7 +126,6 @@ export const useUpdatePlanner = () => {
     },
   });
 };
-
 
 export const usePlannerCategories =
   () =>

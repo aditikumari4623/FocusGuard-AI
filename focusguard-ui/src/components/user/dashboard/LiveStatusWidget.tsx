@@ -6,13 +6,61 @@ import {
   FolderOpen,
 } from "lucide-react";
 
-import { useLiveStatus } from "../../../hooks/usePlanner";
+import {
+  useLiveStatus,
+} from "../../../hooks/usePlanner";
+
+import { useTranslation } from "../../../hooks/useTranslation";
 
 const LiveStatusWidget = () => {
   const {
     data,
     isLoading,
   } = useLiveStatus();
+
+  const loadingText = useTranslation(
+    "Loading live status..."
+  );
+
+  const unavailableText = useTranslation(
+    "Live status unavailable."
+  );
+
+  const title = useTranslation(
+    "Live Focus Status"
+  );
+
+  const plannedCategory = useTranslation(
+    "Planned Category"
+  );
+
+  const currentCategory = useTranslation(
+    "Current Category"
+  );
+
+  const currentWebsite = useTranslation(
+    "Current Website"
+  );
+
+  const statusText = useTranslation(
+    data?.status
+      ? data.status.replace("_", " ")
+      : ""
+  );
+
+  const messageText = useTranslation(
+    data?.message || ""
+  );
+
+  const translatedPlannedCategory =
+    useTranslation(
+      data?.planned_category || ""
+    );
+
+  const translatedCurrentCategory =
+    useTranslation(
+      data?.current_category || ""
+    );
 
   if (isLoading) {
     return (
@@ -34,7 +82,7 @@ const LiveStatusWidget = () => {
           sm:p-6
         "
       >
-        Loading live status...
+        {loadingText}
       </div>
     );
   }
@@ -59,7 +107,7 @@ const LiveStatusWidget = () => {
           sm:p-6
         "
       >
-        Live status unavailable.
+        {unavailableText}
       </div>
     );
   }
@@ -77,36 +125,27 @@ const LiveStatusWidget = () => {
         border-slate-200
         bg-white
         shadow-sm
+        transition-all
+        duration-300
+        hover:shadow-md
 
         dark:border-slate-700
         dark:bg-slate-900
         dark:shadow-black/20
       "
     >
-
-      {/* Header */}
-
       <div className="border-b border-slate-200 p-5 dark:border-slate-700 sm:p-6">
-
         <h2 className="flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-
           <Activity
             size={22}
             className="shrink-0 text-indigo-600 dark:text-indigo-400"
           />
 
-          Live Focus Status
-
+          {title}
         </h2>
-
       </div>
 
-      {/* Body */}
-
       <div className="space-y-6 p-5 sm:p-6">
-
-        {/* Status */}
-
         <div
           className={`flex items-start gap-3 rounded-2xl p-4 ${
             isOnTrack
@@ -124,7 +163,6 @@ const LiveStatusWidget = () => {
               `
           }`}
         >
-
           {isOnTrack ? (
             <CheckCircle2
               size={24}
@@ -138,7 +176,6 @@ const LiveStatusWidget = () => {
           )}
 
           <div className="min-w-0">
-
             <h3
               className={`font-semibold ${
                 isOnTrack
@@ -146,88 +183,66 @@ const LiveStatusWidget = () => {
                   : "text-red-700 dark:text-red-400"
               }`}
             >
-              {data.status}
+              {statusText}
             </h3>
 
             <p className="mt-1 break-words text-sm text-slate-600 dark:text-slate-300">
-              {data.message}
+              {messageText}
             </p>
-
           </div>
-
         </div>
 
-        {/* Planned Category */}
-
         <div className="flex items-start gap-3">
-
           <FolderOpen
             size={20}
             className="mt-1 shrink-0 text-indigo-600 dark:text-indigo-400"
           />
 
           <div className="min-w-0">
-
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Planned Category
+              {plannedCategory}
             </p>
 
             <h3 className="mt-1 break-words font-semibold text-slate-900 dark:text-slate-100">
-              {data.planned_category || "-"}
+              {translatedPlannedCategory || "-"}
             </h3>
-
           </div>
-
         </div>
 
-        {/* Current Category */}
-
         <div className="flex items-start gap-3">
-
           <FolderOpen
             size={20}
             className="mt-1 shrink-0 text-green-600 dark:text-green-400"
           />
 
           <div className="min-w-0">
-
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Current Category
+              {currentCategory}
             </p>
 
             <h3 className="mt-1 break-words font-semibold text-slate-900 dark:text-slate-100">
-              {data.current_category || "-"}
+              {translatedCurrentCategory || "-"}
             </h3>
-
           </div>
-
         </div>
 
-        {/* Website */}
-
         <div className="flex items-start gap-3">
-
           <Globe
             size={20}
             className="mt-1 shrink-0 text-blue-600 dark:text-blue-400"
           />
 
           <div className="min-w-0">
-
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Current Website
+              {currentWebsite}
             </p>
 
             <h3 className="break-all font-semibold text-slate-900 dark:text-slate-100">
               {data.website || "-"}
             </h3>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 };

@@ -1,73 +1,40 @@
 import AppLayout from "../../../layouts/AppLayout";
-
 import AnalyticsHeader from "../../../components/analytics/AnalyticsHeader";
 
-/* =========================================================
-   USER ANALYTICS
-   ========================================================= */
-
+/* USER ANALYTICS */
 import AnalyticsStats from "../../../components/analytics/AnalyticsStats";
-
 import WeeklyActivityChart from "../../../components/dashboard/charts/WeeklyActivityChart";
-
 import WebsiteAnalytics from "../../../components/analytics/WebsiteAnalytics";
-
 import CategoryAnalytics from "../../../components/analytics/CategoryAnalytics";
-
 import ActivitySummary from "../../../components/analytics/ActivitySummary";
-
 import TabSwitchAnalyticsCard from "../../../components/analytics/TabSwitchAnalyticsCard";
 
-
-/* =========================================================
-   ORGANIZATION ANALYTICS
-   ========================================================= */
-
+/* ORGANIZATION ANALYTICS */
 import RoleWeeklyActivityChart from "../../../components/analytics/RoleWeeklyActivityChart";
-
 import RoleMonthlyActivityChart from "../../../components/analytics/RoleMonthlyActivityChart";
-
 import RoleWebsiteBarChart from "../../../components/analytics/RoleWebsiteBarChart";
-
 import RoleCategoryPieChart from "../../../components/analytics/RoleCategoryPieChart";
-
 import RoleTabSwitchCard from "../../../components/analytics/RoleTabSwitchCard";
-
 import AnalyticsStatsRole from "../../../components/analytics/AnalyticsStatsRole";
-
 import OrganizationActivitySummary from "../../../components/analytics/OrganizationActivitySummary";
 
 import { useAuth } from "../../../context/AuthContext";
-
+import { useTranslation } from "../../../hooks/useTranslation";
 
 const AnalyticsPage = () => {
   const { user, loading } = useAuth();
+
+  const unableToDetermineRole = useTranslation(
+    "Unable to determine your account role."
+  );
 
   if (loading) {
     return (
       <AppLayout>
         <div className="w-full min-w-0 space-y-6">
-          <div
-            className="
-              h-36
-              animate-pulse
-              rounded-3xl
-              bg-slate-200
+          <div className="h-36 animate-pulse rounded-3xl bg-slate-200 dark:bg-slate-800" />
 
-              dark:bg-slate-800
-            "
-          />
-
-          <div
-            className="
-              h-32
-              animate-pulse
-              rounded-3xl
-              bg-slate-200
-
-              dark:bg-slate-800
-            "
-          />
+          <div className="h-32 animate-pulse rounded-3xl bg-slate-200 dark:bg-slate-800" />
         </div>
       </AppLayout>
     );
@@ -76,24 +43,9 @@ const AnalyticsPage = () => {
   if (!user) {
     return (
       <AppLayout>
-        <div
-          className="
-            flex
-            min-h-[300px]
-            items-center
-            justify-center
-            rounded-3xl
-            border
-            border-slate-200
-            bg-white
-            text-center
-
-            dark:border-slate-700
-            dark:bg-slate-900
-          "
-        >
+        <div className="flex min-h-[300px] items-center justify-center rounded-3xl border border-slate-200 bg-white text-center dark:border-slate-700 dark:bg-slate-900">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Unable to determine your account role.
+            {unableToDetermineRole}
           </p>
         </div>
       </AppLayout>
@@ -107,34 +59,17 @@ const AnalyticsPage = () => {
   return (
     <AppLayout>
       <div className="w-full min-w-0">
-        {/* =================================================
-            HEADER
-        ================================================= */}
-
         <AnalyticsHeader />
-
-
-        {/* =================================================
-            USER ANALYTICS
-        ================================================= */}
 
         {!isOrganizationRole && (
           <>
-            {/* Stats */}
-
             <div className="mt-6">
               <AnalyticsStats />
             </div>
 
-
-            {/* Weekly */}
-
             <div className="mt-6 w-full min-w-0">
               <WeeklyActivityChart />
             </div>
-
-
-            {/* Websites + Categories */}
 
             <div className="mt-6 grid w-full min-w-0 grid-cols-1 gap-6 xl:grid-cols-2">
               <div className="min-w-0">
@@ -145,9 +80,6 @@ const AnalyticsPage = () => {
                 <CategoryAnalytics />
               </div>
             </div>
-
-
-            {/* Activity + Tab Switch */}
 
             <div className="mt-6 grid w-full min-w-0 grid-cols-1 gap-6 xl:grid-cols-2">
               <div className="min-w-0">
@@ -161,21 +93,11 @@ const AnalyticsPage = () => {
           </>
         )}
 
-
-        {/* =================================================
-            ORGANIZATION ANALYTICS
-        ================================================= */}
-
         {isOrganizationRole && (
           <>
-            {/* Organization Stats */}
-
             <div className="mt-6">
               <AnalyticsStatsRole />
             </div>
-
-
-            {/* Weekly + Monthly */}
 
             <div className="mt-6 grid w-full min-w-0 grid-cols-1 gap-6 xl:grid-cols-2">
               <div className="min-w-0">
@@ -187,9 +109,6 @@ const AnalyticsPage = () => {
               </div>
             </div>
 
-
-            {/* Websites + Categories */}
-
             <div className="mt-6 grid w-full min-w-0 grid-cols-1 gap-6 xl:grid-cols-2">
               <div className="min-w-0">
                 <RoleWebsiteBarChart />
@@ -199,9 +118,6 @@ const AnalyticsPage = () => {
                 <RoleCategoryPieChart />
               </div>
             </div>
-
-
-            {/* Activity Summary + Tab Switching */}
 
             <div className="mt-6 grid w-full min-w-0 grid-cols-1 gap-6 xl:grid-cols-2">
               <div className="min-w-0">

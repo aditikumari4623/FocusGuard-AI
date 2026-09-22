@@ -1,25 +1,20 @@
 import AppLayout from "../../../layouts/AppLayout";
 
 import WelcomeCard from "../../../components/user/dashboard/WelcomeCard";
-
 import QuickStats from "../../../components/user/dashboard/QuickStats";
-
 import PlannerPreview from "../../../components/user/dashboard/PlannerPreview";
-
 import CurrentSessionPreview from "../../../components/user/dashboard/CurrentSessionPreview";
-
 import LiveStatusWidget from "../../../components/user/dashboard/LiveStatusWidget";
-
 import AIRecommendationCard from "../../../components/user/dashboard/AIRecommendationCard";
 
 const DashboardPage = () => {
   return (
     <AppLayout>
-      <div className="w-full min-w-0">
+      <div className="w-full min-w-0 overflow-x-hidden">
 
         {/* ================================
             Welcome
-            ================================ */}
+        ================================ */}
 
         <div className="w-full min-w-0">
           <WelcomeCard />
@@ -27,7 +22,7 @@ const DashboardPage = () => {
 
         {/* ================================
             Quick Stats
-            ================================ */}
+        ================================ */}
 
         <div className="mt-6 w-full min-w-0 sm:mt-8">
           <QuickStats />
@@ -35,7 +30,7 @@ const DashboardPage = () => {
 
         {/* ================================
             Planner + Current Session
-            ================================ */}
+        ================================ */}
 
         <div className="mt-6 grid w-full min-w-0 grid-cols-1 gap-6 sm:mt-8 lg:gap-8 xl:grid-cols-3">
 
@@ -50,8 +45,8 @@ const DashboardPage = () => {
         </div>
 
         {/* ================================
-            Live Status + AI
-            ================================ */}
+            Live Status + AI Recommendation
+        ================================ */}
 
         <div className="mt-6 grid w-full min-w-0 grid-cols-1 gap-6 sm:mt-8 lg:gap-8 xl:grid-cols-2">
 

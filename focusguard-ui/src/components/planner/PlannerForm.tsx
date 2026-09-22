@@ -10,6 +10,7 @@ import {
 } from "react-hook-form";
 
 import { usePlannerCategories } from "../../hooks/usePlanner";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface PlannerFormValues {
   plan_date: string;
@@ -32,6 +33,29 @@ interface Props {
 
   loading?: boolean;
 }
+
+/* =========================================================
+   Category option
+
+   IMPORTANT:
+   value stays original because backend expects
+   original category string.
+========================================================= */
+
+const CategoryOption = ({
+  category,
+}: {
+  category: string;
+}) => {
+  const translatedCategory =
+    useTranslation(category);
+
+  return (
+    <option value={category}>
+      {translatedCategory}
+    </option>
+  );
+};
 
 const PlannerForm = ({
   defaultValues,
@@ -75,6 +99,39 @@ const PlannerForm = ({
     name: "plans",
   });
 
+  const totalGoalMinutesText =
+    useTranslation("Total Goal Minutes");
+
+  const taskText =
+    useTranslation("Task");
+
+  const removeTaskText =
+    useTranslation("Remove task");
+
+  const categoryText =
+    useTranslation("Category");
+
+  const selectCategoryText =
+    useTranslation("Select Category");
+
+  const minutesText =
+    useTranslation("Minutes");
+
+  const startTimeText =
+    useTranslation("Start Time");
+
+  const endTimeText =
+    useTranslation("End Time");
+
+  const addTaskText =
+    useTranslation("Add Task");
+
+  const savingText =
+    useTranslation("Saving...");
+
+  const savePlannerText =
+    useTranslation("Save Planner");
+
   return (
     <form
       onSubmit={handleSubmit(
@@ -102,15 +159,13 @@ const PlannerForm = ({
       )}
       className="space-y-6"
     >
-
       {/* =================================================
           TOTAL GOAL
       ================================================= */}
 
       <div>
-
         <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
-          Total Goal Minutes
+          {totalGoalMinutesText}
         </label>
 
         <input
@@ -146,7 +201,6 @@ const PlannerForm = ({
             dark:focus:ring-indigo-950/50
           "
         />
-
       </div>
 
       {/* =================================================
@@ -154,7 +208,6 @@ const PlannerForm = ({
       ================================================= */}
 
       <div className="space-y-5">
-
         {fields.map(
           (field, index) => (
             <div
@@ -169,13 +222,11 @@ const PlannerForm = ({
                 sm:p-5
               "
             >
-
               {/* Task Header */}
 
               <div className="mb-4 flex items-center justify-between gap-3">
-
                 <h3 className="font-semibold text-slate-900 dark:text-white">
-                  Task {index + 1}
+                  {taskText} {index + 1}
                 </h3>
 
                 {fields.length > 1 && (
@@ -184,7 +235,7 @@ const PlannerForm = ({
                     onClick={() =>
                       remove(index)
                     }
-                    aria-label={`Remove task ${
+                    aria-label={`${removeTaskText} ${
                       index + 1
                     }`}
                     className="
@@ -201,19 +252,16 @@ const PlannerForm = ({
                     <Trash2 size={18} />
                   </button>
                 )}
-
               </div>
 
               {/* Task Inputs */}
 
               <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2">
-
                 {/* Category */}
 
                 <div className="min-w-0">
-
                   <label className="mb-2 block text-sm text-slate-700 dark:text-slate-300">
-                    Category
+                    {categoryText}
                   </label>
 
                   <select
@@ -242,32 +290,26 @@ const PlannerForm = ({
                       dark:focus:ring-indigo-950/50
                     "
                   >
-
                     <option value="">
-                      Select Category
+                      {selectCategoryText}
                     </option>
 
                     {categories?.categories.map(
                       (category) => (
-                        <option
+                        <CategoryOption
                           key={category}
-                          value={category}
-                        >
-                          {category}
-                        </option>
+                          category={category}
+                        />
                       )
                     )}
-
                   </select>
-
                 </div>
 
                 {/* Minutes */}
 
                 <div className="min-w-0">
-
                   <label className="mb-2 block text-sm text-slate-700 dark:text-slate-300">
-                    Minutes
+                    {minutesText}
                   </label>
 
                   <input
@@ -301,15 +343,13 @@ const PlannerForm = ({
                       dark:focus:ring-indigo-950/50
                     "
                   />
-
                 </div>
 
                 {/* Start */}
 
                 <div className="min-w-0">
-
                   <label className="mb-2 block text-sm text-slate-700 dark:text-slate-300">
-                    Start Time
+                    {startTimeText}
                   </label>
 
                   <input
@@ -339,15 +379,13 @@ const PlannerForm = ({
                       dark:focus:ring-indigo-950/50
                     "
                   />
-
                 </div>
 
                 {/* End */}
 
                 <div className="min-w-0">
-
                   <label className="mb-2 block text-sm text-slate-700 dark:text-slate-300">
-                    End Time
+                    {endTimeText}
                   </label>
 
                   <input
@@ -377,15 +415,11 @@ const PlannerForm = ({
                       dark:focus:ring-indigo-950/50
                     "
                   />
-
                 </div>
-
               </div>
-
             </div>
           )
         )}
-
       </div>
 
       {/* =================================================
@@ -424,11 +458,9 @@ const PlannerForm = ({
           sm:w-auto
         "
       >
-
         <Plus size={18} />
 
-        Add Task
-
+        {addTaskText}
       </button>
 
       {/* =================================================
@@ -436,7 +468,6 @@ const PlannerForm = ({
       ================================================= */}
 
       <div className="border-t border-slate-100 pt-5 dark:border-slate-700">
-
         <button
           type="submit"
           disabled={loading}
@@ -459,17 +490,13 @@ const PlannerForm = ({
             sm:w-auto
           "
         >
-
           <Save size={18} />
 
           {loading
-            ? "Saving..."
-            : "Save Planner"}
-
+            ? savingText
+            : savePlannerText}
         </button>
-
       </div>
-
     </form>
   );
 };

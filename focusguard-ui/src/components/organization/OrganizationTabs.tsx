@@ -12,6 +12,10 @@ import OrganizationGrid from "./OrganizationGrid";
 import UsersTable from "../admin/UsersTable";
 import DeactivationRequests from "./DeactivationRequests";
 
+import {
+  useTranslation,
+} from "../../hooks/useTranslation";
+
 interface Props {
   tab:
     | "organizations"
@@ -19,34 +23,48 @@ interface Props {
     | "requests";
 }
 
-const tabs = [
-  {
-    key: "organizations",
-    label: "Organizations",
-    icon: Building2,
-  },
-  {
-    key: "users",
-    label: "Users",
-    icon: Users,
-  },
-  {
-    key: "requests",
-    label: "Requests",
-    icon: FileText,
-  },
-] as const;
-
 const OrganizationTabs = ({
   tab,
 }: Props) => {
+  const organizationsText =
+    useTranslation(
+      "Organizations"
+    );
+
+  const usersText =
+    useTranslation("Users");
+
+  const requestsText =
+    useTranslation("Requests");
+
+  const tabs = [
+    {
+      key: "organizations" as const,
+      label:
+        organizationsText,
+      icon: Building2,
+    },
+    {
+      key: "users" as const,
+      label: usersText,
+      icon: Users,
+    },
+    {
+      key: "requests" as const,
+      label:
+        requestsText,
+      icon: FileText,
+    },
+  ];
+
   return (
-    <div>
+    <div className="min-w-0">
       {/* Tabs */}
 
       <div
         className="
           mb-6
+          max-w-full
           overflow-x-auto
           rounded-3xl
           border
@@ -64,60 +82,67 @@ const OrganizationTabs = ({
         "
       >
         <div className="flex min-w-max gap-2">
-          {tabs.map((item) => {
-            const Icon = item.icon;
+          {tabs.map(
+            (item) => {
+              const Icon =
+                item.icon;
 
-            return (
-              <NavLink
-                key={item.key}
-                to={`/superadmin/organization/${item.key}`}
-                className={`
-                  flex
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-2xl
-                  px-4
-                  py-3
-                  text-sm
-                  font-semibold
-                  transition-all
-                  duration-200
+              return (
+                <NavLink
+                  key={item.key}
+                  to={`/superadmin/organization/${item.key}`}
+                  className={`
+                    flex
+                    shrink-0
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-2xl
+                    px-4
+                    py-3
+                    text-sm
+                    font-semibold
+                    transition-all
+                    duration-200
 
-                  sm:px-6
+                    sm:px-6
 
-                  ${
-                    tab === item.key
-                      ? `
-                        bg-indigo-600
-                        text-white
-                        shadow-md
-                      `
-                      : `
-                        text-slate-600
-                        hover:bg-slate-100
-                        hover:text-slate-900
+                    ${
+                      tab === item.key
+                        ? `
+                          bg-indigo-600
+                          text-white
+                          shadow-md
+                        `
+                        : `
+                          text-slate-600
+                          hover:bg-slate-100
+                          hover:text-slate-900
 
-                        dark:text-slate-400
-                        dark:hover:bg-slate-800
-                        dark:hover:text-white
-                      `
-                  }
-                `}
-              >
-                <Icon size={18} />
+                          dark:text-slate-400
+                          dark:hover:bg-slate-800
+                          dark:hover:text-white
+                        `
+                    }
+                  `}
+                >
+                  <Icon size={18} />
 
-                {item.label}
-              </NavLink>
-            );
-          })}
+                  <span>
+                    {item.label}
+                  </span>
+                </NavLink>
+              );
+            }
+          )}
         </div>
       </div>
 
       {/* Content */}
 
-      <div>
-        {tab === "organizations" && (
+      <div className="min-w-0">
+        {tab ===
+          "organizations" && (
           <OrganizationGrid />
         )}
 

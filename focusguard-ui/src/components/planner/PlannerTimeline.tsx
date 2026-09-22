@@ -7,6 +7,7 @@ import Card from "../common/Card";
 import Skeleton from "../common/Skeleton";
 
 import { usePlannerProgress } from "../../hooks/usePlanner";
+import { useTranslation } from "../../hooks/useTranslation";
 
 const formatTime = (time: string) => {
   if (!time) return "--";
@@ -48,23 +49,62 @@ const getStatusColor = (
   );
 };
 
+/* =========================================================
+   Dynamic translated text
+========================================================= */
+
+const TranslatedText = ({
+  text,
+}: {
+  text: string;
+}) => {
+  const translatedText =
+    useTranslation(text);
+
+  return <>{translatedText}</>;
+};
+
 const PlannerTimeline = () => {
   const {
     data,
     isLoading,
   } = usePlannerProgress();
 
+  const noPlannerYetText =
+    useTranslation("No Planner Yet");
+
+  const createTodaysPlanText =
+    useTranslation(
+      "Create today's focus plan to start tracking your productivity and stay organized throughout the day."
+    );
+
+  const todaysScheduleText =
+    useTranslation("Today's Schedule");
+
+  const focusTimelineText =
+    useTranslation("Your focus timeline");
+
+  const plannedText =
+    useTranslation("Planned");
+
+  const actualText =
+    useTranslation("Actual");
+
+  const progressText =
+    useTranslation("Progress");
+
+  const minText =
+    useTranslation("min");
+
   if (isLoading) {
     return (
       <Card>
-
         {[1, 2].map((item) => (
           <Skeleton
             key={item}
             className="mb-5 h-24 w-full rounded-2xl last:mb-0"
           />
         ))}
-
       </Card>
     );
   }
@@ -75,66 +115,50 @@ const PlannerTimeline = () => {
   ) {
     return (
       <Card>
-
         <div className="flex min-h-[280px] flex-col items-center justify-center text-center">
-
           <Clock3
             size={52}
             className="mb-5 text-slate-300 dark:text-slate-600"
           />
 
           <h2 className="text-xl font-semibold text-slate-800 dark:text-white">
-            No Planner Yet
+            {noPlannerYetText}
           </h2>
 
           <p className="mt-2 max-w-sm text-sm leading-6 text-slate-500 dark:text-slate-400">
-            Create today's focus plan
-            to start tracking your
-            productivity and stay
-            organized throughout the
-            day.
+            {createTodaysPlanText}
           </p>
-
         </div>
-
       </Card>
     );
   }
 
   return (
     <Card className="min-w-0">
-
       {/* Header */}
 
       <div className="mb-6 flex min-w-0 items-center gap-3">
-
         <div className="shrink-0 rounded-xl bg-indigo-100 p-3 dark:bg-indigo-950/50">
-
           <Clock3
             size={22}
             className="text-indigo-600 dark:text-indigo-400"
           />
-
         </div>
 
         <div className="min-w-0">
-
           <h2 className="truncate text-lg font-semibold text-slate-900 dark:text-white">
-            Today's Schedule
+            {todaysScheduleText}
           </h2>
 
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Your focus timeline
+            {focusTimelineText}
           </p>
-
         </div>
-
       </div>
 
       {/* Timeline */}
 
       <div className="space-y-5">
-
         {data.planner.map(
           (plan, index) => (
             <div
@@ -155,7 +179,6 @@ const PlannerTimeline = () => {
                 sm:p-5
               "
             >
-
               {/* Timeline connector */}
 
               {index !==
@@ -176,23 +199,19 @@ const PlannerTimeline = () => {
               )}
 
               <div className="flex min-w-0 gap-3 sm:gap-4">
-
                 {/* Circle */}
 
                 <div className="shrink-0 pt-1">
-
                   <Circle
                     size={14}
                     fill="#4F46E5"
                     className="text-indigo-600 dark:text-indigo-400"
                   />
-
                 </div>
 
                 {/* Content */}
 
                 <div className="min-w-0 flex-1">
-
                   {/* Title + Status */}
 
                   <div
@@ -206,11 +225,11 @@ const PlannerTimeline = () => {
                       sm:justify-between
                     "
                   >
-
                     <div className="min-w-0">
-
                       <h3 className="break-words text-base font-semibold text-slate-900 dark:text-white sm:text-lg">
-                        {plan.category}
+                        <TranslatedText
+                          text={plan.category}
+                        />
                       </h3>
 
                       <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
@@ -222,7 +241,6 @@ const PlannerTimeline = () => {
                           plan.end_time
                         )}
                       </p>
-
                     </div>
 
                     <span
@@ -240,45 +258,40 @@ const PlannerTimeline = () => {
                         )}
                       `}
                     >
-                      {plan.status}
+                      <TranslatedText
+                        text={plan.status}
+                      />
                     </span>
-
                   </div>
 
                   {/* Statistics */}
 
                   <div className="mt-5 grid grid-cols-1 gap-3 min-[400px]:grid-cols-3">
-
                     <div className="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
-
                       <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                        Planned
+                        {plannedText}
                       </p>
 
                       <h4 className="mt-1 text-sm font-semibold text-slate-800 dark:text-slate-200 sm:text-base">
                         {plan.planned_minutes}{" "}
-                        min
+                        {minText}
                       </h4>
-
                     </div>
 
                     <div className="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
-
                       <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                        Actual
+                        {actualText}
                       </p>
 
                       <h4 className="mt-1 text-sm font-semibold text-slate-800 dark:text-slate-200 sm:text-base">
                         {plan.actual_minutes}{" "}
-                        min
+                        {minText}
                       </h4>
-
                     </div>
 
                     <div className="rounded-xl bg-slate-50 p-3 dark:bg-slate-800/70">
-
                       <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                        Progress
+                        {progressText}
                       </p>
 
                       <h4 className="mt-1 text-sm font-semibold text-slate-800 dark:text-slate-200 sm:text-base">
@@ -287,15 +300,12 @@ const PlannerTimeline = () => {
                         }
                         %
                       </h4>
-
                     </div>
-
                   </div>
 
                   {/* Progress */}
 
                   <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-
                     <div
                       className="h-full rounded-full bg-indigo-600 transition-all duration-500"
                       style={{
@@ -308,19 +318,13 @@ const PlannerTimeline = () => {
                         )}%`,
                       }}
                     />
-
                   </div>
-
                 </div>
-
               </div>
-
             </div>
           )
         )}
-
       </div>
-
     </Card>
   );
 };

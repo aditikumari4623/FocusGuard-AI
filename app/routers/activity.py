@@ -315,48 +315,79 @@ def update_user_status(
         user_status.status = status.status
 
     # ----------------------------------------
-    # Close Previous Status Log
+    # Manage Previous Status Log
     # ----------------------------------------
 
     previous_log = db.query(UserStatusLog).filter(
-
         UserStatusLog.user_id == current_user.id,
-
         UserStatusLog.end_time == None
-
+    ).order_by(
+        UserStatusLog.start_time.desc()
     ).first()
+
+    current_time = datetime.now()
 
     if previous_log:
 
-        previous_log.end_time = datetime.now()
+        # ------------------------------------
+        # Same status = heartbeat
+        # ------------------------------------
 
-        previous_log.duration = int(
+        if previous_log.status == status.status:
 
-            (
+            # Keep the same log open.
+            # Update its current duration so the
+            # session does not depend on a future
+            # status change to calculate duration.
 
-                previous_log.end_time -
+            previous_log.duration = int(
+                (
+                    current_time -
+                    previous_log.start_time
+                ).total_seconds()
+            )
 
-                previous_log.start_time
+        else:
 
-            ).total_seconds()
+            # ------------------------------------
+            # Status changed
+            # ------------------------------------
 
+            previous_log.end_time = current_time
+
+            previous_log.duration = int(
+                (
+                    current_time -
+                    previous_log.start_time
+                ).total_seconds()
+            )
+
+        
+
+            # Create a new session for the
+            # new status.
+
+            new_log = UserStatusLog(
+                user_id=current_user.id,
+                status=status.status,
+                start_time=current_time
+            )
+
+            db.add(new_log)
+
+    else:
+
+        # ------------------------------------
+        # No previous open log
+        # ------------------------------------
+
+        new_log = UserStatusLog(
+            user_id=current_user.id,
+            status=status.status,
+            start_time=current_time
         )
 
-    # ----------------------------------------
-    # Create New Status Log
-    # ----------------------------------------
-
-    new_log = UserStatusLog(
-
-        user_id=current_user.id,
-
-        status=status.status,
-
-        start_time=datetime.now()
-
-    )
-
-    db.add(new_log)
+        db.add(new_log)
 
     db.commit()
 

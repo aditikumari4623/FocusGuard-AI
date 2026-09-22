@@ -1,4 +1,4 @@
-from sqlalchemy import Column
+from sqlalchemy import JSON, Column
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy import DateTime
@@ -11,6 +11,7 @@ from sqlalchemy import Text, UniqueConstraint
 from datetime import datetime
 
 from app.database import Base
+from pgvector.sqlalchemy import Vector
 
 
 class Organization(Base):
@@ -117,19 +118,19 @@ class User(Base):
         nullable=False
     )
 
-    age = Column(Integer)
+    age = Column(
+        Integer
+    )
 
-    occupation = Column(String)
+    occupation = Column(
+        String
+    )
 
     organization_id = Column(
-    Integer,
-    ForeignKey("organizations.id"),
-    nullable=True
-)
-
-    # -------------------------
-    # NEW FIELD
-    # -------------------------
+        Integer,
+        ForeignKey("organizations.id"),
+        nullable=True
+    )
 
     role = Column(
         String,
@@ -137,17 +138,30 @@ class User(Base):
         nullable=False
     )
 
+    # -----------------------------------------
+    # USER LANGUAGE PREFERENCE
+    # -----------------------------------------
+
+    preferred_language = Column(
+        String(10),
+        default="en",
+        nullable=False
+    )
+
     is_active = Column(
         Boolean,
         default=True,
         nullable=False
-)
+    )
 
     created_at = Column(
         DateTime,
         default=datetime.now
     )
-    organization = relationship("Organization")
+
+    organization = relationship(
+        "Organization"
+    )
 
 
 class ActivityLog(Base):
@@ -182,18 +196,18 @@ class ActivityLog(Base):
     )
 
     website_name = Column(
-    String,
-    nullable=True
+        String,
+        nullable=True
     )
 
     category = Column(
-    String,
-    nullable=True
+        String,
+        nullable=True
     )
 
     productivity = Column(
-    String,
-    nullable=True
+        String,
+        nullable=True
     )
 
     start_time = Column(
@@ -216,7 +230,10 @@ class ActivityLog(Base):
         default=datetime.now
     )
 
-    user = relationship("User")
+    user = relationship(
+        "User"
+    )
+
 
 class WebsiteCategory(Base):
 
@@ -249,6 +266,7 @@ class WebsiteCategory(Base):
         nullable=False
     )
 
+
 class TabSwitchLog(Base):
 
     __tablename__ = "tab_switch_logs"
@@ -280,7 +298,10 @@ class TabSwitchLog(Base):
         default=datetime.now
     )
 
-    user = relationship("User")
+    user = relationship(
+        "User"
+    )
+
 
 class UserStatus(Base):
 
@@ -311,7 +332,10 @@ class UserStatus(Base):
         onupdate=datetime.now
     )
 
-    user = relationship("User")
+    user = relationship(
+        "User"
+    )
+
 
 class UserStatusLog(Base):
 
@@ -350,7 +374,9 @@ class UserStatusLog(Base):
         default=0
     )
 
-    user = relationship("User")
+    user = relationship(
+        "User"
+    )
 
 
 class Notification(Base):
@@ -396,8 +422,9 @@ class Notification(Base):
         nullable=False
     )
 
-    user = relationship("User")
-
+    user = relationship(
+        "User"
+    )
 
 
 # -----------------------------------------------------
@@ -435,7 +462,9 @@ class FocusPlan(Base):
         default=datetime.now
     )
 
-    user = relationship("User")
+    user = relationship(
+        "User"
+    )
 
     plan_items = relationship(
         "FocusPlanItem",
@@ -445,22 +474,42 @@ class FocusPlan(Base):
 
 
 class FocusPlanItem(Base):
+
     __tablename__ = "focus_plan_items"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
 
     plan_id = Column(
         Integer,
-        ForeignKey("focus_plans.id", ondelete="CASCADE")
+        ForeignKey(
+            "focus_plans.id",
+            ondelete="CASCADE"
+        )
     )
 
-    category = Column(String, nullable=False)
+    category = Column(
+        String,
+        nullable=False
+    )
 
-    planned_minutes = Column(Integer, nullable=False)
+    planned_minutes = Column(
+        Integer,
+        nullable=False
+    )
 
-    start_time = Column(Time, nullable=True)
+    start_time = Column(
+        Time,
+        nullable=True
+    )
 
-    end_time = Column(Time, nullable=True)
+    end_time = Column(
+        Time,
+        nullable=True
+    )
 
     plan = relationship(
         "FocusPlan",
@@ -468,21 +517,34 @@ class FocusPlanItem(Base):
     )
 
 
+# -----------------------------------------------------
+# STATIC TRANSLATIONS
+# -----------------------------------------------------
+
 class Translation(Base):
+
     __tablename__ = "translations"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
 
-    # Example:
-    # ON_TRACK
-    # BREAK_REMINDER
-    # NO_ACTIVE_SESSION
-    message_key = Column(String(100), nullable=False)
+    message_key = Column(
+        String(100),
+        nullable=False
+    )
 
-    # en / hi / ta / ml
-    language = Column(String(10), nullable=False)
+    language = Column(
+        String(10),
+        nullable=False
+    )
 
-    translated_text = Column(Text, nullable=False)
+    translated_text = Column(
+        Text,
+        nullable=False
+    )
 
     __table_args__ = (
         UniqueConstraint(
@@ -491,6 +553,11 @@ class Translation(Base):
             name="uq_translation_message_language",
         ),
     )
+
+
+# -----------------------------------------------------
+# DYNAMIC TRANSLATION CACHE
+# -----------------------------------------------------
 
 class DynamicTranslation(Base):
 
@@ -523,4 +590,28 @@ class DynamicTranslation(Base):
             "language",
             name="uq_dynamic_translation",
         ),
+    )
+
+
+class RAGDocument(Base):
+    __tablename__ = "rag_documents"
+
+    id = Column(Integer, primary_key=True, index=True)
+
+    user_id = Column(Integer, nullable=True, index=True)
+    organization_id = Column(Integer, nullable=True, index=True)
+
+    document_type = Column(String(100), nullable=False, index=True)
+
+    content = Column(Text, nullable=False)
+
+    embedding = Column(Vector(384), nullable=False)
+
+    document_metadata = Column("metadata", JSON, nullable=True)
+
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow,
+        nullable=False,
+        index=True,
     )

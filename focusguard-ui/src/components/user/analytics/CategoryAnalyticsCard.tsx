@@ -7,12 +7,10 @@ import {
   useCategoryAnalytics,
 } from "../../../hooks/useAnalytics";
 
-const formatTime = (
-  seconds: number
-) => {
-  const hours = Math.floor(
-    seconds / 3600
-  );
+import { useTranslation } from "../../../hooks/useTranslation";
+
+const formatTime = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600);
 
   const minutes = Math.floor(
     (seconds % 3600) / 60
@@ -30,6 +28,12 @@ const CategoryAnalyticsCard = () => {
     data,
     isLoading,
   } = useCategoryAnalytics();
+
+  const categoryAnalytics = useTranslation("Category Analytics");
+  const noCategoryData = useTranslation(
+    "No category data available."
+  );
+  const category = useTranslation("Category");
 
   if (isLoading) {
     return (
@@ -80,11 +84,11 @@ const CategoryAnalyticsCard = () => {
         "
       >
         <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-          Category Analytics
+          {categoryAnalytics}
         </h2>
 
         <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-          No category data available.
+          {noCategoryData}
         </p>
       </div>
     );
@@ -112,80 +116,76 @@ const CategoryAnalyticsCard = () => {
             className="shrink-0 text-indigo-600 dark:text-indigo-400"
           />
 
-          <span>Category Analytics</span>
+          <span>{categoryAnalytics}</span>
         </h2>
       </div>
 
       <div className="divide-y divide-slate-100 dark:divide-slate-800">
-        {data.map(
-          (item, index) => (
-            <div
-              key={index}
-              className="
-                flex
-                flex-col
-                gap-4
-                p-5
-                transition
-                hover:bg-slate-50
+        {data.map((item, index) => (
+          <div
+            key={index}
+            className="
+              flex
+              flex-col
+              gap-4
+              p-5
+              transition
+              hover:bg-slate-50
 
-                dark:hover:bg-slate-800/50
+              dark:hover:bg-slate-800/50
 
-                sm:flex-row
-                sm:items-center
-                sm:justify-between
-              "
-            >
-              <div className="flex min-w-0 items-center gap-3">
-                <div
-                  className="
-                    shrink-0
-                    rounded-xl
-                    bg-violet-100
-                    p-3
-
-                    dark:bg-violet-950/40
-                  "
-                >
-                  <PieChart
-                    size={18}
-                    className="text-violet-600 dark:text-violet-400"
-                  />
-                </div>
-
-                <div className="min-w-0">
-                  <h3 className="break-words font-semibold text-slate-900 dark:text-slate-100">
-                    {item.category}
-                  </h3>
-
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Category
-                  </p>
-                </div>
-              </div>
-
+              sm:flex-row
+              sm:items-center
+              sm:justify-between
+            "
+          >
+            <div className="flex min-w-0 items-center gap-3">
               <div
                 className="
-                  self-start
+                  shrink-0
                   rounded-xl
-                  bg-violet-50
-                  px-4
-                  py-2
+                  bg-violet-100
+                  p-3
 
                   dark:bg-violet-950/40
-
-                  sm:self-auto
                 "
               >
-                <span className="whitespace-nowrap font-semibold text-violet-700 dark:text-violet-400">
-                  {formatTime(
-                    item.duration_seconds
-                  )}
-                </span>
+                <PieChart
+                  size={18}
+                  className="text-violet-600 dark:text-violet-400"
+                />
+              </div>
+
+              <div className="min-w-0">
+                <h3 className="break-words font-semibold text-slate-900 dark:text-slate-100">
+                  {item.category}
+                </h3>
+
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  {category}
+                </p>
               </div>
             </div>
-          )
-        )}
+
+            <div
+              className="
+                self-start
+                rounded-xl
+                bg-violet-50
+                px-4
+                py-2
+
+                dark:bg-violet-950/40
+
+                sm:self-auto
+              "
+            >
+              <span className="whitespace-nowrap font-semibold text-violet-700 dark:text-violet-400">
+                {formatTime(item.duration_seconds)}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

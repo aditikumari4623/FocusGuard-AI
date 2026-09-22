@@ -7,12 +7,10 @@ import {
   useWebsiteAnalytics,
 } from "../../../hooks/useAnalytics";
 
-const formatTime = (
-  seconds: number
-) => {
-  const hours = Math.floor(
-    seconds / 3600
-  );
+import { useTranslation } from "../../../hooks/useTranslation";
+
+const formatTime = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600);
 
   const minutes = Math.floor(
     (seconds % 3600) / 60
@@ -30,6 +28,16 @@ const WebsiteAnalyticsCard = () => {
     data,
     isLoading,
   } = useWebsiteAnalytics();
+
+  const websiteAnalytics = useTranslation(
+    "Website Analytics"
+  );
+
+  const noWebsiteActivity = useTranslation(
+    "No website activity found."
+  );
+
+  const website = useTranslation("Website");
 
   if (isLoading) {
     return (
@@ -80,11 +88,11 @@ const WebsiteAnalyticsCard = () => {
         "
       >
         <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-          Website Analytics
+          {websiteAnalytics}
         </h2>
 
         <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-          No website activity found.
+          {noWebsiteActivity}
         </p>
       </div>
     );
@@ -112,82 +120,78 @@ const WebsiteAnalyticsCard = () => {
             className="shrink-0 text-indigo-600 dark:text-indigo-400"
           />
 
-          <span>Website Analytics</span>
+          <span>{websiteAnalytics}</span>
         </h2>
       </div>
 
       <div className="divide-y divide-slate-100 dark:divide-slate-800">
-        {data.map(
-          (website, index) => (
-            <div
-              key={index}
-              className="
-                flex
-                flex-col
-                gap-4
-                p-5
-                transition
-                hover:bg-slate-50
+        {data.map((websiteItem, index) => (
+          <div
+            key={index}
+            className="
+              flex
+              flex-col
+              gap-4
+              p-5
+              transition
+              hover:bg-slate-50
 
-                dark:hover:bg-slate-800/50
+              dark:hover:bg-slate-800/50
 
-                sm:flex-row
-                sm:items-center
-                sm:justify-between
-              "
-            >
-              <div className="flex min-w-0 items-center gap-3">
-
-                <div
-                  className="
-                    shrink-0
-                    rounded-xl
-                    bg-indigo-100
-                    p-3
-
-                    dark:bg-indigo-950/40
-                  "
-                >
-                  <ExternalLink
-                    size={18}
-                    className="text-indigo-600 dark:text-indigo-400"
-                  />
-                </div>
-
-                <div className="min-w-0">
-                  <h3 className="break-all font-semibold text-slate-900 dark:text-slate-100">
-                    {website.website}
-                  </h3>
-
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    Website
-                  </p>
-                </div>
-
-              </div>
-
+              sm:flex-row
+              sm:items-center
+              sm:justify-between
+            "
+          >
+            <div className="flex min-w-0 items-center gap-3">
               <div
                 className="
-                  self-start
+                  shrink-0
                   rounded-xl
-                  bg-indigo-50
-                  px-4
-                  py-2
+                  bg-indigo-100
+                  p-3
 
                   dark:bg-indigo-950/40
-
-                  sm:self-auto
                 "
               >
-                <span className="whitespace-nowrap font-semibold text-indigo-700 dark:text-indigo-400">
-                  {formatTime(
-                    website.duration_seconds
-                  )}
-                </span>
+                <ExternalLink
+                  size={18}
+                  className="text-indigo-600 dark:text-indigo-400"
+                />
+              </div>
+
+              <div className="min-w-0">
+                <h3 className="break-all font-semibold text-slate-900 dark:text-slate-100">
+                  {websiteItem.website}
+                </h3>
+
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  {website}
+                </p>
               </div>
             </div>
-          )
-        )}
+
+            <div
+              className="
+                self-start
+                rounded-xl
+                bg-indigo-50
+                px-4
+                py-2
+
+                dark:bg-indigo-950/40
+
+                sm:self-auto
+              "
+            >
+              <span className="whitespace-nowrap font-semibold text-indigo-700 dark:text-indigo-400">
+                {formatTime(
+                  websiteItem.duration_seconds
+                )}
+              </span>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

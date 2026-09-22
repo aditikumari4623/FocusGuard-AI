@@ -9,12 +9,89 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "../../../context/AuthContext";
+import { useTranslation } from "../../../hooks/useTranslation";
 
 const UserProfileSettings = () => {
   const {
     user,
     logout,
   } = useAuth();
+
+  const profileInformationText = useTranslation(
+    "Profile Information"
+  );
+
+  const accountInformationText = useTranslation(
+    "Your FocusGuard account information"
+  );
+
+  const fullNameText = useTranslation(
+    "Full Name"
+  );
+
+  const emailText = useTranslation("Email");
+
+  const roleText = useTranslation("Role");
+
+  const organizationText = useTranslation(
+    "Organization"
+  );
+
+  const notAvailableText = useTranslation(
+    "Not available"
+  );
+
+  const userRoleText = useTranslation("USER");
+
+  const notAssignedText = useTranslation(
+    "Not assigned"
+  );
+
+  const accountStatusText = useTranslation(
+    "Account Status"
+  );
+
+  const accountStatusDescriptionText =
+    useTranslation(
+      "Current status of your FocusGuard account"
+    );
+
+  const activeText = useTranslation("Active");
+
+  const securityText = useTranslation(
+    "Security"
+  );
+
+  const securityDescriptionText =
+    useTranslation(
+      "Manage your account security"
+    );
+
+  const passwordText = useTranslation(
+    "Password"
+  );
+
+  const passwordDescriptionText =
+    useTranslation(
+      "Password management can be added once the change-password API is available."
+    );
+
+  const changePasswordText = useTranslation(
+    "Change Password"
+  );
+
+  const signOutText = useTranslation(
+    "Sign Out"
+  );
+
+  const signOutDescriptionText =
+    useTranslation(
+      "Sign out of your FocusGuard account on this device."
+    );
+
+  const logoutText = useTranslation(
+    "Logout"
+  );
 
   const handleLogout = async () => {
     try {
@@ -23,6 +100,20 @@ const UserProfileSettings = () => {
       console.error("Logout failed:", error);
     }
   };
+
+  const formattedRole =
+    user?.role?.replace("_", " ") || "USER";
+
+  const translatedRole = useTranslation(
+    formattedRole
+  );
+
+  const organizationName = user?.organization_id
+    ? `Organization #${user.organization_id}`
+    : "Not assigned";
+
+  const translatedOrganization =
+    useTranslation(organizationName);
 
   return (
     <div className="space-y-6">
@@ -56,11 +147,11 @@ const UserProfileSettings = () => {
 
           <div className="min-w-0">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-              Profile Information
+              {profileInformationText}
             </h2>
 
             <p className="mt-1 text-sm leading-5 text-slate-500 dark:text-slate-400">
-              Your FocusGuard account information
+              {accountInformationText}
             </p>
           </div>
         </div>
@@ -80,11 +171,11 @@ const UserProfileSettings = () => {
 
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                  Full Name
+                  {fullNameText}
                 </p>
 
                 <p className="mt-1 break-words font-semibold text-slate-800 dark:text-slate-200">
-                  {user?.full_name || "Not available"}
+                  {user?.full_name || notAvailableText}
                 </p>
               </div>
             </div>
@@ -101,11 +192,11 @@ const UserProfileSettings = () => {
 
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                  Email
+                  {emailText}
                 </p>
 
                 <p className="mt-1 break-all font-semibold text-slate-800 dark:text-slate-200">
-                  {user?.email || "Not available"}
+                  {user?.email || notAvailableText}
                 </p>
               </div>
             </div>
@@ -122,14 +213,13 @@ const UserProfileSettings = () => {
 
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                  Role
+                  {roleText}
                 </p>
 
                 <span className="mt-1 inline-flex max-w-full break-words rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-400">
-                  {user?.role?.replace(
-                    "_",
-                    " "
-                  ) || "USER"}
+                  {user?.role
+                    ? translatedRole
+                    : userRoleText}
                 </span>
               </div>
             </div>
@@ -146,13 +236,11 @@ const UserProfileSettings = () => {
 
               <div className="min-w-0">
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                  Organization
+                  {organizationText}
                 </p>
 
                 <p className="mt-1 break-words font-semibold text-slate-800 dark:text-slate-200">
-                  {user?.organization_id
-                    ? `Organization #${user.organization_id}`
-                    : "Not assigned"}
+                  {translatedOrganization}
                 </p>
               </div>
             </div>
@@ -192,11 +280,11 @@ const UserProfileSettings = () => {
             <div className="min-w-0">
 
               <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-                Account Status
+                {accountStatusText}
               </h2>
 
               <p className="mt-1 text-sm leading-5 text-slate-500 dark:text-slate-400">
-                Current status of your FocusGuard account
+                {accountStatusDescriptionText}
               </p>
 
             </div>
@@ -207,7 +295,7 @@ const UserProfileSettings = () => {
 
             <span className="h-2 w-2 rounded-full bg-green-500 dark:bg-green-400" />
 
-            Active
+            {activeText}
 
           </span>
 
@@ -243,11 +331,11 @@ const UserProfileSettings = () => {
           <div className="min-w-0">
 
             <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-              Security
+              {securityText}
             </h2>
 
             <p className="mt-1 text-sm leading-5 text-slate-500 dark:text-slate-400">
-              Manage your account security
+              {securityDescriptionText}
             </p>
 
           </div>
@@ -261,12 +349,11 @@ const UserProfileSettings = () => {
             <div className="min-w-0">
 
               <h3 className="font-semibold text-slate-800 dark:text-slate-200">
-                Password
+                {passwordText}
               </h3>
 
               <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
-                Password management can be added once the
-                change-password API is available.
+                {passwordDescriptionText}
               </p>
 
             </div>
@@ -290,7 +377,7 @@ const UserProfileSettings = () => {
                 sm:w-auto
               "
             >
-              Change Password
+              {changePasswordText}
             </button>
 
           </div>
@@ -320,11 +407,11 @@ const UserProfileSettings = () => {
           <div className="min-w-0">
 
             <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-              Sign Out
+              {signOutText}
             </h2>
 
             <p className="mt-1 text-sm leading-6 text-slate-500 dark:text-slate-400">
-              Sign out of your FocusGuard account on this device.
+              {signOutDescriptionText}
             </p>
 
           </div>
@@ -351,7 +438,7 @@ const UserProfileSettings = () => {
           >
             <LogOut size={18} />
 
-            Logout
+            {logoutText}
           </button>
 
         </div>

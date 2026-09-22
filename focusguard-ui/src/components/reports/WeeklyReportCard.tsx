@@ -8,15 +8,59 @@ import Card from "../common/Card";
 
 import { useWeeklyReport } from "../../hooks/useReports";
 
+import { useTranslation } from "../../hooks/useTranslation";
+
 const WeeklyReportCard = () => {
-  const { data, isLoading } =
-    useWeeklyReport();
+  const {
+    data,
+    isLoading,
+  } = useWeeklyReport();
+
+  const loadingText = useTranslation(
+    "Loading Weekly Report..."
+  );
+
+  const noReportText = useTranslation(
+    "No weekly report available."
+  );
+
+  const weeklyReportText = useTranslation(
+    "Weekly Report"
+  );
+
+  const last7DaysText = useTranslation(
+    "Last 7 days summary"
+  );
+
+  const focusScoreText = useTranslation(
+    "Focus Score"
+  );
+
+  const activeTimeText = useTranslation(
+    "Active Time"
+  );
+
+  const idleTimeText = useTranslation(
+    "Idle Time"
+  );
+
+  const totalTimeText = useTranslation(
+    "Total Time"
+  );
 
   if (isLoading) {
     return (
       <Card>
-        <p className="text-slate-600 dark:text-slate-300">
-          Loading Weekly Report...
+        <p
+          className="
+            break-words
+            text-sm
+            leading-6
+            text-slate-600
+            dark:text-slate-300
+          "
+        >
+          {loadingText}
         </p>
       </Card>
     );
@@ -25,8 +69,16 @@ const WeeklyReportCard = () => {
   if (!data) {
     return (
       <Card>
-        <p className="text-slate-600 dark:text-slate-300">
-          No weekly report available.
+        <p
+          className="
+            break-words
+            text-sm
+            leading-6
+            text-slate-600
+            dark:text-slate-300
+          "
+        >
+          {noReportText}
         </p>
       </Card>
     );
@@ -35,47 +87,54 @@ const WeeklyReportCard = () => {
   return (
     <Card
       className="
+        min-w-0
         border
         border-slate-200
         shadow-sm
         dark:border-slate-700
       "
     >
-      <div className="mb-6">
+      <div className="mb-6 min-w-0">
         <h2
           className="
+            break-words
             text-xl
             font-bold
+            leading-tight
             text-slate-900
             dark:text-white
           "
         >
-          Weekly Report
+          {weeklyReportText}
         </h2>
 
         <p
           className="
+            mt-1
+            break-words
             text-sm
+            leading-6
             text-slate-500
             dark:text-slate-400
           "
         >
-          Last 7 days summary
+          {last7DaysText}
         </p>
       </div>
 
       <div
         className="
           grid
+          min-w-0
           grid-cols-1
           gap-4
           sm:grid-cols-2
         "
       >
         {/* Focus */}
-
         <div
           className="
+            min-w-0
             rounded-2xl
             bg-indigo-50
             p-4
@@ -90,16 +149,20 @@ const WeeklyReportCard = () => {
           <p
             className="
               mt-3
+              break-words
               text-sm
+              leading-5
               text-slate-500
               dark:text-slate-400
             "
           >
-            Focus Score
+            {focusScoreText}
           </p>
 
           <h3
             className="
+              mt-1
+              break-words
               text-2xl
               font-bold
               text-slate-900
@@ -111,9 +174,9 @@ const WeeklyReportCard = () => {
         </div>
 
         {/* Active */}
-
         <div
           className="
+            min-w-0
             rounded-2xl
             bg-green-50
             p-4
@@ -128,16 +191,20 @@ const WeeklyReportCard = () => {
           <p
             className="
               mt-3
+              break-words
               text-sm
+              leading-5
               text-slate-500
               dark:text-slate-400
             "
           >
-            Active Time
+            {activeTimeText}
           </p>
 
           <h3
             className="
+              mt-1
+              break-words
               text-xl
               font-bold
               text-slate-900
@@ -149,9 +216,9 @@ const WeeklyReportCard = () => {
         </div>
 
         {/* Idle */}
-
         <div
           className="
+            min-w-0
             rounded-2xl
             bg-orange-50
             p-4
@@ -166,16 +233,20 @@ const WeeklyReportCard = () => {
           <p
             className="
               mt-3
+              break-words
               text-sm
+              leading-5
               text-slate-500
               dark:text-slate-400
             "
           >
-            Idle Time
+            {idleTimeText}
           </p>
 
           <h3
             className="
+              mt-1
+              break-words
               text-xl
               font-bold
               text-slate-900
@@ -187,9 +258,9 @@ const WeeklyReportCard = () => {
         </div>
 
         {/* Total */}
-
         <div
           className="
+            min-w-0
             rounded-2xl
             bg-violet-50
             p-4
@@ -204,16 +275,20 @@ const WeeklyReportCard = () => {
           <p
             className="
               mt-3
+              break-words
               text-sm
+              leading-5
               text-slate-500
               dark:text-slate-400
             "
           >
-            Total Time
+            {totalTimeText}
           </p>
 
           <h3
             className="
+              mt-1
+              break-words
               text-xl
               font-bold
               text-slate-900
@@ -228,4 +303,4 @@ const WeeklyReportCard = () => {
   );
 };
 
-export default WeeklyReportCard; 
+export default WeeklyReportCard;

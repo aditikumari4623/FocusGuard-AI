@@ -43,7 +43,6 @@ export const getAIRecommendation =
     return response.data;
   };
 
-
 export interface ChatRequest {
   message: string;
 }

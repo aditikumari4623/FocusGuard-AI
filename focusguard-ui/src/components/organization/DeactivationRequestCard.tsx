@@ -15,6 +15,10 @@ import type {
   DeactivationRequest,
 } from "../../api/organization.api";
 
+import {
+  useTranslation,
+} from "../../hooks/useTranslation";
+
 interface Props {
   request: DeactivationRequest;
 }
@@ -28,37 +32,87 @@ const DeactivationRequestCard = ({
   const reject =
     useRejectRequest();
 
-  const handleApprove = async () => {
-    try {
-      await approve.mutateAsync(
-        request.id
-      );
+  const deactivationRequestText =
+    useTranslation(
+      "Deactivation request"
+    );
 
-      toast.success(
-        "Request approved."
-      );
-    } catch {
-      toast.error(
-        "Approval failed."
-      );
-    }
-  };
+  const organizationText =
+    useTranslation(
+      "Organization"
+    );
 
-  const handleReject = async () => {
-    try {
-      await reject.mutateAsync(
-        request.id
-      );
+  const reasonText =
+    useTranslation("Reason");
 
-      toast.success(
-        "Request rejected."
-      );
-    } catch {
-      toast.error(
-        "Reject failed."
-      );
-    }
-  };
+  const requestedByText =
+    useTranslation("Requested By");
+
+  const approvingText =
+    useTranslation("Approving...");
+
+  const approveText =
+    useTranslation("Approve");
+
+  const rejectingText =
+    useTranslation("Rejecting...");
+
+  const rejectText =
+    useTranslation("Reject");
+
+  const approvalSuccessText =
+    useTranslation(
+      "Request approved."
+    );
+
+  const approvalFailedText =
+    useTranslation(
+      "Approval failed."
+    );
+
+  const rejectionSuccessText =
+    useTranslation(
+      "Request rejected."
+    );
+
+  const rejectionFailedText =
+    useTranslation(
+      "Reject failed."
+    );
+
+  const handleApprove =
+    async () => {
+      try {
+        await approve.mutateAsync(
+          request.id
+        );
+
+        toast.success(
+          approvalSuccessText
+        );
+      } catch {
+        toast.error(
+          approvalFailedText
+        );
+      }
+    };
+
+  const handleReject =
+    async () => {
+      try {
+        await reject.mutateAsync(
+          request.id
+        );
+
+        toast.success(
+          rejectionSuccessText
+        );
+      } catch {
+        toast.error(
+          rejectionFailedText
+        );
+      }
+    };
 
   const isPending =
     approve.isPending ||
@@ -67,6 +121,7 @@ const DeactivationRequestCard = ({
   return (
     <div
       className="
+        min-w-0
         overflow-hidden
         rounded-3xl
         border
@@ -85,8 +140,26 @@ const DeactivationRequestCard = ({
       <div className="p-5 sm:p-6">
         {/* Header */}
 
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex min-w-0 items-start gap-3">
+        <div
+          className="
+            flex
+            min-w-0
+            flex-col
+            gap-4
+
+            sm:flex-row
+            sm:items-start
+            sm:justify-between
+          "
+        >
+          <div
+            className="
+              flex
+              min-w-0
+              items-start
+              gap-3
+            "
+          >
             <div
               className="
                 flex
@@ -103,18 +176,36 @@ const DeactivationRequestCard = ({
             >
               <Clock3
                 size={21}
-                className="text-orange-600 dark:text-orange-400"
+                className="
+                  text-orange-600
+                  dark:text-orange-400
+                "
               />
             </div>
 
             <div className="min-w-0">
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                Organization #
+              <h2
+                className="
+                  break-words
+                  text-lg
+                  font-bold
+                  text-slate-900
+                  dark:text-white
+                "
+              >
+                {organizationText} #
                 {request.organization_id}
               </h2>
 
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                Deactivation request
+              <p
+                className="
+                  mt-1
+                  text-sm
+                  text-slate-500
+                  dark:text-slate-400
+                "
+              >
+                {deactivationRequestText}
               </p>
             </div>
           </div>
@@ -122,6 +213,7 @@ const DeactivationRequestCard = ({
           <span
             className="
               w-fit
+              shrink-0
               rounded-full
               bg-yellow-100
               px-3
@@ -155,11 +247,29 @@ const DeactivationRequestCard = ({
             dark:bg-slate-800
           "
         >
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            Reason
+          <p
+            className="
+              text-xs
+              font-semibold
+              uppercase
+              tracking-wide
+              text-slate-500
+              dark:text-slate-400
+            "
+          >
+            {reasonText}
           </p>
 
-          <p className="mt-2 break-words text-sm leading-6 text-slate-700 dark:text-slate-200">
+          <p
+            className="
+              mt-2
+              break-words
+              text-sm
+              leading-6
+              text-slate-700
+              dark:text-slate-200
+            "
+          >
             {request.reason}
           </p>
         </div>
@@ -167,18 +277,45 @@ const DeactivationRequestCard = ({
         {/* Requested By */}
 
         <div className="mt-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            Requested By
+          <p
+            className="
+              text-xs
+              font-semibold
+              uppercase
+              tracking-wide
+              text-slate-500
+              dark:text-slate-400
+            "
+          >
+            {requestedByText}
           </p>
 
-          <p className="mt-1 break-words text-sm font-medium text-slate-700 dark:text-slate-200">
+          <p
+            className="
+              mt-1
+              break-words
+              text-sm
+              font-medium
+              text-slate-700
+              dark:text-slate-200
+            "
+          >
             {request.requested_by}
           </p>
         </div>
 
         {/* Actions */}
 
-        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div
+          className="
+            mt-6
+            grid
+            grid-cols-1
+            gap-3
+
+            sm:grid-cols-2
+          "
+        >
           <button
             type="button"
             onClick={handleApprove}
@@ -205,8 +342,8 @@ const DeactivationRequestCard = ({
             <CheckCircle2 size={18} />
 
             {approve.isPending
-              ? "Approving..."
-              : "Approve"}
+              ? approvingText
+              : approveText}
           </button>
 
           <button
@@ -235,8 +372,8 @@ const DeactivationRequestCard = ({
             <XCircle size={18} />
 
             {reject.isPending
-              ? "Rejecting..."
-              : "Reject"}
+              ? rejectingText
+              : rejectText}
           </button>
         </div>
       </div>

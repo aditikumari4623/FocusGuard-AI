@@ -7,15 +7,21 @@ import {
 
 import { useDashboard } from "../../hooks/useDashboard";
 import { formatDuration } from "../../utils/time";
-
 import Skeleton from "../common/Skeleton";
 import StatCard from "./StatCard";
+import { useTranslation } from "../../hooks/useTranslation";
 
 const StatsGrid = () => {
-  const {
-    data,
-    isLoading,
-  } = useDashboard();
+  const { data, isLoading } = useDashboard();
+
+  const activeTimeText = useTranslation("Active Time");
+  const activeDurationText = useTranslation("Today's active duration");
+  const idleTimeText = useTranslation("Idle Time");
+  const awayFromWorkText = useTranslation("Away from work");
+  const browserTimeText = useTranslation("Browser Time");
+  const timeSpentBrowsingText = useTranslation("Time spent browsing");
+  const websitesText = useTranslation("Websites");
+  const visitedTodayText = useTranslation("Visited today");
 
   if (isLoading) {
     return (
@@ -36,10 +42,9 @@ const StatsGrid = () => {
 
   return (
     <div className="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-
       <StatCard
-        title="Active Time"
-        subtitle="Today's active duration"
+        title={activeTimeText}
+        subtitle={activeDurationText}
         value={formatDuration(data?.active_time ?? 0)}
         icon={Activity}
         iconColor="text-green-600"
@@ -47,8 +52,8 @@ const StatsGrid = () => {
       />
 
       <StatCard
-        title="Idle Time"
-        subtitle="Away from work"
+        title={idleTimeText}
+        subtitle={awayFromWorkText}
         value={formatDuration(data?.idle_time ?? 0)}
         icon={Clock3}
         iconColor="text-orange-500"
@@ -56,8 +61,8 @@ const StatsGrid = () => {
       />
 
       <StatCard
-        title="Browser Time"
-        subtitle="Time spent browsing"
+        title={browserTimeText}
+        subtitle={timeSpentBrowsingText}
         value={formatDuration(data?.browser_time ?? 0)}
         icon={Timer}
         iconColor="text-indigo-600"
@@ -65,14 +70,13 @@ const StatsGrid = () => {
       />
 
       <StatCard
-        title="Websites"
-        subtitle="Visited today"
+        title={websitesText}
+        subtitle={visitedTodayText}
         value={data?.total_website_visited ?? 0}
         icon={Globe}
         iconColor="text-cyan-600"
         iconBg="bg-cyan-100"
       />
-
     </div>
   );
 };

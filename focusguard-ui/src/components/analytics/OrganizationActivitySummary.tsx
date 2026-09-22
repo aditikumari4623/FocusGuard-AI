@@ -13,6 +13,8 @@ import {
 
 import { formatDuration } from "../../utils/time";
 
+import { useTranslation } from "../../hooks/useTranslation";
+
 const ProgressBar = ({
   value,
   color,
@@ -51,12 +53,50 @@ const OrganizationActivitySummary = () => {
     isError,
   } = useRoleActivitySummary();
 
+  const loadingText =
+    useTranslation(
+      "Loading Organization Activity..."
+    );
+
+  const errorText =
+    useTranslation(
+      "Unable to load organization activity."
+    );
+
+  const title =
+    useTranslation(
+      "Organization Activity Summary"
+    );
+
+  const description =
+    useTranslation(
+      "Overview of activity across organization users"
+    );
+
+  const browserTimeLabel =
+    useTranslation("Browser Time");
+
+  const activeTimeLabel =
+    useTranslation("Active Time");
+
+  const idleTimeLabel =
+    useTranslation("Idle Time");
+
+  const focusScoreLabel =
+    useTranslation("Organization Focus Score");
+
+  const activePercentLabel =
+    useTranslation("Active %");
+
+  const idlePercentLabel =
+    useTranslation("Idle %");
+
   if (isLoading) {
     return (
       <Card>
         <div className="flex min-h-[250px] items-center justify-center">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Loading Organization Activity...
+            {loadingText}
           </p>
         </div>
       </Card>
@@ -68,7 +108,7 @@ const OrganizationActivitySummary = () => {
       <Card>
         <div className="flex min-h-[250px] items-center justify-center text-center">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Unable to load organization activity.
+            {errorText}
           </p>
         </div>
       </Card>
@@ -113,11 +153,11 @@ const OrganizationActivitySummary = () => {
     >
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white sm:text-xl">
-          Organization Activity Summary
+          {title}
         </h2>
 
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Overview of activity across organization users
+          {description}
         </p>
       </div>
 
@@ -133,7 +173,7 @@ const OrganizationActivitySummary = () => {
               />
 
               <span className="font-medium text-slate-700 dark:text-slate-300">
-                Browser Time
+                {browserTimeLabel}
               </span>
             </div>
 
@@ -154,7 +194,7 @@ const OrganizationActivitySummary = () => {
               />
 
               <span className="font-medium text-slate-700 dark:text-slate-300">
-                Active Time
+                {activeTimeLabel}
               </span>
             </div>
 
@@ -180,7 +220,7 @@ const OrganizationActivitySummary = () => {
               />
 
               <span className="font-medium text-slate-700 dark:text-slate-300">
-                Idle Time
+                {idleTimeLabel}
               </span>
             </div>
 
@@ -213,7 +253,7 @@ const OrganizationActivitySummary = () => {
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <span className="font-semibold text-slate-700 dark:text-slate-300">
-              Organization Focus Score
+              {focusScoreLabel}
             </span>
 
             <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 sm:text-3xl">
@@ -249,7 +289,7 @@ const OrganizationActivitySummary = () => {
             />
 
             <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Active %
+              {activePercentLabel}
             </p>
 
             <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-white">
@@ -276,7 +316,7 @@ const OrganizationActivitySummary = () => {
             />
 
             <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Idle %
+              {idlePercentLabel}
             </p>
 
             <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-white">

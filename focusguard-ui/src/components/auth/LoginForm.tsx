@@ -142,7 +142,23 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-lg">
+    <div
+      className="
+        w-full
+        max-w-md
+        rounded-3xl
+        border
+        border-slate-200
+        bg-white
+        p-8
+        shadow-lg
+        transition-colors
+        duration-300
+        dark:border-slate-800
+        dark:bg-slate-900
+        dark:shadow-slate-950/40
+      "
+    >
 
       <AuthHeader
         title="Welcome Back"
@@ -157,7 +173,17 @@ const LoginForm = () => {
         {/* Email */}
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-slate-700">
+
+          <label
+            className="
+              mb-2
+              block
+              text-sm
+              font-medium
+              text-slate-700
+              dark:text-slate-300
+            "
+          >
             Email
           </label>
 
@@ -169,8 +195,30 @@ const LoginForm = () => {
               setEmail(e.target.value)
             }
             required
-            className="h-12 w-full rounded-2xl border border-slate-300 px-4 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+            className="
+              h-12
+              w-full
+              rounded-2xl
+              border
+              border-slate-300
+              bg-white
+              px-4
+              text-slate-900
+              outline-none
+              transition
+              placeholder:text-slate-400
+              focus:border-indigo-500
+              focus:ring-4
+              focus:ring-indigo-100
+              dark:border-slate-700
+              dark:bg-slate-800
+              dark:text-slate-100
+              dark:placeholder:text-slate-500
+              dark:focus:border-indigo-400
+              dark:focus:ring-indigo-500/20
+            "
           />
+
         </div>
 
         {/* Password */}
@@ -183,12 +231,21 @@ const LoginForm = () => {
         {/* Forgot Password */}
 
         <div className="flex justify-end">
+
           <Link
             to="/forgot-password"
-            className="text-sm text-indigo-600 hover:underline"
+            className="
+              text-sm
+              text-indigo-600
+              transition
+              hover:underline
+              dark:text-indigo-400
+              dark:hover:text-indigo-300
+            "
           >
             Forgot Password?
           </Link>
+
         </div>
 
         {/* Login */}
@@ -198,7 +255,20 @@ const LoginForm = () => {
           disabled={
             loginMutation.isPending
           }
-          className="h-12 w-full rounded-2xl bg-indigo-600 font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-indigo-400"
+          className="
+            h-12
+            w-full
+            rounded-2xl
+            bg-indigo-600
+            font-semibold
+            text-white
+            transition
+            hover:bg-indigo-700
+            disabled:cursor-not-allowed
+            disabled:bg-indigo-400
+            dark:bg-indigo-500
+            dark:hover:bg-indigo-600
+          "
         >
           {loginMutation.isPending
             ? "Signing In..."
@@ -207,18 +277,32 @@ const LoginForm = () => {
 
         {/* Register */}
 
-        <p className="text-center text-sm text-slate-600">
+        <p
+          className="
+            text-center
+            text-sm
+            text-slate-600
+            dark:text-slate-400
+          "
+        >
           Don't have an account?{" "}
 
           <Link
             to="/register"
-            className="font-semibold text-indigo-600 hover:underline"
+            className="
+              font-semibold
+              text-indigo-600
+              hover:underline
+              dark:text-indigo-400
+            "
           >
             Register
           </Link>
+
         </p>
 
       </form>
+
     </div>
   );
 };

@@ -20,6 +20,8 @@ import {
   useRoleMonthlyReport,
 } from "../../hooks/useReports";
 
+import { useTranslation } from "../../hooks/useTranslation";
+
 const formatMinutes = (seconds: number) => {
   const mins = Math.round(seconds / 60);
 
@@ -32,6 +34,41 @@ const RoleMonthlyActivityChart = () => {
     isLoading,
     isError,
   } = useRoleMonthlyReport();
+
+  const errorMessage =
+    useTranslation(
+      "Unable to load organization monthly activity."
+    );
+
+  const title =
+    useTranslation(
+      "Monthly Organization Activity"
+    );
+
+  const subtitle =
+    useTranslation(
+      "Last 30 Days · Organization Users"
+    );
+
+  const focusLabel =
+    useTranslation("Focus");
+
+  const activeLabel =
+    useTranslation("Active");
+
+  const idleLabel =
+    useTranslation("Idle");
+
+  const activeTimeLabel =
+    useTranslation("Active Time");
+
+  const idleTimeLabel =
+    useTranslation("Idle Time");
+
+  const footerText =
+    useTranslation(
+      "Organization users' monthly activity"
+    );
 
   if (isLoading) {
     return (
@@ -47,7 +84,7 @@ const RoleMonthlyActivityChart = () => {
     return (
       <Card>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Unable to load organization monthly activity.
+          {errorMessage}
         </p>
       </Card>
     );
@@ -55,74 +92,62 @@ const RoleMonthlyActivityChart = () => {
 
   return (
     <Card className="min-w-0 overflow-hidden">
-
       {/* Header */}
 
       <div className="mb-5 flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-
         <div className="flex min-w-0 items-start gap-3">
-
           <div className="shrink-0 rounded-xl bg-indigo-100 p-3 dark:bg-indigo-950/60">
-
             <Activity
               size={22}
               className="text-indigo-600 dark:text-indigo-400"
             />
-
           </div>
 
           <div className="min-w-0">
-
             <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
-              Monthly Organization Activity
+              {title}
             </h2>
 
             <p className="text-sm text-slate-500 dark:text-slate-400">
-              Last 30 Days · Organization Users
+              {subtitle}
             </p>
-
           </div>
-
         </div>
 
         <div className="w-full rounded-2xl bg-indigo-50 px-4 py-3 text-center dark:bg-indigo-950/40 sm:w-auto">
-
           <p className="text-xs font-medium uppercase tracking-wide text-indigo-700 dark:text-indigo-300">
-            Focus
+            {focusLabel}
           </p>
 
           <h3 className="mt-1 text-2xl font-bold text-indigo-700 dark:text-indigo-300">
             {data.focus_score.toFixed(1)}%
           </h3>
-
         </div>
-
       </div>
 
       {/* Legend */}
 
       <div className="mb-5 flex flex-wrap items-center gap-4 text-sm sm:gap-6">
-
         <div className="flex items-center gap-2">
           <div className="h-3 w-3 rounded-full bg-indigo-500" />
+
           <span className="text-slate-700 dark:text-slate-300">
-            Active
+            {activeLabel}
           </span>
         </div>
 
         <div className="flex items-center gap-2">
           <div className="h-3 w-3 rounded-full bg-red-400" />
+
           <span className="text-slate-700 dark:text-slate-300">
-            Idle
+            {idleLabel}
           </span>
         </div>
-
       </div>
 
       {/* Chart */}
 
       <div className="w-full min-w-0">
-
         <ResponsiveContainer
           width="100%"
           height={220}
@@ -136,7 +161,6 @@ const RoleMonthlyActivityChart = () => {
               bottom: 5,
             }}
           >
-
             <CartesianGrid
               stroke="#334155"
               vertical={false}
@@ -175,21 +199,31 @@ const RoleMonthlyActivityChart = () => {
                 fontSize: 13,
               }}
               formatter={(value, name) => {
-
                 const seconds =
                   typeof value === "number"
                     ? value
                     : 0;
 
+                let translatedName = name;
+
+                if (name === "Active Time") {
+                  translatedName =
+                    activeTimeLabel;
+                }
+
+                if (name === "Idle Time") {
+                  translatedName =
+                    idleTimeLabel;
+                }
+
                 return [
                   formatMinutes(seconds),
-                  name,
+                  translatedName,
                 ];
               }}
             />
 
             <defs>
-
               <linearGradient
                 id="roleActiveGradient"
                 x1="0"
@@ -229,7 +263,6 @@ const RoleMonthlyActivityChart = () => {
                   stopOpacity={0}
                 />
               </linearGradient>
-
             </defs>
 
             <Area
@@ -249,27 +282,22 @@ const RoleMonthlyActivityChart = () => {
               strokeWidth={3}
               fill="url(#roleIdleGradient)"
             />
-
           </AreaChart>
         </ResponsiveContainer>
-
       </div>
 
       {/* Footer */}
 
       <div className="mt-5 flex items-start gap-2 border-t border-slate-200 pt-4 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
-
         <TrendingUp
           size={16}
           className="mt-0.5 shrink-0"
         />
 
         <span>
-          Organization users' monthly activity
+          {footerText}
         </span>
-
       </div>
-
     </Card>
   );
 };

@@ -13,6 +13,8 @@ import {
 
 import { formatDuration } from "../../utils/time";
 
+import { useTranslation } from "../../hooks/useTranslation";
+
 const ProgressBar = ({
   value,
   color,
@@ -51,6 +53,19 @@ const ActivitySummary = () => {
     isError,
   } = useActivitySummary();
 
+  const loadingText = useTranslation("Loading Activity...");
+  const errorText = useTranslation("Unable to load activity data.");
+  const title = useTranslation("Activity Summary");
+  const description = useTranslation(
+    "Overview of your productivity and activity"
+  );
+  const browserTimeText = useTranslation("Browser Time");
+  const activeTimeText = useTranslation("Active Time");
+  const idleTimeText = useTranslation("Idle Time");
+  const focusScoreText = useTranslation("Focus Score");
+  const activePercentText = useTranslation("Active %");
+  const idlePercentText = useTranslation("Idle %");
+
   if (isLoading) {
     return (
       <Card
@@ -65,7 +80,7 @@ const ActivitySummary = () => {
       >
         <div className="flex min-h-[180px] items-center justify-center">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Loading Activity...
+            {loadingText}
           </p>
         </div>
       </Card>
@@ -86,7 +101,7 @@ const ActivitySummary = () => {
       >
         <div className="flex min-h-[180px] items-center justify-center text-center">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Unable to load activity data.
+            {errorText}
           </p>
         </div>
       </Card>
@@ -131,17 +146,16 @@ const ActivitySummary = () => {
     >
       <div className="mb-6">
         <h2 className="text-lg font-semibold text-slate-900 dark:text-white sm:text-xl">
-          Activity Summary
+          {title}
         </h2>
 
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Overview of your productivity and activity
+          {description}
         </p>
       </div>
 
       <div className="space-y-6">
         {/* Browser */}
-
         <div>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-3">
@@ -151,7 +165,7 @@ const ActivitySummary = () => {
               />
 
               <span className="font-medium text-slate-700 dark:text-slate-300">
-                Browser Time
+                {browserTimeText}
               </span>
             </div>
 
@@ -162,7 +176,6 @@ const ActivitySummary = () => {
         </div>
 
         {/* Active */}
-
         <div>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-3">
@@ -172,7 +185,7 @@ const ActivitySummary = () => {
               />
 
               <span className="font-medium text-slate-700 dark:text-slate-300">
-                Active Time
+                {activeTimeText}
               </span>
             </div>
 
@@ -188,7 +201,6 @@ const ActivitySummary = () => {
         </div>
 
         {/* Idle */}
-
         <div>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-3">
@@ -198,7 +210,7 @@ const ActivitySummary = () => {
               />
 
               <span className="font-medium text-slate-700 dark:text-slate-300">
-                Idle Time
+                {idleTimeText}
               </span>
             </div>
 
@@ -214,7 +226,6 @@ const ActivitySummary = () => {
         </div>
 
         {/* Focus */}
-
         <div
           className="
             rounded-2xl
@@ -231,7 +242,7 @@ const ActivitySummary = () => {
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <span className="font-semibold text-slate-700 dark:text-slate-300">
-              Focus Score
+              {focusScoreText}
             </span>
 
             <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 sm:text-3xl">
@@ -246,7 +257,6 @@ const ActivitySummary = () => {
         </div>
 
         {/* Percentages */}
-
         <div className="grid grid-cols-1 gap-4 pt-2 sm:grid-cols-2">
           <div
             className="
@@ -267,7 +277,7 @@ const ActivitySummary = () => {
             />
 
             <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Active %
+              {activePercentText}
             </p>
 
             <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-white">
@@ -294,7 +304,7 @@ const ActivitySummary = () => {
             />
 
             <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              Idle %
+              {idlePercentText}
             </p>
 
             <h3 className="mt-1 text-lg font-bold text-slate-900 dark:text-white">

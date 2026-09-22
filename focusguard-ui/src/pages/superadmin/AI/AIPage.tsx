@@ -12,12 +12,48 @@ import {
 
 import Chatbot from "../../../components/ai/Chatbot";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 const AIPage = () => {
   const {
     data,
     isLoading,
     isError,
   } = useAIRecommendation();
+
+  const loadingText = useTranslation(
+    "Loading AI Report..."
+  );
+
+  const unableToLoadText = useTranslation(
+    "Unable to load AI report"
+  );
+
+  const tryAgainText = useTranslation(
+    "Please try again later."
+  );
+
+  const reportTitle = useTranslation(
+    "AI Productivity Report"
+  );
+
+  const generatedAtText = useTranslation(
+    "Generated at"
+  );
+
+  /*
+   * AI-generated recommendation is dynamic content.
+   *
+   * useTranslation() will:
+   * 1. Return English when language = en.
+   * 2. Check static translation if available.
+   * 3. Fall back to Sarvam dynamic translation.
+   * 4. Fall back to original recommendation if translation fails.
+   */
+  const translatedRecommendation =
+    useTranslation(
+      data?.recommendation ?? ""
+    );
 
   if (isLoading) {
     return (
@@ -66,7 +102,7 @@ const AIPage = () => {
                   dark:text-slate-400
                 "
               >
-                Loading AI Report...
+                {loadingText}
               </p>
             </div>
           </div>
@@ -124,7 +160,7 @@ const AIPage = () => {
                 dark:text-white
               "
             >
-              Unable to load AI report
+              {unableToLoadText}
             </h2>
 
             <p
@@ -135,7 +171,7 @@ const AIPage = () => {
                 dark:text-slate-400
               "
             >
-              Please try again later.
+              {tryAgainText}
             </p>
           </div>
         </div>
@@ -194,7 +230,7 @@ const AIPage = () => {
                 />
 
                 <span className="break-words">
-                  AI Productivity Report
+                  {reportTitle}
                 </span>
               </h1>
 
@@ -209,7 +245,7 @@ const AIPage = () => {
                   sm:text-base
                 "
               >
-                Generated at{" "}
+                {generatedAtText}{" "}
                 {data.generated_at}
               </p>
             </div>
@@ -298,7 +334,7 @@ const AIPage = () => {
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
               >
-                {data.recommendation ?? ""}
+                {translatedRecommendation}
               </ReactMarkdown>
             </article>
           </div>

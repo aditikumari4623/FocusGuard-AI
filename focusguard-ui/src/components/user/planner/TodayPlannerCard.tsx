@@ -13,8 +13,118 @@ import {
   useTodayPlanner,
 } from "../../../hooks/usePlanner";
 
+import {
+  useTranslation,
+} from "../../../hooks/useTranslation";
+
 import CreatePlannerModal from "./CreatePlannerModal";
 import EditPlannerModal from "./EditPlannerModal";
+
+
+interface PlannerTaskProps {
+  category: string;
+  startTime: string;
+  endTime: string;
+  plannedMinutes: number;
+}
+
+
+const PlannerTask = ({
+  category,
+  startTime,
+  endTime,
+  plannedMinutes,
+}: PlannerTaskProps) => {
+  /*
+   * Dynamic planner category is translated.
+   * Time and duration are real backend values,
+   * so they are NOT hardcoded.
+   */
+  const translatedCategory =
+    useTranslation(category);
+
+  const minsText =
+    useTranslation("mins");
+
+  return (
+    <div
+      className="
+        flex
+        flex-col
+        gap-4
+        p-5
+        transition
+        hover:bg-slate-50
+
+        dark:hover:bg-slate-800/50
+
+        sm:flex-row
+        sm:items-center
+        sm:justify-between
+        sm:p-6
+      "
+    >
+
+      {/* Task Information */}
+
+      <div className="min-w-0">
+
+        <h3 className="break-words text-base font-semibold text-slate-900 dark:text-slate-100 sm:text-lg">
+          {translatedCategory}
+        </h3>
+
+        <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400 sm:gap-4">
+
+          <span className="flex items-center gap-2 whitespace-nowrap">
+
+            <Clock3
+              size={16}
+              className="shrink-0"
+            />
+
+            {startTime}
+
+          </span>
+
+          <span>
+            →
+          </span>
+
+          <span className="whitespace-nowrap">
+            {endTime}
+          </span>
+
+        </div>
+
+      </div>
+
+      {/* Duration */}
+
+      <div
+        className="
+          w-fit
+          rounded-xl
+          bg-indigo-50
+          px-4
+          py-2.5
+
+          dark:bg-indigo-950/40
+
+          sm:px-5
+          sm:py-3
+        "
+      >
+
+        <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-400 sm:text-base">
+          {plannedMinutes} {minsText}
+        </span>
+
+      </div>
+
+    </div>
+  );
+};
+
 
 const TodayPlannerCard = () => {
   const {
@@ -27,6 +137,52 @@ const TodayPlannerCard = () => {
 
   const [openEdit, setOpenEdit] =
     useState(false);
+
+
+  /*
+   * Static UI translations
+   */
+
+  const loadingText =
+    useTranslation(
+      "Loading today's planner..."
+    );
+
+  const noPlannerText =
+    useTranslation(
+      "No Planner Found"
+    );
+
+  const createDescriptionText =
+    useTranslation(
+      "Create today's planner to start tracking your focus."
+    );
+
+  const createPlannerText =
+    useTranslation(
+      "Create Planner"
+    );
+
+  const todayPlannerText =
+    useTranslation(
+      "Today's Planner"
+    );
+
+  const goalText =
+    useTranslation(
+      "Goal"
+    );
+
+  const minsText =
+    useTranslation(
+      "mins"
+    );
+
+  const editPlannerLabel =
+    useTranslation(
+      "Edit today's planner"
+    );
+
 
   if (isLoading) {
     return (
@@ -45,12 +201,15 @@ const TodayPlannerCard = () => {
           sm:p-6
         "
       >
+
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Loading today's planner...
+          {loadingText}
         </p>
+
       </div>
     );
   }
+
 
   if (!data) {
     return (
@@ -97,13 +256,16 @@ const TodayPlannerCard = () => {
 
           </div>
 
+
           <h2 className="mt-5 text-xl font-bold text-slate-900 dark:text-white sm:mt-6 sm:text-2xl">
-            No Planner Found
+            {noPlannerText}
           </h2>
 
+
           <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400 sm:text-base">
-            Create today's planner to start tracking your focus.
+            {createDescriptionText}
           </p>
+
 
           <button
             type="button"
@@ -134,12 +296,15 @@ const TodayPlannerCard = () => {
               sm:w-auto
             "
           >
+
             <Plus size={18} />
 
-            Create Planner
+            {createPlannerText}
+
           </button>
 
         </div>
+
 
         <CreatePlannerModal
           open={openCreate}
@@ -147,9 +312,11 @@ const TodayPlannerCard = () => {
             setOpenCreate(false)
           }
         />
+
       </>
     );
   }
+
 
   return (
     <>
@@ -177,7 +344,7 @@ const TodayPlannerCard = () => {
             <div className="min-w-0">
 
               <h2 className="text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
-                Today's Planner
+                {todayPlannerText}
               </h2>
 
               <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
@@ -185,6 +352,7 @@ const TodayPlannerCard = () => {
               </p>
 
             </div>
+
 
             <div className="flex w-full items-center gap-3 sm:w-auto sm:gap-4">
 
@@ -207,14 +375,15 @@ const TodayPlannerCard = () => {
               >
 
                 <p className="text-xs text-slate-500 dark:text-slate-400 sm:text-sm">
-                  Goal
+                  {goalText}
                 </p>
 
                 <h3 className="mt-0.5 text-base font-bold text-indigo-700 dark:text-indigo-400 sm:text-xl">
-                  {data.total_goal_minutes} mins
+                  {data.total_goal_minutes} {minsText}
                 </h3>
 
               </div>
+
 
               {/* Edit */}
 
@@ -223,7 +392,7 @@ const TodayPlannerCard = () => {
                 onClick={() =>
                   setOpenEdit(true)
                 }
-                aria-label="Edit today's planner"
+                aria-label={editPlannerLabel}
                 className="
                   flex
                   h-12
@@ -241,7 +410,9 @@ const TodayPlannerCard = () => {
                   dark:hover:bg-indigo-600
                 "
               >
+
                 <Pencil size={18} />
+
               </button>
 
             </div>
@@ -250,94 +421,27 @@ const TodayPlannerCard = () => {
 
         </div>
 
+
         {/* Planner Tasks */}
 
         <div className="divide-y divide-slate-100 dark:divide-slate-800">
 
           {data.plans.map(
             (task, index) => (
-              <div
+              <PlannerTask
                 key={index}
-                className="
-                  flex
-                  flex-col
-                  gap-4
-                  p-5
-                  transition
-                  hover:bg-slate-50
-
-                  dark:hover:bg-slate-800/50
-
-                  sm:flex-row
-                  sm:items-center
-                  sm:justify-between
-                  sm:p-6
-                "
-              >
-
-                {/* Task Information */}
-
-                <div className="min-w-0">
-
-                  <h3 className="break-words text-base font-semibold text-slate-900 dark:text-slate-100 sm:text-lg">
-                    {task.category}
-                  </h3>
-
-                  <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-slate-500 dark:text-slate-400 sm:gap-4">
-
-                    <span className="flex items-center gap-2 whitespace-nowrap">
-
-                      <Clock3
-                        size={16}
-                        className="shrink-0"
-                      />
-
-                      {task.start_time}
-
-                    </span>
-
-                    <span>
-                      →
-                    </span>
-
-                    <span className="whitespace-nowrap">
-                      {task.end_time}
-                    </span>
-
-                  </div>
-
-                </div>
-
-                {/* Duration */}
-
-                <div
-                  className="
-                    w-fit
-                    rounded-xl
-                    bg-indigo-50
-                    px-4
-                    py-2.5
-
-                    dark:bg-indigo-950/40
-
-                    sm:px-5
-                    sm:py-3
-                  "
-                >
-
-                  <span className="text-sm font-semibold text-indigo-700 dark:text-indigo-400 sm:text-base">
-                    {task.planned_minutes} mins
-                  </span>
-
-                </div>
-
-              </div>
+                category={task.category}
+                startTime={task.start_time}
+                endTime={task.end_time}
+                plannedMinutes={task.planned_minutes}
+              />
             )
           )}
 
         </div>
 
       </div>
+
 
       {/* Create Modal */}
 
@@ -348,6 +452,7 @@ const TodayPlannerCard = () => {
         }
       />
 
+
       {/* Edit Modal */}
 
       <EditPlannerModal
@@ -357,8 +462,10 @@ const TodayPlannerCard = () => {
         }
         planner={data}
       />
+
     </>
   );
 };
+
 
 export default TodayPlannerCard;

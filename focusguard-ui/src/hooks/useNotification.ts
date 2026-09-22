@@ -19,83 +19,249 @@ export const useNotifications = () =>
     refetchInterval: 30000,
   });
 
-export const useUnreadNotificationCount =
-  () =>
-    useQuery({
-      queryKey: ["notifications-unread-count"],
-      queryFn: getUnreadNotificationCount,
-      refetchInterval: 30000,
-    });
+export const useUnreadNotificationCount = () =>
+  useQuery({
+    queryKey: ["notifications-unread-count"],
+    queryFn: getUnreadNotificationCount,
+    refetchInterval: 30000,
+  });
 
-export const useLatestNotification =
-  () =>
-    useQuery({
-      queryKey: [
-        "latest-notification",
-      ],
-      queryFn:
-        getLatestNotification,
-      refetchInterval: 30000,
-    });
+export const useLatestNotification = () =>
+  useQuery({
+    queryKey: ["latest-notification"],
+    queryFn: getLatestNotification,
+    refetchInterval: 30000,
+  });
 
-export const useMarkNotificationAsRead =
-  () => {
-    const queryClient =
-      useQueryClient();
 
-    return useMutation({
-      mutationFn:
-        markNotificationAsRead,
+// -----------------------------------------------------
+// Mark One Notification As Read
+// -----------------------------------------------------
 
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [
-            "notifications",
-          ],
-        });
+export const useMarkNotificationAsRead = () => {
+  const queryClient = useQueryClient();
 
-        queryClient.invalidateQueries({
-          queryKey: [
-            "latest-notification",
-          ],
-        });
+  return useMutation({
+    mutationFn: markNotificationAsRead,
 
-        queryClient.invalidateQueries({
-          queryKey: [
-            "notifications-unread-count",
-          ],
-        });
-      },
-    });
-  };
+    onMutate: async (notificationId: number) => {
+      // Stop an old request from overwriting our optimistic update
+      await queryClient.cancelQueries({
+        queryKey: ["notifications"],
+      });
 
-export const useMarkAllNotificationsAsRead =
-  () => {
-    const queryClient =
-      useQueryClient();
+      await queryClient.cancelQueries({
+        queryKey: ["notifications-unread-count"],
+      });
 
-    return useMutation({
-      mutationFn:
-        markAllNotificationsAsRead,
+      // Save previous data in case the request fails
+      const previousNotifications =
+        queryClient.getQueryData<any[]>([
+          "notifications",
+        ]);
 
-      onSuccess: () => {
-        queryClient.invalidateQueries({
-          queryKey: [
-            "notifications",
-          ],
-        });
+      const previousUnreadCount =
+        queryClient.getQueryData<number>([
+          "notifications-unread-count",
+        ]);
 
-        queryClient.invalidateQueries({
-          queryKey: [
-            "latest-notification",
-          ],
-        });
+      // Immediately mark notification as read in UI
+      queryClient.setQueryData<any[]>(
+        ["notifications"],
+        (oldNotifications) => {
+          if (!oldNotifications) {
+            return oldNotifications;
+          }
 
-        queryClient.invalidateQueries({
-          queryKey: [
-            "notifications-unread-count",
-          ],
-        });
-      },
-    });
-  };
+          return oldNotifications.map(
+            (notification) =>
+              notification.id === notificationId
+                ? {
+                    ...notification,
+                    is_read: true,
+                  }
+                : notification
+          );
+        }
+      );
+
+      // Immediately decrease unread badge
+      queryClient.setQueryData<number>(
+        ["notifications-unread-count"],
+        (oldCount) => {
+          if (!oldCount || oldCount <= 0) {
+            return 0;
+          }
+
+          return oldCount - 1;
+        }
+      );
+
+      return {
+        previousNotifications,
+        previousUnreadCount,
+      };
+    },
+
+    onError: (
+      _error,
+      _notificationId,
+      context
+    ) => {
+      if (context?.previousNotifications) {
+        queryClient.setQueryData(
+          ["notifications"],
+          context.previousNotifications
+        );
+      }
+
+      if (
+        context?.previousUnreadCount !== undefined
+      ) {
+        queryClient.setQueryData(
+          ["notifications-unread-count"],
+          context.previousUnreadCount
+        );
+      }
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["latest-notification"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["notifications-unread-count"],
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["notifications-unread-count"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["latest-notification"],
+      });
+    },
+  });
+};
+
+
+// -----------------------------------------------------
+// Mark All Notifications As Read
+// -----------------------------------------------------
+
+export const useMarkAllNotificationsAsRead = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: markAllNotificationsAsRead,
+
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: ["notifications"],
+      });
+
+      await queryClient.cancelQueries({
+        queryKey: ["notifications-unread-count"],
+      });
+
+      const previousNotifications =
+        queryClient.getQueryData<any[]>([
+          "notifications",
+        ]);
+
+      const previousUnreadCount =
+        queryClient.getQueryData<number>([
+          "notifications-unread-count",
+        ]);
+
+      // Immediately mark everything as read
+      queryClient.setQueryData<any[]>(
+        ["notifications"],
+        (oldNotifications) => {
+          if (!oldNotifications) {
+            return oldNotifications;
+          }
+
+          return oldNotifications.map(
+            (notification) => ({
+              ...notification,
+              is_read: true,
+            })
+          );
+        }
+      );
+
+      // Immediately remove badge
+      queryClient.setQueryData<number>(
+        ["notifications-unread-count"],
+        0
+      );
+
+      return {
+        previousNotifications,
+        previousUnreadCount,
+      };
+    },
+
+    onError: (
+      _error,
+      _variables,
+      context
+    ) => {
+      if (context?.previousNotifications) {
+        queryClient.setQueryData(
+          ["notifications"],
+          context.previousNotifications
+        );
+      }
+
+      if (
+        context?.previousUnreadCount !== undefined
+      ) {
+        queryClient.setQueryData(
+          ["notifications-unread-count"],
+          context.previousUnreadCount
+        );
+      }
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["latest-notification"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["notifications-unread-count"],
+      });
+    },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["notifications"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["notifications-unread-count"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["latest-notification"],
+      });
+    },
+  });
+};

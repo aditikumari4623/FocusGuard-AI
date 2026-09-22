@@ -15,6 +15,10 @@ import {
   useActivateOrganization,
 } from "../../hooks/useOrganization";
 
+import {
+  useTranslation,
+} from "../../hooks/useTranslation";
+
 interface Props {
   organization: Organization;
 }
@@ -25,28 +29,72 @@ const OrganizationCard = ({
   const activateOrganization =
     useActivateOrganization();
 
-  const handleActivate = async () => {
-    const confirmed = window.confirm(
-      `Are you sure you want to activate "${organization.organization_name}"?`
+  const organizationIdText =
+    useTranslation(
+      "Organization ID"
     );
 
-    if (!confirmed) return;
+  const organizationStatusText =
+    useTranslation(
+      "Organization Status"
+    );
 
-    try {
-      await activateOrganization.mutateAsync(
-        organization.id
-      );
+  const activeText =
+    useTranslation("Active");
 
-      toast.success(
-        "Organization activated successfully."
-      );
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.detail ??
-          "Unable to activate organization."
-      );
-    }
-  };
+  const inactiveText =
+    useTranslation("Inactive");
+
+  const activatingText =
+    useTranslation(
+      "Activating..."
+    );
+
+  const activateOrganizationText =
+    useTranslation(
+      "Activate Organization"
+    );
+
+  const activationSuccessText =
+    useTranslation(
+      "Organization activated successfully."
+    );
+
+  const activationFailedText =
+    useTranslation(
+      "Unable to activate organization."
+    );
+
+  const activationConfirmationText =
+    useTranslation(
+      "Are you sure you want to activate this organization?"
+    );
+
+  const handleActivate =
+    async () => {
+      const confirmed =
+        window.confirm(
+          activationConfirmationText
+        );
+
+      if (!confirmed) return;
+
+      try {
+        await activateOrganization.mutateAsync(
+          organization.id
+        );
+
+        toast.success(
+          activationSuccessText
+        );
+      } catch (error: any) {
+        toast.error(
+          error?.response?.data
+            ?.detail ??
+            activationFailedText
+        );
+      }
+    };
 
   return (
     <div
@@ -75,7 +123,14 @@ const OrganizationCard = ({
     >
       {/* Header */}
 
-      <div className="flex min-w-0 items-start gap-4">
+      <div
+        className="
+          flex
+          min-w-0
+          items-start
+          gap-4
+        "
+      >
         <div
           className="
             flex
@@ -92,30 +147,71 @@ const OrganizationCard = ({
         >
           <Building2
             size={27}
-            className="text-indigo-600 dark:text-indigo-400"
+            className="
+              text-indigo-600
+              dark:text-indigo-400
+            "
           />
         </div>
 
         <div className="min-w-0 flex-1">
-          <h2 className="break-words text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
+          <h2
+            className="
+              break-words
+              text-lg
+              font-bold
+              text-slate-900
+              dark:text-white
+
+              sm:text-xl
+            "
+          >
             {organization.organization_name}
           </h2>
 
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 sm:text-sm">
-            Organization ID: {organization.id}
+          <p
+            className="
+              mt-1
+              break-words
+              text-xs
+              text-slate-500
+              dark:text-slate-400
+
+              sm:text-sm
+            "
+          >
+            {organizationIdText}:{" "}
+            {organization.id}
           </p>
         </div>
       </div>
 
       {/* Divider */}
 
-      <div className="my-6 h-px bg-slate-100 dark:bg-slate-800" />
+      <div
+        className="
+          my-6
+          h-px
+          bg-slate-100
+          dark:bg-slate-800
+        "
+      />
 
       {/* Status */}
 
       <div>
-        <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-          Organization Status
+        <p
+          className="
+            mb-2
+            text-xs
+            font-semibold
+            uppercase
+            tracking-wide
+            text-slate-500
+            dark:text-slate-400
+          "
+        >
+          {organizationStatusText}
         </p>
 
         {organization.is_active ? (
@@ -138,7 +234,7 @@ const OrganizationCard = ({
           >
             <CheckCircle2 size={16} />
 
-            Active
+            {activeText}
           </span>
         ) : (
           <span
@@ -160,7 +256,7 @@ const OrganizationCard = ({
           >
             <XCircle size={16} />
 
-            Inactive
+            {inactiveText}
           </span>
         )}
       </div>
@@ -199,8 +295,8 @@ const OrganizationCard = ({
           <Power size={18} />
 
           {activateOrganization.isPending
-            ? "Activating..."
-            : "Activate Organization"}
+            ? activatingText
+            : activateOrganizationText}
         </button>
       )}
     </div>

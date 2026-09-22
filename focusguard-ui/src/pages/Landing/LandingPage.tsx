@@ -14,13 +14,21 @@ const LandingPage = () => {
   return (
     <LandingLayout>
       <Hero />
+
       <Features />
+
       <Solutions />
+
       <Pricing />
+
       <HowItWorks />
+
       <AISection />
+
       <ChromeSection />
+
       <AnalyticsSection />
+
       <CTA />
     </LandingLayout>
   );

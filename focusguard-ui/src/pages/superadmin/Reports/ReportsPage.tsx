@@ -11,29 +11,40 @@ import MonthlyActivityChart from "../../../components/dashboard/charts/MonthlyAc
 const ReportsPage = () => {
   return (
     <AppLayout>
+      <div className="w-full min-w-0">
+        <ReportsHeader />
 
-      <ReportsHeader />
+        {/* Weekly + Monthly Reports */}
+        <div
+          className="
+            mt-6
+            grid
+            min-w-0
+            grid-cols-1
+            gap-6
+            xl:grid-cols-2
+          "
+        >
+          <WeeklyReportCard />
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-2">
+          <MonthlyReportCard />
+        </div>
 
-        <WeeklyReportCard />
+        {/* Weekly Activity */}
+        <div className="mt-6 min-w-0">
+          <WeeklyActivityChart />
+        </div>
 
-        <MonthlyReportCard />
+        {/* Monthly Activity */}
+        <div className="mt-6 min-w-0">
+          <MonthlyActivityChart />
+        </div>
 
+        {/* Export */}
+        <div className="mt-6 min-w-0 pb-6">
+          <ExportButtons />
+        </div>
       </div>
-
-      <div className="mt-6">
-        <WeeklyActivityChart />
-      </div>
-
-      <div className="mt-6">
-        <MonthlyActivityChart />
-      </div>
-
-      <div className="mt-6">
-        <ExportButtons />
-      </div>
-
     </AppLayout>
   );
 };

@@ -11,6 +11,8 @@ import {
   useCategoryAnalytics,
 } from "../../../hooks/useAnalytics";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 const COLORS = [
   "#6366F1",
   "#22C55E",
@@ -25,6 +27,14 @@ const CategoryPieChart = () => {
     data,
     isLoading,
   } = useCategoryAnalytics();
+
+  const categoryDistribution = useTranslation(
+    "Category Distribution"
+  );
+
+  const noCategoryData = useTranslation(
+    "No category data available."
+  );
 
   if (isLoading) {
     return (
@@ -70,11 +80,11 @@ const CategoryPieChart = () => {
         "
       >
         <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-          Category Distribution
+          {categoryDistribution}
         </h2>
 
         <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-          No category data available.
+          {noCategoryData}
         </p>
       </div>
     );
@@ -99,7 +109,7 @@ const CategoryPieChart = () => {
       "
     >
       <h2 className="mb-5 text-lg font-bold text-slate-900 dark:text-white sm:mb-6 sm:text-xl">
-        Category Distribution
+        {categoryDistribution}
       </h2>
 
       <div className="h-[300px] w-full min-w-0 sm:h-[320px]">
@@ -117,19 +127,16 @@ const CategoryPieChart = () => {
               outerRadius="65%"
               label
             >
-              {data.map(
-                (_, index) => (
-                  <Cell
-                    key={index}
-                    fill={
-                      COLORS[
-                        index %
-                          COLORS.length
-                      ]
-                    }
-                  />
-                )
-              )}
+              {data.map((_, index) => (
+                <Cell
+                  key={index}
+                  fill={
+                    COLORS[
+                      index % COLORS.length
+                    ]
+                  }
+                />
+              ))}
             </Pie>
 
             <Tooltip

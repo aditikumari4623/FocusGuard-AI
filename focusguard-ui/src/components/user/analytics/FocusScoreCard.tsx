@@ -7,11 +7,26 @@ import {
   useActivitySummary,
 } from "../../../hooks/useAnalytics";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 const FocusScoreCard = () => {
   const {
     data,
     isLoading,
   } = useActivitySummary();
+
+  const focusScoreTitle = useTranslation("Focus Score");
+  const productivityFocus = useTranslation(
+    "Your productivity focus"
+  );
+  const focus = useTranslation("focus");
+  const overallProductivity = useTranslation(
+    "Overall productivity"
+  );
+  const excellent = useTranslation("Excellent");
+  const good = useTranslation("Good");
+  const needsFocus = useTranslation("Needs Focus");
+  const lowFocus = useTranslation("Low Focus");
 
   if (isLoading) {
     return (
@@ -76,7 +91,6 @@ const FocusScoreCard = () => {
 
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
-
           <div
             className="
               flex
@@ -99,11 +113,11 @@ const FocusScoreCard = () => {
 
           <div className="min-w-0">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-              Focus Score
+              {focusScoreTitle}
             </h2>
 
             <p className="text-xs text-slate-500 dark:text-slate-400 sm:text-sm">
-              Your productivity focus
+              {productivityFocus}
             </p>
           </div>
         </div>
@@ -122,7 +136,7 @@ const FocusScoreCard = () => {
         </h3>
 
         <span className="mb-1 text-sm text-slate-500 dark:text-slate-400">
-          focus
+          {focus}
         </span>
       </div>
 
@@ -142,9 +156,8 @@ const FocusScoreCard = () => {
       {/* Status */}
 
       <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-
         <span className="text-xs text-slate-500 dark:text-slate-400 sm:text-sm">
-          Overall productivity
+          {overallProductivity}
         </span>
 
         <span
@@ -163,12 +176,12 @@ const FocusScoreCard = () => {
           "
         >
           {focusScore >= 80
-            ? "Excellent"
+            ? excellent
             : focusScore >= 60
-            ? "Good"
+            ? good
             : focusScore >= 40
-            ? "Needs Focus"
-            : "Low Focus"}
+            ? needsFocus
+            : lowFocus}
         </span>
       </div>
     </div>

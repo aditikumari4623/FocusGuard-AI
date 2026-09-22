@@ -2,18 +2,22 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
-from app.models import User
+from app.models import User, Organization
+
 from app.schemas import (
     ChangeRole,
     InviteSubAdmin,
     AcceptInvitation
 )
+
 from app.role_checker import require_super_admin
+
 from app.security import (
     create_invitation_token,
     verify_invitation_token,
     hash_password
 )
+
 from app.email_service import send_invitation_email
 
 
@@ -213,7 +217,32 @@ def invite_sub_admin(
 
 ):
 
+    # -------------------------------------------------
+    # Validate organization
+    # -------------------------------------------------
+
+    organization = db.query(Organization).filter(
+        Organization.id == invitation.organization_id
+    ).first()
+
+    if organization is None:
+
+        raise HTTPException(
+            status_code=404,
+            detail="Organization not found."
+        )
+
+    if not organization.is_active:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Cannot invite a Sub Admin to an inactive organization."
+        )
+
+
+    # -------------------------------------------------
     # Check whether email already exists
+    # -------------------------------------------------
 
     existing_user = db.query(User).filter(
         User.email == invitation.email
@@ -226,7 +255,10 @@ def invite_sub_admin(
             detail="A user with this email already exists."
         )
 
+
+    # -------------------------------------------------
     # Generate Invitation Token
+    # -------------------------------------------------
 
     token = create_invitation_token(
 
@@ -236,19 +268,27 @@ def invite_sub_admin(
 
             "name": invitation.full_name,
 
-            "role": "SUB_ADMIN"
+            "role": "SUB_ADMIN",
+
+            "organization_id": invitation.organization_id
 
         }
 
     )
 
-    # Invitation Link
+
+    # -------------------------------------------------
+    # Frontend Invitation Link
+    # -------------------------------------------------
 
     invitation_link = (
-        f"http://127.0.0.1:8000/admin/accept-invitation?token={token}"
-    )
+    f"http://localhost:5173/#/accept-invitation?token={token}"
+)
 
-    # Send Email
+
+    # -------------------------------------------------
+    # Send Invitation Email
+    # -------------------------------------------------
 
     success = send_invitation_email(
 
@@ -268,6 +308,7 @@ def invite_sub_admin(
 
         }
 
+
     raise HTTPException(
 
         status_code=500,
@@ -275,6 +316,11 @@ def invite_sub_admin(
         detail="Unable to send invitation email."
 
     )
+
+
+# -------------------------------------------------
+# Accept Invitation
+# -------------------------------------------------
 
 @router.post("/accept-invitation")
 def accept_invitation(
@@ -286,6 +332,10 @@ def accept_invitation(
     db: Session = Depends(get_db)
 
 ):
+
+    # -------------------------------------------------
+    # Verify Invitation Token
+    # -------------------------------------------------
 
     payload = verify_invitation_token(token)
 
@@ -299,9 +349,90 @@ def accept_invitation(
 
         )
 
+
+    # -------------------------------------------------
+    # Validate required invitation data
+    # -------------------------------------------------
+
+    email = payload.get("email")
+
+    full_name = payload.get("name")
+
+    role = payload.get("role")
+
+    organization_id = payload.get("organization_id")
+
+
+    if not email or not full_name:
+
+        raise HTTPException(
+
+            status_code=400,
+
+            detail="Invalid invitation data."
+
+        )
+
+
+    if role != "SUB_ADMIN":
+
+        raise HTTPException(
+
+            status_code=400,
+
+            detail="Invalid invitation role."
+
+        )
+
+
+    if organization_id is None:
+
+        raise HTTPException(
+
+            status_code=400,
+
+            detail="Invitation is not associated with an organization."
+
+        )
+
+
+    # -------------------------------------------------
+    # Verify Organization
+    # -------------------------------------------------
+
+    organization = db.query(Organization).filter(
+        Organization.id == organization_id
+    ).first()
+
+    if organization is None:
+
+        raise HTTPException(
+
+            status_code=404,
+
+            detail="Organization not found."
+
+        )
+
+
+    if not organization.is_active:
+
+        raise HTTPException(
+
+            status_code=400,
+
+            detail="This organization is no longer active."
+
+        )
+
+
+    # -------------------------------------------------
+    # Check whether user already exists
+    # -------------------------------------------------
+
     existing_user = db.query(User).filter(
 
-        User.email == payload["email"]
+        User.email == email
 
     ).first()
 
@@ -315,21 +446,29 @@ def accept_invitation(
 
         )
 
+
+    # -------------------------------------------------
+    # Create Sub Admin
+    # -------------------------------------------------
+
     new_user = User(
 
-        full_name=payload["name"],
+        full_name=full_name,
 
-        email=payload["email"],
+        email=email,
 
         hashed_password=hash_password(
-
             data.password
-
         ),
 
-        role=payload["role"]
+        role="SUB_ADMIN",
+
+        organization_id=organization_id,
+
+        is_active=True
 
     )
+
 
     db.add(new_user)
 
@@ -337,10 +476,19 @@ def accept_invitation(
 
     db.refresh(new_user)
 
+
+    # -------------------------------------------------
+    # Success
+    # -------------------------------------------------
+
     return {
 
-        "message":"Invitation Accepted Successfully.",
+        "message": "Invitation Accepted Successfully.",
 
-        "role":new_user.role
+        "role": new_user.role,
+
+        "organization_id": new_user.organization_id,
+
+        "organization_name": organization.organization_name
 
     }

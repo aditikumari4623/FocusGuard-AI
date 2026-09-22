@@ -7,9 +7,8 @@ import {
   Legend,
 } from "recharts";
 
-import {
-  useRoleCategoryAnalytics,
-} from "../../hooks/useAnalytics";
+import { useRoleCategoryAnalytics } from "../../hooks/useAnalytics";
+import { useTranslation } from "../../hooks/useTranslation";
 
 const COLORS = [
   "#6366F1",
@@ -21,34 +20,19 @@ const COLORS = [
 ];
 
 const RoleCategoryPieChart = () => {
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useRoleCategoryAnalytics();
+  const { data, isLoading, isError } = useRoleCategoryAnalytics();
+
+  const unableToLoadText = useTranslation("Unable to load category analytics.");
+  const organizationCategoriesText = useTranslation("Organization Categories");
+  const noOrganizationActivityText = useTranslation("No organization activity available yet.");
+  const organizationCategoryUsageText = useTranslation("Organization Category Usage");
+  const activityDistributionText = useTranslation("Activity distribution across your organization");
 
   if (isLoading) {
     return (
-      <div
-        className="
-          min-w-0
-          rounded-3xl
-          border
-          border-slate-200
-          bg-white
-          p-5
-          shadow-sm
-
-          dark:border-slate-700
-          dark:bg-slate-900
-
-          sm:p-6
-        "
-      >
+      <div className="min-w-0 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900 sm:p-6">
         <div className="h-5 w-48 animate-pulse rounded bg-slate-100 dark:bg-slate-800" />
-
         <div className="mt-2 h-4 w-64 max-w-full animate-pulse rounded bg-slate-100 dark:bg-slate-800" />
-
         <div className="mt-6 h-[260px] w-full animate-pulse rounded-2xl bg-slate-100 dark:bg-slate-800 sm:h-[320px]" />
       </div>
     );
@@ -56,21 +40,9 @@ const RoleCategoryPieChart = () => {
 
   if (isError) {
     return (
-      <div
-        className="
-          rounded-3xl
-          border
-          border-slate-200
-          bg-white
-          p-6
-          shadow-sm
-
-          dark:border-slate-700
-          dark:bg-slate-900
-        "
-      >
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Unable to load category analytics.
+          {unableToLoadText}
         </p>
       </div>
     );
@@ -78,64 +50,28 @@ const RoleCategoryPieChart = () => {
 
   if (!data || data.length === 0) {
     return (
-      <div
-        className="
-          rounded-3xl
-          border
-          border-slate-200
-          bg-white
-          p-6
-          shadow-sm
-
-          dark:border-slate-700
-          dark:bg-slate-900
-        "
-      >
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
         <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-          Organization Categories
+          {organizationCategoriesText}
         </h2>
-
         <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-          No organization activity available yet.
+          {noOrganizationActivityText}
         </p>
       </div>
     );
   }
 
   return (
-    <div
-      className="
-        min-w-0
-        overflow-hidden
-        rounded-3xl
-        border
-        border-slate-200
-        bg-white
-        p-5
-        text-slate-900
-        shadow-sm
-
-        dark:border-slate-700
-        dark:bg-slate-900
-        dark:text-slate-100
-
-        sm:p-6
-      "
-    >
+    <div className="min-w-0 overflow-hidden rounded-3xl border border-slate-200 bg-white p-5 text-slate-900 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 sm:p-6">
       <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-        Organization Category Usage
+        {organizationCategoryUsageText}
       </h2>
-
       <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-        Activity distribution across your organization
+        {activityDistributionText}
       </p>
 
       <div className="mt-4 w-full min-w-0 overflow-hidden">
-        <ResponsiveContainer
-          width="100%"
-          height={300}
-          minWidth={0}
-        >
+        <ResponsiveContainer width="100%" height={300} minWidth={0}>
           <PieChart>
             <Pie
               data={data}
@@ -147,12 +83,7 @@ const RoleCategoryPieChart = () => {
               label
             >
               {data.map((_, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={
-                    COLORS[index % COLORS.length]
-                  }
-                />
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
 

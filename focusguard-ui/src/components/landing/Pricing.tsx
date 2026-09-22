@@ -1,18 +1,26 @@
 import {
   Check,
-  ArrowRight,
-  UserRound,
-  UsersRound,
   Building2,
+  Crown,
+  User,
 } from "lucide-react";
-
 import { Link } from "react-router-dom";
 
-const plans = [
+import { useTranslation } from "../../hooks/useTranslation";
+
+interface PricingPlan {
+  name: string;
+  audience: string;
+  description: string;
+  features: string[];
+  icon: React.ElementType;
+  recommended?: boolean;
+}
+
+const plans: PricingPlan[] = [
   {
-    icon: UserRound,
     name: "Individual",
-    label: "For Employees",
+    audience: "For Employees",
     description:
       "Everything you need to understand your productivity and build better focus habits.",
     features: [
@@ -23,15 +31,11 @@ const plans = [
       "AI productivity recommendations",
       "Smart notifications",
     ],
-    iconBg: "bg-cyan-100",
-    iconColor: "text-cyan-600",
-    buttonClass:
-      "border border-cyan-200 text-cyan-700 hover:border-cyan-300 hover:bg-cyan-50",
+    icon: User,
   },
   {
-    icon: UsersRound,
     name: "Team",
-    label: "For Organizations",
+    audience: "For Organizations",
     description:
       "Give team managers the visibility they need to understand productivity across their organization.",
     features: [
@@ -42,16 +46,12 @@ const plans = [
       "Organization-level insights",
       "Sub Admin dashboard",
     ],
-    iconBg: "bg-indigo-100",
-    iconColor: "text-indigo-600",
-    buttonClass:
-      "border border-indigo-200 text-indigo-700 hover:border-indigo-300 hover:bg-indigo-50",
-    popular: true,
+    icon: Building2,
+    recommended: true,
   },
   {
-    icon: Building2,
     name: "Enterprise",
-    label: "For Larger Organizations",
+    audience: "For Larger Organizations",
     description:
       "Centralized platform management and organization-wide visibility for larger teams.",
     features: [
@@ -62,213 +62,188 @@ const plans = [
       "Advanced platform analytics",
       "Dedicated organization workflows",
     ],
-    iconBg: "bg-violet-100",
-    iconColor: "text-violet-600",
-    buttonClass:
-      "border border-violet-200 text-violet-700 hover:border-violet-300 hover:bg-violet-50",
+    icon: Crown,
   },
 ];
 
+interface PricingFeatureProps {
+  feature: string;
+}
+
+const PricingFeature = ({
+  feature,
+}: PricingFeatureProps) => {
+  const featureText = useTranslation(feature);
+
+  return (
+    <li className="flex min-w-0 items-start gap-3">
+      <Check
+        size={18}
+        className="mt-0.5 shrink-0 text-indigo-600 dark:text-indigo-400"
+      />
+
+      <span className="break-words text-sm leading-6 text-slate-700 dark:text-slate-300 sm:text-base">
+        {featureText}
+      </span>
+    </li>
+  );
+};
+
+interface PricingCardProps {
+  plan: PricingPlan;
+}
+
+const PricingCard = ({
+  plan,
+}: PricingCardProps) => {
+  const nameText = useTranslation(plan.name);
+  const audienceText = useTranslation(plan.audience);
+  const descriptionText = useTranslation(
+    plan.description
+  );
+
+  const recommendedText = useTranslation("Recommended");
+  const contactUsText = useTranslation("Contact Us");
+  const getStartedText = useTranslation("Get Started");
+
+  const Icon = plan.icon;
+
+  return (
+    <div
+      className={`relative flex h-full min-w-0 flex-col rounded-2xl border bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl dark:bg-slate-900 sm:p-6 lg:p-7 ${
+        plan.recommended
+          ? "border-indigo-500 ring-1 ring-indigo-500/20 dark:border-indigo-500"
+          : "border-slate-200 dark:border-slate-800"
+      }`}
+    >
+      {/* Recommended Badge */}
+      {plan.recommended && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-indigo-600 px-3 py-1 text-xs font-semibold text-white shadow-sm sm:px-4">
+          {recommendedText}
+        </div>
+      )}
+
+      {/* Icon */}
+      <div className="mb-5 flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400">
+        <Icon size={24} />
+      </div>
+
+      {/* Plan Name */}
+      <h3 className="break-words text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+        {nameText}
+      </h3>
+
+      {/* Audience */}
+      <p className="mt-2 break-words text-sm font-semibold text-indigo-600 dark:text-indigo-400">
+        {audienceText}
+      </p>
+
+      {/* Description */}
+      <p className="mt-4 break-words text-sm leading-6 text-slate-600 dark:text-slate-400 sm:text-base sm:leading-7">
+        {descriptionText}
+      </p>
+
+      {/* Features */}
+      <ul className="mt-6 flex-1 space-y-3">
+        {plan.features.map((feature) => (
+          <PricingFeature
+            key={feature}
+            feature={feature}
+          />
+        ))}
+      </ul>
+
+      {/* CTA */}
+      {plan.name === "Enterprise" ? (
+        <a
+          href="mailto:support@focusguard.ai"
+          className={`mt-7 inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition ${
+            plan.recommended
+              ? "bg-indigo-600 text-white hover:bg-indigo-700"
+              : "border border-slate-200 text-slate-700 hover:border-indigo-600 hover:bg-indigo-50 hover:text-indigo-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-indigo-500 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-400"
+          }`}
+        >
+          {contactUsText}
+        </a>
+      ) : (
+        <Link
+          to="/register"
+          className={`mt-7 inline-flex min-h-11 items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold transition ${
+            plan.recommended
+              ? "bg-indigo-600 text-white hover:bg-indigo-700"
+              : "border border-slate-200 text-slate-700 hover:border-indigo-600 hover:bg-indigo-50 hover:text-indigo-600 dark:border-slate-700 dark:text-slate-200 dark:hover:border-indigo-500 dark:hover:bg-indigo-950/40 dark:hover:text-indigo-400"
+          }`}
+        >
+          {getStartedText}
+        </Link>
+      )}
+    </div>
+  );
+};
+
 const Pricing = () => {
+  const pricingText = useTranslation("Pricing");
+
+  const headingText = useTranslation(
+    "Choose The Right Experience For Your Team"
+  );
+
+  const descriptionText = useTranslation(
+    "FocusGuard AI is designed to scale from individual productivity to organization-wide attention intelligence."
+  );
+
+  const bottomText = useTranslation(
+    "Pricing and deployment options can be customized according to organization size, requirements, and platform usage."
+  );
+
+  const talkToTeamText = useTranslation(
+    "Talk to our team"
+  );
+
   return (
     <section
       id="pricing"
-      className="bg-white py-24"
+      className="scroll-mt-20 bg-slate-50 py-16 dark:bg-slate-950 sm:py-20 lg:py-24"
     >
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
+          <p className="text-sm font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 sm:text-base">
+            {pricingText}
+          </p>
 
-        {/* Header */}
-
-        <div className="mx-auto max-w-3xl text-center">
-
-          <span className="text-sm font-semibold uppercase tracking-widest text-indigo-600">
-            Pricing
-          </span>
-
-          <h2 className="mt-6 text-5xl font-bold tracking-tight text-slate-900">
-            Choose The Right Experience For Your Team
+          <h2 className="mt-3 break-words text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl lg:text-5xl">
+            {headingText}
           </h2>
 
-          <p className="mt-6 text-lg leading-8 text-slate-600">
-            FocusGuard AI is designed to scale from individual productivity
-            to organization-wide attention intelligence.
+          <p className="mt-4 break-words text-base leading-7 text-slate-600 dark:text-slate-400 sm:text-lg sm:leading-8">
+            {descriptionText}
           </p>
-
         </div>
 
-        {/* Pricing Cards */}
-
-        <div className="mt-20 grid gap-8 lg:grid-cols-3">
-
-          {plans.map((plan) => {
-            const Icon = plan.icon;
-
-            return (
-              <div
-                key={plan.name}
-                className="
-                  group
-                  relative
-                  flex
-                  h-full
-                  flex-col
-                  rounded-3xl
-                  border
-                  border-slate-200
-                  bg-white
-                  p-8
-                  shadow-sm
-                  transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:shadow-[0_12px_35px_rgba(15,23,42,0.08)]
-                  hover:border-slate-300
-                "
-              >
-
-                {/* Recommended Badge */}
-
-                {plan.popular && (
-                  <div className="absolute right-6 top-6 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700">
-                    Recommended
-                  </div>
-                )}
-
-                {/* Icon */}
-
-                <div
-                  className={`
-                    flex
-                    h-16
-                    w-16
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    ${plan.iconBg}
-                    ${plan.iconColor}
-                    transition-transform
-                    duration-300
-                    group-hover:scale-105
-                  `}
-                >
-                  <Icon size={30} />
-                </div>
-
-                {/* Plan */}
-
-                <p
-                  className={`
-                    mt-7
-                    text-sm
-                    font-semibold
-                    ${plan.iconColor}
-                  `}
-                >
-                  {plan.label}
-                </p>
-
-                <h3 className="mt-2 text-3xl font-bold text-slate-900">
-                  {plan.name}
-                </h3>
-
-                <p className="mt-4 min-h-[84px] leading-7 text-slate-600">
-                  {plan.description}
-                </p>
-
-                {/* Divider */}
-
-                <div className="my-7 border-t border-slate-200" />
-
-                {/* Features */}
-
-                <div className="flex-1 space-y-4">
-
-                  {plan.features.map((feature) => (
-                    <div
-                      key={feature}
-                      className="flex items-start gap-3"
-                    >
-                      <div
-                        className={`
-                          mt-0.5
-                          flex
-                          h-5
-                          w-5
-                          shrink-0
-                          items-center
-                          justify-center
-                          rounded-full
-                          ${plan.iconBg}
-                          ${plan.iconColor}
-                        `}
-                      >
-                        <Check
-                          size={13}
-                          strokeWidth={3}
-                        />
-                      </div>
-
-                      <span className="text-sm leading-6 text-slate-600">
-                        {feature}
-                      </span>
-                    </div>
-                  ))}
-
-                </div>
-
-                {/* Contact Button */}
-
-                <Link
-                  to="/contact"
-                  className={`
-                    mt-8
-                    flex
-                    items-center
-                    justify-center
-                    gap-2
-                    rounded-2xl
-                    px-5
-                    py-3
-                    font-semibold
-                    transition-all
-                    duration-300
-                    ${plan.buttonClass}
-                  `}
-                >
-                  Contact Us
-
-                  <ArrowRight
-                    size={18}
-                    className="transition-transform duration-300 group-hover:translate-x-1"
-                  />
-                </Link>
-
-              </div>
-            );
-          })}
-
+        {/* Pricing Grid */}
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          {plans.map((plan) => (
+            <PricingCard
+              key={plan.name}
+              plan={plan}
+            />
+          ))}
         </div>
 
-        {/* Bottom Note */}
-
-        <div className="mx-auto mt-14 max-w-3xl rounded-2xl border border-slate-200 bg-slate-50 p-6 text-center">
-
-          <p className="text-sm leading-7 text-slate-600">
-            Pricing and deployment options can be customized according to
-            organization size, requirements, and platform usage.
+        {/* Bottom Information */}
+        <div className="mx-auto mt-10 max-w-3xl rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm dark:border-slate-800 dark:bg-slate-900 sm:mt-12 sm:p-6">
+          <p className="break-words text-sm leading-6 text-slate-600 dark:text-slate-400 sm:text-base sm:leading-7">
+            {bottomText}
           </p>
 
-          <Link
-            to="/contact"
-            className="mt-3 inline-flex items-center gap-2 font-semibold text-indigo-600 transition hover:text-indigo-700"
+          <a
+            href="mailto:support@focusguard.ai"
+            className="mt-4 inline-flex items-center justify-center text-sm font-semibold text-indigo-600 transition hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 sm:text-base"
           >
-            Talk to our team
-
-            <ArrowRight size={17} />
-          </Link>
-
+            {talkToTeamText}
+          </a>
         </div>
-
       </div>
     </section>
   );

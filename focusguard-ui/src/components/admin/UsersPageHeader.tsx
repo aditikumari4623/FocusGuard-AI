@@ -1,6 +1,12 @@
 import { Users } from "lucide-react";
+import { useTranslation } from "../../hooks/useTranslation";
 
 const UsersPageHeader = () => {
+  const usersText = useTranslation("Users");
+  const descriptionText = useTranslation(
+    "Manage all users in the platform."
+  );
+
   return (
     <div
       className="
@@ -37,6 +43,7 @@ const UsersPageHeader = () => {
       <div className="min-w-0">
         <h1
           className="
+            break-words
             text-2xl
             font-bold
             tracking-tight
@@ -45,19 +52,20 @@ const UsersPageHeader = () => {
             sm:text-3xl
           "
         >
-          Users
+          {usersText}
         </h1>
 
         <p
           className="
             mt-1
+            break-words
             text-sm
             text-slate-500
             dark:text-slate-400
             sm:text-base
           "
         >
-          Manage all users in the platform.
+          {descriptionText}
         </p>
       </div>
     </div>

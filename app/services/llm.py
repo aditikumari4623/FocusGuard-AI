@@ -47,7 +47,7 @@ class LLMService:
 
         response = self.groq_client.chat.completions.create(
 
-            # New recommended Groq model
+            # Current Groq model
             model="openai/gpt-oss-120b",
 
             messages=[
@@ -57,8 +57,14 @@ class LLMService:
                         "You are FocusGuard AI, an intelligent "
                         "productivity assistant. "
                         "Provide concise, practical, and actionable "
-                        "recommendations based on the user's "
-                        "productivity data."
+                        "recommendations based only on the data "
+                        "provided in the user's prompt. "
+                        "Do not invent statistics, causes, trends, "
+                        "or features. "
+                        "When historical information is provided, "
+                        "preserve its dates exactly. "
+                        "Always finish the response with complete "
+                        "sentences."
                     ),
                 },
                 {
@@ -69,7 +75,9 @@ class LLMService:
 
             temperature=0.4,
 
-            max_tokens=500,
+            # Increased from 500 so organization insights
+            # are not cut off midway through the response.
+            max_tokens=1000,
         )
 
         content = response.choices[0].message.content
@@ -104,13 +112,20 @@ class LLMService:
                     "You are FocusGuard AI, an intelligent "
                     "productivity assistant. "
                     "Provide concise, practical, and actionable "
-                    "recommendations based on the user's "
-                    "productivity data."
+                    "recommendations based only on the data "
+                    "provided in the user's prompt. "
+                    "Do not invent statistics, causes, trends, "
+                    "or features. "
+                    "When historical information is provided, "
+                    "preserve its dates exactly. "
+                    "Always finish the response with complete "
+                    "sentences."
                 ),
 
                 temperature=0.4,
 
-                max_output_tokens=500,
+                # Same output capacity as Groq.
+                max_output_tokens=1000,
             ),
         )
 

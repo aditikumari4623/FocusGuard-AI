@@ -9,6 +9,8 @@ import { useDashboard } from "../../hooks/useDashboard";
 
 import { exportReportPDF } from "../../utils/pdf";
 
+import { useTranslation } from "../../hooks/useTranslation";
+
 const ExportButtons = () => {
   const { data: weekly } =
     useWeeklyReport();
@@ -18,6 +20,32 @@ const ExportButtons = () => {
 
   const { data: dashboard } =
     useDashboard();
+
+  const exportReportsText =
+    useTranslation("Export Reports");
+
+  const exportDescriptionText =
+    useTranslation(
+      "Download your productivity reports in different formats."
+    );
+
+  const weeklyJSONText =
+    useTranslation("Weekly JSON");
+
+  const monthlyJSONText =
+    useTranslation("Monthly JSON");
+
+  const weeklyCSVText =
+    useTranslation("Weekly CSV");
+
+  const monthlyCSVText =
+    useTranslation("Monthly CSV");
+
+  const weeklyPDFText =
+    useTranslation("Weekly PDF");
+
+  const monthlyPDFText =
+    useTranslation("Monthly PDF");
 
   const downloadJSON = (
     filename: string,
@@ -40,7 +68,10 @@ const ExportButtons = () => {
 
     link.href = url;
     link.download = filename;
+
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
   };
@@ -98,61 +129,85 @@ const ExportButtons = () => {
 
     link.href = url;
     link.download = filename;
+
+    document.body.appendChild(link);
     link.click();
+    document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
   };
 
+  const exportButtonBase = `
+    flex
+    min-h-[46px]
+    w-full
+    items-center
+    justify-center
+    gap-2
+    rounded-xl
+    px-4
+    py-3
+    text-sm
+    font-medium
+    transition
+    sm:w-auto
+    sm:px-5
+  `;
+
   return (
     <div
       className="
+        min-w-0
         rounded-3xl
         border
         border-slate-200
         bg-white
         p-5
         shadow-sm
-
         dark:border-slate-700
         dark:bg-slate-900
-
         sm:p-6
       "
     >
       <h2
         className="
+          break-words
           text-xl
           font-bold
+          leading-tight
           text-slate-900
           dark:text-white
         "
       >
-        Export Reports
+        {exportReportsText}
       </h2>
 
       <p
         className="
-          mt-1
+          mt-2
+          max-w-2xl
+          break-words
           text-sm
+          leading-6
           text-slate-500
           dark:text-slate-400
         "
       >
-        Download your productivity reports in
-        different formats.
+        {exportDescriptionText}
       </p>
 
       <div
         className="
           mt-6
-          flex
-          flex-wrap
+          grid
+          grid-cols-1
           gap-3
+          sm:flex
+          sm:flex-wrap
           sm:gap-4
         "
       >
         {/* Weekly JSON */}
-
         <button
           type="button"
           onClick={() =>
@@ -161,28 +216,23 @@ const ExportButtons = () => {
               weekly
             )
           }
-          className="
-            flex
-            items-center
-            gap-2
-            rounded-xl
+          className={`
+            ${exportButtonBase}
             bg-indigo-600
-            px-4
-            py-3
-            text-sm
-            font-medium
             text-white
-            transition
             hover:bg-indigo-700
-            sm:px-5
-          "
+          `}
         >
-          <Download size={18} />
-          Weekly JSON
+          <Download
+            size={18}
+            className="shrink-0"
+          />
+          <span className="break-words">
+            {weeklyJSONText}
+          </span>
         </button>
 
         {/* Monthly JSON */}
-
         <button
           type="button"
           onClick={() =>
@@ -191,28 +241,23 @@ const ExportButtons = () => {
               monthly
             )
           }
-          className="
-            flex
-            items-center
-            gap-2
-            rounded-xl
+          className={`
+            ${exportButtonBase}
             bg-violet-600
-            px-4
-            py-3
-            text-sm
-            font-medium
             text-white
-            transition
             hover:bg-violet-700
-            sm:px-5
-          "
+          `}
         >
-          <Download size={18} />
-          Monthly JSON
+          <Download
+            size={18}
+            className="shrink-0"
+          />
+          <span className="break-words">
+            {monthlyJSONText}
+          </span>
         </button>
 
         {/* Weekly CSV */}
-
         <button
           type="button"
           onClick={() =>
@@ -221,36 +266,29 @@ const ExportButtons = () => {
               weekly
             )
           }
-          className="
-            flex
-            items-center
-            gap-2
-            rounded-xl
+          className={`
+            ${exportButtonBase}
             border
             border-slate-300
             bg-white
-            px-4
-            py-3
-            text-sm
-            font-medium
             text-slate-700
-            transition
             hover:bg-slate-100
-
             dark:border-slate-600
             dark:bg-slate-800
             dark:text-slate-200
             dark:hover:bg-slate-700
-
-            sm:px-5
-          "
+          `}
         >
-          <Download size={18} />
-          Weekly CSV
+          <Download
+            size={18}
+            className="shrink-0"
+          />
+          <span className="break-words">
+            {weeklyCSVText}
+          </span>
         </button>
 
         {/* Monthly CSV */}
-
         <button
           type="button"
           onClick={() =>
@@ -259,36 +297,29 @@ const ExportButtons = () => {
               monthly
             )
           }
-          className="
-            flex
-            items-center
-            gap-2
-            rounded-xl
+          className={`
+            ${exportButtonBase}
             border
             border-slate-300
             bg-white
-            px-4
-            py-3
-            text-sm
-            font-medium
             text-slate-700
-            transition
             hover:bg-slate-100
-
             dark:border-slate-600
             dark:bg-slate-800
             dark:text-slate-200
             dark:hover:bg-slate-700
-
-            sm:px-5
-          "
+          `}
         >
-          <Download size={18} />
-          Monthly CSV
+          <Download
+            size={18}
+            className="shrink-0"
+          />
+          <span className="break-words">
+            {monthlyCSVText}
+          </span>
         </button>
 
         {/* Weekly PDF */}
-
         <button
           type="button"
           onClick={() => {
@@ -302,28 +333,23 @@ const ExportButtons = () => {
               );
             }
           }}
-          className="
-            flex
-            items-center
-            gap-2
-            rounded-xl
+          className={`
+            ${exportButtonBase}
             bg-red-600
-            px-4
-            py-3
-            text-sm
-            font-medium
             text-white
-            transition
             hover:bg-red-700
-            sm:px-5
-          "
+          `}
         >
-          <Download size={18} />
-          Weekly PDF
+          <Download
+            size={18}
+            className="shrink-0"
+          />
+          <span className="break-words">
+            {weeklyPDFText}
+          </span>
         </button>
 
         {/* Monthly PDF */}
-
         <button
           type="button"
           onClick={() => {
@@ -337,24 +363,20 @@ const ExportButtons = () => {
               );
             }
           }}
-          className="
-            flex
-            items-center
-            gap-2
-            rounded-xl
+          className={`
+            ${exportButtonBase}
             bg-rose-600
-            px-4
-            py-3
-            text-sm
-            font-medium
             text-white
-            transition
             hover:bg-rose-700
-            sm:px-5
-          "
+          `}
         >
-          <Download size={18} />
-          Monthly PDF
+          <Download
+            size={18}
+            className="shrink-0"
+          />
+          <span className="break-words">
+            {monthlyPDFText}
+          </span>
         </button>
       </div>
     </div>

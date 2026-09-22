@@ -33,7 +33,6 @@ export interface OrganizationAIRecommendation {
 
 export const getOrganizationAIRecommendation =
   async (): Promise<OrganizationAIRecommendation> => {
-
     const response = await api.get(
       "/ai/organization-recommendation"
     );

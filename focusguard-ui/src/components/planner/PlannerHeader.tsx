@@ -9,14 +9,38 @@ import {
 import CreatePlannerModal from "./CreatePlannerModal";
 
 import { useTodayPlanner } from "../../hooks/usePlanner";
+import { useTranslation } from "../../hooks/useTranslation";
+import { useLanguage } from "../../context/LanguageContext";
 
 const PlannerHeader = () => {
   const [open, setOpen] = useState(false);
 
-  const { data: planner } = useTodayPlanner();
+  const { data: planner } =
+    useTodayPlanner();
+
+  const { language } = useLanguage();
+
+  const focusPlannerText =
+    useTranslation("Focus Planner");
+
+  const organizeDayText =
+    useTranslation(
+      "Organize your day and stay focused."
+    );
+
+  const editPlanText =
+    useTranslation("Edit Plan");
+
+  const createPlanText =
+    useTranslation("Create Plan");
+
+  const locale =
+    language === "en"
+      ? "en-IN"
+      : `${language}-IN`;
 
   const today = new Date().toLocaleDateString(
-    "en-IN",
+    locale,
     {
       weekday: "long",
       day: "numeric",
@@ -39,13 +63,11 @@ const PlannerHeader = () => {
           lg:justify-between
         "
       >
-
         {/* =================================================
             TITLE
         ================================================= */}
 
         <div className="min-w-0">
-
           <h1
             className="
               text-2xl
@@ -56,13 +78,12 @@ const PlannerHeader = () => {
               sm:text-3xl
             "
           >
-            Focus Planner
+            {focusPlannerText}
           </h1>
 
           <p className="mt-1 text-sm text-slate-500 dark:text-slate-400 sm:text-base">
-            Organize your day and stay focused.
+            {organizeDayText}
           </p>
-
         </div>
 
         {/* =================================================
@@ -81,7 +102,6 @@ const PlannerHeader = () => {
             lg:w-auto
           "
         >
-
           {/* Date */}
 
           <div
@@ -103,7 +123,6 @@ const PlannerHeader = () => {
               sm:w-auto
             "
           >
-
             <CalendarDays
               size={18}
               className="shrink-0 text-indigo-600 dark:text-indigo-400"
@@ -120,7 +139,6 @@ const PlannerHeader = () => {
             >
               {today}
             </span>
-
           </div>
 
           {/* Create / Edit */}
@@ -146,32 +164,31 @@ const PlannerHeader = () => {
               sm:w-auto
             "
           >
-
             {planner ? (
               <>
                 <Pencil size={18} />
 
-                <span>Edit Plan</span>
+                <span>
+                  {editPlanText}
+                </span>
               </>
             ) : (
               <>
                 <Plus size={18} />
 
-                <span>Create Plan</span>
+                <span>
+                  {createPlanText}
+                </span>
               </>
             )}
-
           </button>
-
         </div>
-
       </div>
 
       <CreatePlannerModal
         open={open}
         onClose={() => setOpen(false)}
       />
-
     </>
   );
 };

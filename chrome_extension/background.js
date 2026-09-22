@@ -361,6 +361,47 @@ chrome.idle.onStateChanged.addListener(
 
 
 // -------------------------------------------
+// Status Heartbeat
+// -------------------------------------------
+
+// Keep the backend status session updated
+// even when the user's status does not change.
+
+setInterval(
+    async () => {
+
+        try {
+
+            const token = await getAccessToken();
+
+            if (!token) {
+                return;
+            }
+
+            await updateUserStatus(currentStatus);
+
+            console.log(
+                "Status heartbeat:",
+                currentStatus
+            );
+
+        }
+
+        catch (error) {
+
+            console.error(
+                "Status heartbeat error:",
+                error
+            );
+
+        }
+
+    },
+    5 * 60 * 1000
+);
+
+
+// -------------------------------------------
 // Browser Notifications
 // -------------------------------------------
 

@@ -6,6 +6,10 @@ import {
   useCreateOrganization,
 } from "../../hooks/useOrganization";
 
+import {
+  useTranslation,
+} from "../../hooks/useTranslation";
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -17,6 +21,29 @@ const CreateOrganizationModal = ({
 }: Props) => {
   const createOrganization =
     useCreateOrganization();
+
+  const createOrganizationText =
+    useTranslation(
+      "Create Organization"
+    );
+
+  const createDescriptionText =
+    useTranslation(
+      "Add a new organization to FocusGuard."
+    );
+
+  const closeText =
+    useTranslation("Close");
+
+  const organizationCreatedText =
+    useTranslation(
+      "Organization created successfully."
+    );
+
+  const unableToCreateText =
+    useTranslation(
+      "Unable to create organization."
+    );
 
   if (!open) return null;
 
@@ -34,7 +61,10 @@ const CreateOrganizationModal = ({
         backdrop-blur-sm
       "
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget) {
+        if (
+          event.target ===
+          event.currentTarget
+        ) {
           onClose();
         }
       }}
@@ -43,7 +73,8 @@ const CreateOrganizationModal = ({
         className="
           w-full
           max-w-lg
-          overflow-hidden
+          max-h-[90vh]
+          overflow-y-auto
           rounded-3xl
           border
           border-slate-200
@@ -59,12 +90,12 @@ const CreateOrganizationModal = ({
         <div
           className="
             flex
-            items-center
+            items-start
             justify-between
             gap-4
             border-b
             border-slate-200
-            px-6
+            px-5
             py-5
 
             dark:border-slate-700
@@ -73,20 +104,37 @@ const CreateOrganizationModal = ({
             sm:py-6
           "
         >
-          <div>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
-              Create Organization
+          <div className="min-w-0">
+            <h2
+              className="
+                text-xl
+                font-bold
+                text-slate-900
+                dark:text-white
+
+                sm:text-2xl
+              "
+            >
+              {createOrganizationText}
             </h2>
 
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              Add a new organization to FocusGuard.
+            <p
+              className="
+                mt-1
+                text-sm
+                leading-5
+                text-slate-500
+                dark:text-slate-400
+              "
+            >
+              {createDescriptionText}
             </p>
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close modal"
+            aria-label={closeText}
             className="
               flex
               h-10
@@ -113,7 +161,7 @@ const CreateOrganizationModal = ({
 
         {/* Body */}
 
-        <div className="p-6 sm:p-7">
+        <div className="p-5 sm:p-7">
           <CreateOrganizationForm
             loading={
               createOrganization.isPending
@@ -130,7 +178,7 @@ const CreateOrganizationModal = ({
                 );
 
                 toast.success(
-                  "Organization created successfully."
+                  organizationCreatedText
                 );
 
                 onClose();
@@ -138,7 +186,7 @@ const CreateOrganizationModal = ({
                 toast.error(
                   error?.response?.data
                     ?.detail ??
-                    "Unable to create organization."
+                    unableToCreateText
                 );
               }
             }}

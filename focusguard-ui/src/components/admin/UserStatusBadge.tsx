@@ -1,13 +1,16 @@
+import { useTranslation } from "../../hooks/useTranslation";
+
 interface Props {
   active: boolean;
 }
 
-const UserStatusBadge = ({
-  active,
-}: Props) => {
+const UserStatusBadge = ({ active }: Props) => {
+  const activeText = useTranslation("Active");
+  const inactiveText = useTranslation("Inactive");
+
   return (
     <span
-      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+      className={`inline-flex whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold ${
         active
           ? `
             bg-green-100
@@ -23,7 +26,7 @@ const UserStatusBadge = ({
           `
       }`}
     >
-      {active ? "Active" : "Inactive"}
+      {active ? activeText : inactiveText}
     </span>
   );
 };

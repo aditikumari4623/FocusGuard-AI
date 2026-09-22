@@ -15,6 +15,10 @@ import {
 
 import { useTheme } from "next-themes";
 
+import {
+  useTranslation,
+} from "../../../hooks/useTranslation";
+
 import Card from "../../common/Card";
 import Skeleton from "../../common/Skeleton";
 
@@ -22,8 +26,11 @@ import {
   useRoleMonthlyReport,
 } from "../../../hooks/useReports";
 
-const formatMinutes = (seconds: number) => {
-  const mins = Math.round(seconds / 60);
+const formatMinutes = (
+  seconds: number
+) => {
+  const mins =
+    Math.round(seconds / 60);
 
   return `${mins}m`;
 };
@@ -35,18 +42,76 @@ const SuperAdminMonthlyActivityChart = () => {
     isError,
   } = useRoleMonthlyReport();
 
-  const { resolvedTheme } = useTheme();
+  const {
+    resolvedTheme,
+  } = useTheme();
 
-  const isDark = resolvedTheme === "dark";
+  const unableToLoadOverallMonthlyActivity =
+    useTranslation(
+      "Unable to load overall monthly activity."
+    );
+
+  const overallMonthlyActivity =
+    useTranslation(
+      "Overall Monthly Activity"
+    );
+
+  const last30DaysAllOrganizationUsers =
+    useTranslation(
+      "Last 30 days - all organization users"
+    );
+
+  const focus =
+    useTranslation("Focus");
+
+  const active =
+    useTranslation("Active");
+
+  const idle =
+    useTranslation("Idle");
+
+  const activeTime =
+    useTranslation("Active Time");
+
+  const idleTime =
+    useTranslation("Idle Time");
+
+  const overallActivityLast30Days =
+    useTranslation(
+      "Overall activity for the last 30 days"
+    );
+
+  const isDark =
+    resolvedTheme === "dark";
 
   const chartColors = {
-    grid: isDark ? "#475569" : "#E2E8F0",
-    axis: isDark ? "#94A3B8" : "#64748B",
-    cursor: isDark ? "#334155" : "#E2E8F0",
-    tooltipBg: isDark ? "#0F172A" : "#FFFFFF",
-    tooltipBorder: isDark ? "#475569" : "#CBD5E1",
-    tooltipText: isDark ? "#F8FAFC" : "#0F172A",
-    tooltipItem: isDark ? "#E2E8F0" : "#334155",
+    grid: isDark
+      ? "#475569"
+      : "#E2E8F0",
+
+    axis: isDark
+      ? "#94A3B8"
+      : "#64748B",
+
+    cursor: isDark
+      ? "#334155"
+      : "#E2E8F0",
+
+    tooltipBg: isDark
+      ? "#0F172A"
+      : "#FFFFFF",
+
+    tooltipBorder: isDark
+      ? "#475569"
+      : "#CBD5E1",
+
+    tooltipText: isDark
+      ? "#F8FAFC"
+      : "#0F172A",
+
+    tooltipItem: isDark
+      ? "#E2E8F0"
+      : "#334155",
   };
 
   if (isLoading) {
@@ -54,7 +119,14 @@ const SuperAdminMonthlyActivityChart = () => {
       <Card>
         <Skeleton className="h-5 w-40" />
 
-        <Skeleton className="mt-8 h-56 w-full rounded-2xl" />
+        <Skeleton
+          className="
+            mt-8
+            h-56
+            w-full
+            rounded-2xl
+          "
+        />
       </Card>
     );
   }
@@ -62,33 +134,66 @@ const SuperAdminMonthlyActivityChart = () => {
   if (isError || !data) {
     return (
       <Card>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Unable to load overall monthly activity.
+        <p
+          className="
+            text-sm
+            text-slate-500
+            dark:text-slate-400
+          "
+        >
+          {unableToLoadOverallMonthlyActivity}
         </p>
       </Card>
     );
   }
 
   return (
-    <Card className="min-w-0 overflow-hidden">
+    <Card
+      className="
+        min-w-0
+        overflow-hidden
+      "
+    >
+      <div
+        className="
+          mb-5
+          flex
+          min-w-0
+          flex-col
+          gap-4
 
-      {/* Header */}
-
-      <div className="mb-5 flex min-w-0 flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-
-        <div className="flex min-w-0 items-start gap-3">
-
-          <div className="shrink-0 rounded-xl bg-indigo-100 p-3 dark:bg-indigo-950/50">
-
+          sm:flex-row
+          sm:items-start
+          sm:justify-between
+        "
+      >
+        <div
+          className="
+            flex
+            min-w-0
+            items-start
+            gap-3
+          "
+        >
+          <div
+            className="
+              shrink-0
+              rounded-xl
+              bg-indigo-100
+              p-3
+              dark:bg-indigo-950/50
+            "
+          >
             <Activity
               size={22}
-              className="text-indigo-600 dark:text-indigo-400"
+              className="
+                text-indigo-600
+                dark:text-indigo-400
+              "
             />
-
           </div>
 
           <div className="min-w-0">
-
             <h2
               className="
                 text-lg
@@ -96,28 +201,26 @@ const SuperAdminMonthlyActivityChart = () => {
                 leading-tight
                 text-slate-900
                 dark:text-white
+
                 sm:text-xl
               "
             >
-              Overall Monthly Activity
+              {overallMonthlyActivity}
             </h2>
 
             <p
               className="
                 mt-1
                 text-sm
+                leading-5
                 text-slate-500
                 dark:text-slate-400
               "
             >
-              Last 30 Days · All Organization Users
+              {last30DaysAllOrganizationUsers}
             </p>
-
           </div>
-
         </div>
-
-        {/* Focus */}
 
         <div
           className="
@@ -129,10 +232,10 @@ const SuperAdminMonthlyActivityChart = () => {
             py-3
             text-left
             dark:bg-indigo-950/40
+
             sm:text-center
           "
         >
-
           <p
             className="
               text-xs
@@ -143,7 +246,7 @@ const SuperAdminMonthlyActivityChart = () => {
               dark:text-indigo-400
             "
           >
-            Focus
+            {focus}
           </p>
 
           <h3
@@ -157,12 +260,8 @@ const SuperAdminMonthlyActivityChart = () => {
           >
             {data.focus_score.toFixed(1)}%
           </h3>
-
         </div>
-
       </div>
-
-      {/* Legend */}
 
       <div
         className="
@@ -177,34 +276,48 @@ const SuperAdminMonthlyActivityChart = () => {
           dark:text-slate-300
         "
       >
-
         <div className="flex items-center gap-2">
+          <div
+            className="
+              h-3
+              w-3
+              shrink-0
+              rounded-full
+              bg-indigo-500
+            "
+          />
 
-          <div className="h-3 w-3 shrink-0 rounded-full bg-indigo-500" />
-
-          Active
-
+          {active}
         </div>
 
         <div className="flex items-center gap-2">
+          <div
+            className="
+              h-3
+              w-3
+              shrink-0
+              rounded-full
+              bg-red-400
+            "
+          />
 
-          <div className="h-3 w-3 shrink-0 rounded-full bg-red-400" />
-
-          Idle
-
+          {idle}
         </div>
-
       </div>
 
-      {/* Chart */}
+      <div
+        className="
+          h-[220px]
+          w-full
+          min-w-0
 
-      <div className="h-[220px] w-full min-w-0">
-
+          sm:h-[240px]
+        "
+      >
         <ResponsiveContainer
           width="100%"
           height="100%"
         >
-
           <AreaChart
             data={data.weekly_breakdown}
             margin={{
@@ -214,10 +327,11 @@ const SuperAdminMonthlyActivityChart = () => {
               bottom: 5,
             }}
           >
-
             <CartesianGrid
               stroke={chartColors.grid}
-              strokeOpacity={isDark ? 0.35 : 0.8}
+              strokeOpacity={
+                isDark ? 0.35 : 0.8
+              }
               vertical={false}
             />
 
@@ -245,21 +359,27 @@ const SuperAdminMonthlyActivityChart = () => {
             <Tooltip
               cursor={{
                 fill: chartColors.cursor,
-                fillOpacity: isDark ? 0.25 : 0.35,
+                fillOpacity:
+                  isDark ? 0.25 : 0.35,
               }}
               contentStyle={{
                 borderRadius: 12,
-                border: `1px solid ${chartColors.tooltipBorder}`,
-                backgroundColor: chartColors.tooltipBg,
-                color: chartColors.tooltipText,
+                border:
+                  `1px solid ${chartColors.tooltipBorder}`,
+                backgroundColor:
+                  chartColors.tooltipBg,
+                color:
+                  chartColors.tooltipText,
                 fontSize: 13,
               }}
               labelStyle={{
-                color: chartColors.tooltipText,
+                color:
+                  chartColors.tooltipText,
                 fontWeight: 600,
               }}
               itemStyle={{
-                color: chartColors.tooltipItem,
+                color:
+                  chartColors.tooltipItem,
               }}
               formatter={(value, name) => {
                 const seconds =
@@ -275,7 +395,6 @@ const SuperAdminMonthlyActivityChart = () => {
             />
 
             <defs>
-
               <linearGradient
                 id="superAdminActiveGradient"
                 x1="0"
@@ -283,7 +402,6 @@ const SuperAdminMonthlyActivityChart = () => {
                 x2="0"
                 y2="1"
               >
-
                 <stop
                   offset="5%"
                   stopColor="#6366F1"
@@ -295,7 +413,6 @@ const SuperAdminMonthlyActivityChart = () => {
                   stopColor="#6366F1"
                   stopOpacity={0}
                 />
-
               </linearGradient>
 
               <linearGradient
@@ -305,7 +422,6 @@ const SuperAdminMonthlyActivityChart = () => {
                 x2="0"
                 y2="1"
               >
-
                 <stop
                   offset="5%"
                   stopColor="#F87171"
@@ -317,15 +433,13 @@ const SuperAdminMonthlyActivityChart = () => {
                   stopColor="#F87171"
                   stopOpacity={0}
                 />
-
               </linearGradient>
-
             </defs>
 
             <Area
               type="monotone"
               dataKey="active_time_seconds"
-              name="Active Time"
+              name={activeTime}
               stroke="#4F46E5"
               strokeWidth={3}
               fill="url(#superAdminActiveGradient)"
@@ -334,19 +448,14 @@ const SuperAdminMonthlyActivityChart = () => {
             <Area
               type="monotone"
               dataKey="idle_time_seconds"
-              name="Idle Time"
+              name={idleTime}
               stroke="#EF4444"
               strokeWidth={3}
               fill="url(#superAdminIdleGradient)"
             />
-
           </AreaChart>
-
         </ResponsiveContainer>
-
       </div>
-
-      {/* Footer */}
 
       <div
         className="
@@ -360,23 +469,23 @@ const SuperAdminMonthlyActivityChart = () => {
           text-sm
           leading-5
           text-slate-500
+
           dark:border-slate-700
           dark:text-slate-400
         "
       >
-
         <TrendingUp
           size={16}
-          className="mt-0.5 shrink-0"
+          className="
+            mt-0.5
+            shrink-0
+          "
         />
 
         <span>
-          Overall activity of all organization users
-          for the last 30 days
+          {overallActivityLast30Days}
         </span>
-
       </div>
-
     </Card>
   );
 };

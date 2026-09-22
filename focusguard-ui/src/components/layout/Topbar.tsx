@@ -11,34 +11,169 @@ import { useAuth } from "../../context/AuthContext";
 
 import NotificationBell from "../common/NotificationBell";
 
+import LanguageSelector from "../common/LanguageSelector";
+
+import {
+  useTranslation,
+} from "../../hooks/useTranslation";
+
+import {
+  useLanguage,
+} from "../../context/LanguageContext";
+
+
 interface TopbarProps {
   onMenuClick: () => void;
 }
 
+
 const Topbar = ({
   onMenuClick,
 }: TopbarProps) => {
-  const { user } = useAuth();
 
-  const { theme, setTheme } = useTheme();
+  const {
+    user,
+  } = useAuth();
 
-  const today = new Date().toLocaleDateString(
-    "en-IN",
-    {
-      weekday: "long",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }
-  );
 
-  const isDark = theme === "dark";
+  const {
+    theme,
+    setTheme,
+  } = useTheme();
+
+
+  const {
+    language,
+  } = useLanguage();
+
+
+  // =====================================
+  // TRANSLATIONS
+  // =====================================
+
+  const dashboardText =
+    useTranslation("Dashboard");
+
+
+  const searchText =
+    useTranslation("Search...");
+
+
+  const lightModeText =
+    useTranslation(
+      "Switch to light mode"
+    );
+
+
+  const darkModeText =
+    useTranslation(
+      "Switch to dark mode"
+    );
+
+
+  const userText =
+    useTranslation("User");
+
+
+  // =====================================
+  // DATE
+  // =====================================
+
+  const languageLocales:
+    Record<string, string> = {
+
+      en: "en-IN",
+
+      hi: "hi-IN",
+
+      bn: "bn-IN",
+
+      gu: "gu-IN",
+
+      kn: "kn-IN",
+
+      ml: "ml-IN",
+
+      mr: "mr-IN",
+
+      od: "or-IN",
+
+      pa: "pa-IN",
+
+      ta: "ta-IN",
+
+      te: "te-IN",
+
+      as: "as-IN",
+
+      ne: "ne-NP",
+
+      ur: "ur-IN",
+
+    };
+
+
+  const locale =
+    languageLocales[language] ||
+    "en-IN";
+
+
+  const today =
+    new Date()
+      .toLocaleDateString(
+        locale,
+        {
+          weekday: "long",
+
+          day: "numeric",
+
+          month: "long",
+
+          year: "numeric",
+        }
+      );
+
+
+  // =====================================
+  // THEME
+  // =====================================
+
+  const isDark =
+    theme === "dark";
+
 
   const toggleTheme = () => {
-    setTheme(isDark ? "light" : "dark");
+
+    setTheme(
+      isDark
+        ? "light"
+        : "dark"
+    );
+
   };
 
+
+  // =====================================
+  // USER ROLE
+  // =====================================
+
+  const formattedRole =
+    user?.role
+      ?.replace(
+        "_",
+        " "
+      ) ??
+    "";
+
+
+  const translatedRole =
+    useTranslation(
+      formattedRole
+    );
+
+
   return (
+
     <header
       className="
         shrink-0
@@ -54,9 +189,10 @@ const Topbar = ({
         sm:px-6
       "
     >
-      {/* =====================================================
+
+      {/* =====================================
           TOP ROW
-      ===================================================== */}
+      ===================================== */}
 
       <div
         className="
@@ -69,9 +205,10 @@ const Topbar = ({
           sm:gap-3
         "
       >
-        {/* =================================================
+
+        {/* =====================================
             LEFT SECTION
-        ================================================= */}
+        ===================================== */}
 
         <div
           className="
@@ -84,12 +221,18 @@ const Topbar = ({
             sm:gap-3
           "
         >
-          {/* Mobile / Tablet Menu */}
+
+          {/* MOBILE / TABLET MENU */}
 
           <button
             type="button"
-            onClick={onMenuClick}
+
+            onClick={
+              onMenuClick
+            }
+
             aria-label="Open navigation"
+
             className="
               flex
               h-9
@@ -119,10 +262,13 @@ const Topbar = ({
               lg:hidden
             "
           >
+
             <Menu size={20} />
+
           </button>
 
-          {/* Page Heading */}
+
+          {/* PAGE HEADING */}
 
           <div
             className="
@@ -130,6 +276,7 @@ const Topbar = ({
               shrink
             "
           >
+
             <h1
               className="
                 whitespace-nowrap
@@ -144,8 +291,11 @@ const Topbar = ({
                 md:text-2xl
               "
             >
-              Dashboard
+
+              {dashboardText}
+
             </h1>
+
 
             <p
               className="
@@ -161,14 +311,19 @@ const Topbar = ({
                 sm:text-sm
               "
             >
+
               {today}
+
             </p>
+
           </div>
+
         </div>
 
-        {/* =================================================
+
+        {/* =====================================
             RIGHT SECTION
-        ================================================= */}
+        ===================================== */}
 
         <div
           className="
@@ -181,9 +336,17 @@ const Topbar = ({
             md:gap-4
           "
         >
-          {/* Desktop / Tablet Search */}
 
-          <div className="relative hidden sm:block">
+          {/* SEARCH */}
+
+          <div
+            className="
+              relative
+              hidden
+              sm:block
+            "
+          >
+
             <Search
               className="
                 absolute
@@ -194,13 +357,22 @@ const Topbar = ({
 
                 dark:text-slate-500
               "
+
               size={17}
             />
 
+
             <input
               type="search"
-              placeholder="Search..."
-              aria-label="Search"
+
+              placeholder={
+                searchText
+              }
+
+              aria-label={
+                searchText
+              }
+
               className="
                 h-10
                 w-36
@@ -232,25 +404,48 @@ const Topbar = ({
                 lg:w-64
               "
             />
+
           </div>
 
-          {/* =================================================
+
+          {/* =====================================
+              LANGUAGE SELECTOR
+          ===================================== */}
+
+          <div
+            className="
+              shrink-0
+            "
+          >
+
+            <LanguageSelector />
+
+          </div>
+
+
+          {/* =====================================
               DARK / LIGHT MODE
-          ================================================= */}
+          ===================================== */}
 
           <button
             type="button"
-            onClick={toggleTheme}
+
+            onClick={
+              toggleTheme
+            }
+
             aria-label={
               isDark
-                ? "Switch to light mode"
-                : "Switch to dark mode"
+                ? lightModeText
+                : darkModeText
             }
+
             title={
               isDark
-                ? "Switch to light mode"
-                : "Switch to dark mode"
+                ? lightModeText
+                : darkModeText
             }
+
             className="
               flex
               h-9
@@ -278,22 +473,36 @@ const Topbar = ({
               sm:w-10
             "
           >
+
             {isDark ? (
+
               <Sun size={18} />
+
             ) : (
+
               <Moon size={18} />
+
             )}
+
           </button>
 
-          {/* Notifications */}
 
-          <div className="shrink-0">
+          {/* NOTIFICATIONS */}
+
+          <div
+            className="
+              shrink-0
+            "
+          >
+
             <NotificationBell />
+
           </div>
 
-          {/* =================================================
+
+          {/* =====================================
               USER
-          ================================================= */}
+          ===================================== */}
 
           <div
             className="
@@ -305,7 +514,8 @@ const Topbar = ({
               sm:gap-3
             "
           >
-            {/* Avatar */}
+
+            {/* AVATAR */}
 
             <div
               className="
@@ -323,18 +533,34 @@ const Topbar = ({
 
                 sm:h-10
                 sm:w-10
+
                 md:h-11
                 md:w-11
               "
             >
-              {user?.full_name
-                ?.charAt(0)
-                .toUpperCase() ?? "U"}
+
+              {
+                user?.full_name
+                  ?.charAt(0)
+                  .toUpperCase()
+                ??
+                "U"
+              }
+
             </div>
 
-            {/* User Information */}
 
-            <div className="hidden min-w-0 md:block">
+            {/* USER INFORMATION */}
+
+            <div
+              className="
+                hidden
+                min-w-0
+
+                md:block
+              "
+            >
+
               <h3
                 className="
                   max-w-[140px]
@@ -348,8 +574,15 @@ const Topbar = ({
                   lg:max-w-[190px]
                 "
               >
-                {user?.full_name ?? "User"}
+
+                {
+                  user?.full_name
+                  ??
+                  userText
+                }
+
               </h3>
+
 
               <p
                 className="
@@ -363,22 +596,38 @@ const Topbar = ({
                   lg:text-sm
                 "
               >
-                {user?.role?.replace(
-                  "_",
-                  " "
-                )}
+
+                {translatedRole}
+
               </p>
+
             </div>
+
           </div>
+
         </div>
+
       </div>
 
-      {/* =====================================================
-          MOBILE SEARCH
-      ===================================================== */}
 
-      <div className="mt-3 sm:hidden">
-        <div className="relative">
+      {/* =====================================
+          MOBILE SEARCH
+      ===================================== */}
+
+      <div
+        className="
+          mt-3
+
+          sm:hidden
+        "
+      >
+
+        <div
+          className="
+            relative
+          "
+        >
+
           <Search
             className="
               absolute
@@ -389,13 +638,22 @@ const Topbar = ({
 
               dark:text-slate-500
             "
+
             size={17}
           />
 
+
           <input
             type="search"
-            placeholder="Search..."
-            aria-label="Search"
+
+            placeholder={
+              searchText
+            }
+
+            aria-label={
+              searchText
+            }
+
             className="
               h-10
               w-full
@@ -426,10 +684,16 @@ const Topbar = ({
               dark:focus:ring-indigo-900
             "
           />
+
         </div>
+
       </div>
+
     </header>
+
   );
+
 };
+
 
 export default Topbar;

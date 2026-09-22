@@ -13,12 +13,31 @@ import {
 
 import { formatDuration } from "../../utils/time";
 
+import { useTranslation } from "../../hooks/useTranslation";
+
 const AnalyticsStatsRole = () => {
   const {
     data,
     isLoading,
     isError,
   } = useRoleActivitySummary();
+
+  const browserTimeLabel =
+    useTranslation("Browser Time");
+
+  const focusScoreLabel =
+    useTranslation("Focus Score");
+
+  const activeTimeLabel =
+    useTranslation("Active Time");
+
+  const idleTimeLabel =
+    useTranslation("Idle Time");
+
+  const errorMessage =
+    useTranslation(
+      "Unable to load organization analytics."
+    );
 
   if (isLoading) {
     return (
@@ -55,7 +74,7 @@ const AnalyticsStatsRole = () => {
       <Card>
         <div className="flex min-h-[120px] items-center justify-center text-center">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Unable to load organization analytics.
+            {errorMessage}
           </p>
         </div>
       </Card>
@@ -64,7 +83,7 @@ const AnalyticsStatsRole = () => {
 
   const stats = [
     {
-      title: "Browser Time",
+      title: browserTimeLabel,
       value: formatDuration(
         data.browser_time_seconds ?? 0
       ),
@@ -75,7 +94,7 @@ const AnalyticsStatsRole = () => {
         "bg-indigo-50 dark:bg-indigo-950/40",
     },
     {
-      title: "Focus Score",
+      title: focusScoreLabel,
       value: `${(
         data.focus_score ?? 0
       ).toFixed(2)}%`,
@@ -86,7 +105,7 @@ const AnalyticsStatsRole = () => {
         "bg-green-50 dark:bg-green-950/40",
     },
     {
-      title: "Active Time",
+      title: activeTimeLabel,
       value: formatDuration(
         data.active_time_seconds ?? 0
       ),
@@ -97,7 +116,7 @@ const AnalyticsStatsRole = () => {
         "bg-emerald-50 dark:bg-emerald-950/40",
     },
     {
-      title: "Idle Time",
+      title: idleTimeLabel,
       value: formatDuration(
         data.idle_time_seconds ?? 0
       ),

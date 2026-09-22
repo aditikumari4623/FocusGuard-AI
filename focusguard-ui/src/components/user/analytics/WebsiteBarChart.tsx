@@ -12,11 +12,25 @@ import {
   useWebsiteAnalytics,
 } from "../../../hooks/useAnalytics";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 const WebsiteBarChart = () => {
   const {
     data,
     isLoading,
   } = useWebsiteAnalytics();
+
+  const websiteUsage = useTranslation(
+    "Website Usage"
+  );
+
+  const noWebsiteActivity = useTranslation(
+    "No website activity found."
+  );
+
+  const timeSpent = useTranslation(
+    "Time Spent"
+  );
 
   if (isLoading) {
     return (
@@ -64,11 +78,11 @@ const WebsiteBarChart = () => {
         "
       >
         <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-          Website Usage
+          {websiteUsage}
         </h2>
 
         <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-          No website activity found.
+          {noWebsiteActivity}
         </p>
       </div>
     );
@@ -93,7 +107,7 @@ const WebsiteBarChart = () => {
       "
     >
       <h2 className="mb-5 text-lg font-bold text-slate-900 dark:text-white sm:mb-6 sm:text-xl">
-        Website Usage
+        {websiteUsage}
       </h2>
 
       <div className="h-[300px] w-full min-w-0 sm:h-[320px]">
@@ -158,7 +172,7 @@ const WebsiteBarChart = () => {
 
             <Bar
               dataKey="duration_seconds"
-              name="Time Spent"
+              name={timeSpent}
               fill="#6366F1"
               radius={[
                 8,

@@ -6,11 +6,33 @@ import {
   useAIRecommendation,
 } from "../../../hooks/useAnalytics";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 const AIRecommendationCard = () => {
   const {
     data,
     isLoading,
   } = useAIRecommendation();
+
+  const loadingText = useTranslation(
+    "Loading recommendation..."
+  );
+
+  const title = useTranslation(
+    "AI Recommendation"
+  );
+
+  const subtitle = useTranslation(
+    "Personalized productivity insight"
+  );
+
+  const noRecommendation = useTranslation(
+    "No recommendation available."
+  );
+
+  const recommendation = useTranslation(
+    data?.recommendation || ""
+  );
 
   if (isLoading) {
     return (
@@ -32,7 +54,7 @@ const AIRecommendationCard = () => {
           sm:p-6
         "
       >
-        Loading recommendation...
+        {loadingText}
       </div>
     );
   }
@@ -47,7 +69,9 @@ const AIRecommendationCard = () => {
         bg-white
         p-5
         shadow-sm
-        transition-colors
+        transition-all
+        duration-300
+        hover:shadow-md
 
         dark:border-slate-700
         dark:bg-slate-900
@@ -56,9 +80,7 @@ const AIRecommendationCard = () => {
         sm:p-6
       "
     >
-
       <div className="flex items-center gap-4">
-
         <div
           className="
             flex
@@ -76,26 +98,21 @@ const AIRecommendationCard = () => {
             sm:w-14
           "
         >
-
           <BrainCircuit
             size={26}
             className="text-indigo-600 dark:text-indigo-400 sm:h-7 sm:w-7"
           />
-
         </div>
 
         <div className="min-w-0">
-
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-2xl">
-            AI Recommendation
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
+            {title}
           </h2>
 
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Personalized productivity insight
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+            {subtitle}
           </p>
-
         </div>
-
       </div>
 
       <div
@@ -107,18 +124,15 @@ const AIRecommendationCard = () => {
 
           dark:bg-slate-800
 
-          sm:mt-8
           sm:p-6
         "
       >
-
         <p className="whitespace-pre-line break-words text-sm leading-7 text-slate-700 dark:text-slate-300 sm:text-base sm:leading-8">
-          {data?.recommendation ||
-            "No recommendation available."}
+          {data?.recommendation
+            ? recommendation
+            : noRecommendation}
         </p>
-
       </div>
-
     </div>
   );
 };

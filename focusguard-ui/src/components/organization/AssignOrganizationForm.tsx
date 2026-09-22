@@ -1,11 +1,19 @@
 import { useState } from "react";
 
-import type { Organization } from "../../api/organization.api";
+import type {
+  Organization,
+} from "../../api/organization.api";
+
+import {
+  useTranslation,
+} from "../../hooks/useTranslation";
 
 interface Props {
   organizations: Organization[];
   loading: boolean;
-  onSubmit: (organizationId: number) => void;
+  onSubmit: (
+    organizationId: number
+  ) => void;
 }
 
 const AssignOrganizationForm = ({
@@ -13,15 +21,42 @@ const AssignOrganizationForm = ({
   loading,
   onSubmit,
 }: Props) => {
-  const [organizationId, setOrganizationId] =
-    useState("");
+  const [
+    organizationId,
+    setOrganizationId,
+  ] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const organizationText =
+    useTranslation("Organization");
+
+  const selectOrganizationText =
+    useTranslation(
+      "Select Organization"
+    );
+
+  const noOrganizationsText =
+    useTranslation(
+      "No organizations are currently available."
+    );
+
+  const assigningText =
+    useTranslation("Assigning...");
+
+  const assignOrganizationText =
+    useTranslation(
+      "Assign Organization"
+    );
+
+  const handleSubmit = (
+    event: React.FormEvent
+  ) => {
+    event.preventDefault();
 
     if (!organizationId) return;
 
-    onSubmit(Number(organizationId));
+    onSubmit(
+      Number(organizationId)
+    );
   };
 
   return (
@@ -41,14 +76,16 @@ const AssignOrganizationForm = ({
             dark:text-slate-200
           "
         >
-          Organization
+          {organizationText}
         </label>
 
         <select
           id="organization-select"
           value={organizationId}
-          onChange={(e) =>
-            setOrganizationId(e.target.value)
+          onChange={(event) =>
+            setOrganizationId(
+              event.target.value
+            )
           }
           disabled={loading}
           className="
@@ -82,22 +119,31 @@ const AssignOrganizationForm = ({
           "
         >
           <option value="">
-            Select Organization
+            {selectOrganizationText}
           </option>
 
-          {organizations.map((organization) => (
-            <option
-              key={organization.id}
-              value={organization.id}
-            >
-              {organization.organization_name}
-            </option>
-          ))}
+          {organizations.map(
+            (organization) => (
+              <option
+                key={organization.id}
+                value={organization.id}
+              >
+                {organization.organization_name}
+              </option>
+            )
+          )}
         </select>
 
         {organizations.length === 0 && (
-          <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-            No organizations are currently available.
+          <p
+            className="
+              mt-2
+              text-xs
+              text-slate-500
+              dark:text-slate-400
+            "
+          >
+            {noOrganizationsText}
           </p>
         )}
       </div>
@@ -133,8 +179,8 @@ const AssignOrganizationForm = ({
         "
       >
         {loading
-          ? "Assigning..."
-          : "Assign Organization"}
+          ? assigningText
+          : assignOrganizationText}
       </button>
     </form>
   );

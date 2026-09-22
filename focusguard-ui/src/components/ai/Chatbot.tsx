@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 import { useAIChat } from "../../hooks/useAIChat";
+import { useTranslation } from "../../hooks/useTranslation";
 
 interface Message {
   id: number;
@@ -16,24 +17,123 @@ interface Message {
   text: string;
 }
 
+/* -----------------------------------------
+   AI Message
+
+   Dynamic AI responses are translated here.
+----------------------------------------- */
+
+interface AIMessageProps {
+  text: string;
+}
+
+const AIMessage = ({
+  text,
+}: AIMessageProps) => {
+  const translatedText =
+    useTranslation(text);
+
+  return (
+    <div
+      className="
+        min-w-0
+        max-w-[calc(100%-44px)]
+        overflow-hidden
+        break-words
+        whitespace-pre-wrap
+        rounded-2xl
+        rounded-bl-md
+        border
+        border-slate-200
+        bg-white
+        px-3
+        py-2.5
+        text-sm
+        leading-6
+        text-slate-700
+        shadow-sm
+
+        dark:border-slate-700
+        dark:bg-slate-800
+        dark:text-slate-200
+
+        sm:max-w-[78%]
+        sm:px-4
+        sm:py-3
+      "
+    >
+      {translatedText}
+    </div>
+  );
+};
+
 const Chatbot = () => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] =
+    useState(false);
 
-  const [message, setMessage] = useState("");
+  const [message, setMessage] =
+    useState("");
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      sender: "ai",
-      text:
-        "Hi! I'm the FocusGuard AI Assistant. Ask me about your productivity, focus score, activity, reports, or recommendations.",
-    },
-  ]);
+  const chatMutation =
+    useAIChat();
 
-  const chatMutation = useAIChat();
+  /* -----------------------------------------
+     Static UI translations
+  ----------------------------------------- */
+
+  const productivityAssistantText =
+    useTranslation(
+      "Productivity Assistant"
+    );
+
+  const closeAssistantText =
+    useTranslation(
+      "Close FocusGuard AI"
+    );
+
+  const openAssistantText =
+    useTranslation(
+      "Open FocusGuard AI Assistant"
+    );
+
+  const thinkingText =
+    useTranslation("Thinking...");
+
+  const inputPlaceholder =
+    useTranslation(
+      "Ask FocusGuard AI..."
+    );
+
+  const sendMessageText =
+    useTranslation("Send message");
+
+  const initialMessage =
+    useTranslation(
+      "Hi! I'm the FocusGuard AI Assistant. Ask me about your productivity, focus score, activity, reports, or recommendations."
+    );
+
+  const errorMessageText =
+    useTranslation(
+      "Sorry, I couldn't process your request right now."
+    );
+
+  const [messages, setMessages] =
+    useState<Message[]>([
+      {
+        id: 1,
+        sender: "ai",
+        text:
+          "Hi! I'm the FocusGuard AI Assistant. Ask me about your productivity, focus score, activity, reports, or recommendations.",
+      },
+    ]);
+
+  /* -----------------------------------------
+     Send Message
+  ----------------------------------------- */
 
   const handleSend = async () => {
-    const trimmedMessage = message.trim();
+    const trimmedMessage =
+      message.trim();
 
     if (!trimmedMessage) {
       return;
@@ -69,11 +169,14 @@ const Chatbot = () => {
         aiMessage,
       ]);
     } catch (error: any) {
+      const backendError =
+        error?.response?.data?.detail;
+
       const errorMessage: Message = {
         id: Date.now() + 1,
         sender: "ai",
         text:
-          error?.response?.data?.detail ??
+          backendError ??
           "Sorry, I couldn't process your request right now.",
       };
 
@@ -83,6 +186,10 @@ const Chatbot = () => {
       ]);
     }
   };
+
+  /* -----------------------------------------
+     Enter Key
+  ----------------------------------------- */
 
   const handleKeyDown = (
     event: React.KeyboardEvent<HTMLInputElement>
@@ -102,7 +209,7 @@ const Chatbot = () => {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          aria-label="Open FocusGuard AI Assistant"
+          aria-label={openAssistantText}
           className="
             fixed
             bottom-4
@@ -158,7 +265,9 @@ const Chatbot = () => {
 
             sm:hidden
           "
-          onClick={() => setOpen(false)}
+          onClick={() =>
+            setOpen(false)
+          }
         />
       )}
 
@@ -276,15 +385,19 @@ const Chatbot = () => {
                     sm:text-xs
                   "
                 >
-                  Productivity Assistant
+                  {productivityAssistantText}
                 </p>
               </div>
             </div>
 
             <button
               type="button"
-              onClick={() => setOpen(false)}
-              aria-label="Close FocusGuard AI"
+              onClick={() =>
+                setOpen(false)
+              }
+              aria-label={
+                closeAssistantText
+              }
               className="
                 flex
                 h-9
@@ -312,112 +425,112 @@ const Chatbot = () => {
               overflow-x-hidden
               bg-slate-50
               p-3
+
               dark:bg-slate-950
 
               sm:p-4
             "
           >
             <div className="space-y-4">
-              {messages.map((item) => (
-                <div
-                  key={item.id}
-                  className={`
-                    flex
-                    min-w-0
-                    items-end
-                    gap-2
-                    ${
-                      item.sender === "user"
-                        ? "justify-end"
-                        : "justify-start"
-                    }
-                  `}
-                >
-                  {item.sender === "ai" && (
-                    <div
-                      className="
-                        flex
-                        h-8
-                        w-8
-                        shrink-0
-                        items-center
-                        justify-center
-                        rounded-full
-                        bg-violet-100
-                        text-violet-600
-
-                        dark:bg-violet-950/70
-                        dark:text-violet-400
-                      "
-                    >
-                      <Sparkles size={16} />
-                    </div>
-                  )}
-
+              {messages.map(
+                (item) => (
                   <div
+                    key={item.id}
                     className={`
+                      flex
                       min-w-0
-                      max-w-[calc(100%-44px)]
-                      overflow-hidden
-                      break-words
-                      whitespace-pre-wrap
-                      rounded-2xl
-                      px-3
-                      py-2.5
-                      text-sm
-                      leading-6
-
-                      sm:max-w-[78%]
-                      sm:px-4
-                      sm:py-3
+                      items-end
+                      gap-2
 
                       ${
-                        item.sender === "user"
-                          ? `
-                            rounded-br-md
-                            bg-violet-600
-                            text-white
-                          `
-                          : `
-                            rounded-bl-md
-                            border
-                            border-slate-200
-                            bg-white
-                            text-slate-700
-                            shadow-sm
-
-                            dark:border-slate-700
-                            dark:bg-slate-800
-                            dark:text-slate-200
-                          `
+                        item.sender ===
+                        "user"
+                          ? "justify-end"
+                          : "justify-start"
                       }
                     `}
                   >
-                    {item.text}
+                    {item.sender ===
+                      "ai" && (
+                      <div
+                        className="
+                          flex
+                          h-8
+                          w-8
+                          shrink-0
+                          items-center
+                          justify-center
+                          rounded-full
+                          bg-violet-100
+                          text-violet-600
+
+                          dark:bg-violet-950/70
+                          dark:text-violet-400
+                        "
+                      >
+                        <Sparkles
+                          size={16}
+                        />
+                      </div>
+                    )}
+
+                    {item.sender ===
+                    "ai" ? (
+                      <AIMessage
+                        text={item.text}
+                      />
+                    ) : (
+                      <div
+                        className="
+                          min-w-0
+                          max-w-[calc(100%-44px)]
+                          overflow-hidden
+                          break-words
+                          whitespace-pre-wrap
+                          rounded-2xl
+                          rounded-br-md
+                          bg-violet-600
+                          px-3
+                          py-2.5
+                          text-sm
+                          leading-6
+                          text-white
+
+                          sm:max-w-[78%]
+                          sm:px-4
+                          sm:py-3
+                        "
+                      >
+                        {item.text}
+                      </div>
+                    )}
+
+                    {item.sender ===
+                      "user" && (
+                      <div
+                        className="
+                          flex
+                          h-8
+                          w-8
+                          shrink-0
+                          items-center
+                          justify-center
+                          rounded-full
+                          bg-slate-200
+                          text-slate-600
+
+                          dark:bg-slate-700
+                          dark:text-slate-200
+                        "
+                      >
+                        <User
+                          size={16}
+                        />
+                      </div>
+                    )}
                   </div>
-
-                  {item.sender === "user" && (
-                    <div
-                      className="
-                        flex
-                        h-8
-                        w-8
-                        shrink-0
-                        items-center
-                        justify-center
-                        rounded-full
-                        bg-slate-200
-                        text-slate-600
-
-                        dark:bg-slate-700
-                        dark:text-slate-200
-                      "
-                    >
-                      <User size={16} />
-                    </div>
-                  )}
-                </div>
-              ))}
+                )
+              )}
 
               {chatMutation.isPending && (
                 <div className="flex items-end gap-2">
@@ -437,7 +550,9 @@ const Chatbot = () => {
                       dark:text-violet-400
                     "
                   >
-                    <Sparkles size={16} />
+                    <Sparkles
+                      size={16}
+                    />
                   </div>
 
                   <div
@@ -458,7 +573,7 @@ const Chatbot = () => {
                       dark:text-slate-400
                     "
                   >
-                    Thinking...
+                    {thinkingText}
                   </div>
                 </div>
               )}
@@ -493,10 +608,16 @@ const Chatbot = () => {
                 type="text"
                 value={message}
                 onChange={(event) =>
-                  setMessage(event.target.value)
+                  setMessage(
+                    event.target.value
+                  )
                 }
-                onKeyDown={handleKeyDown}
-                placeholder="Ask FocusGuard AI..."
+                onKeyDown={
+                  handleKeyDown
+                }
+                placeholder={
+                  inputPlaceholder
+                }
                 disabled={
                   chatMutation.isPending
                 }
@@ -544,7 +665,9 @@ const Chatbot = () => {
                   !message.trim() ||
                   chatMutation.isPending
                 }
-                aria-label="Send message"
+                aria-label={
+                  sendMessageText
+                }
                 className="
                   flex
                   h-10

@@ -17,7 +17,6 @@ import OrganizationAIRecommendationCard from "../../../components/superadmin/Org
 const DashboardPage = () => {
   return (
     <AppLayout>
-
       <div className="w-full min-w-0 overflow-x-hidden">
 
         {/* ================================
@@ -32,8 +31,22 @@ const DashboardPage = () => {
             Organization Activity
             ================================ */}
 
-        <div className="mt-6 grid w-full min-w-0 grid-cols-1 gap-6 lg:gap-8 xl:grid-cols-2">
+        <div
+          className="
+            mt-6
+            grid
+            w-full
+            min-w-0
+            grid-cols-1
+            gap-5
 
+            sm:mt-7
+            sm:gap-6
+
+            xl:grid-cols-2
+            xl:gap-8
+          "
+        >
           <div className="min-w-0">
             <SuperAdminWeeklyActivityChart />
           </div>
@@ -41,15 +54,28 @@ const DashboardPage = () => {
           <div className="min-w-0">
             <SuperAdminMonthlyActivityChart />
           </div>
-
         </div>
 
         {/* ================================
             Planner + Personal AI
             ================================ */}
 
-        <div className="mt-6 grid w-full min-w-0 grid-cols-1 gap-6 lg:gap-8 xl:grid-cols-2">
+        <div
+          className="
+            mt-6
+            grid
+            w-full
+            min-w-0
+            grid-cols-1
+            gap-5
 
+            sm:mt-7
+            sm:gap-6
+
+            xl:grid-cols-2
+            xl:gap-8
+          "
+        >
           <div className="min-w-0">
             <PlannerCard />
           </div>
@@ -57,14 +83,13 @@ const DashboardPage = () => {
           <div className="min-w-0">
             <AIRecommendationCard />
           </div>
-
         </div>
 
         {/* ================================
             Organization AI Insights
             ================================ */}
 
-        <div className="mt-6 w-full min-w-0">
+        <div className="mt-6 w-full min-w-0 sm:mt-7">
           <OrganizationAIRecommendationCard />
         </div>
 
@@ -72,12 +97,11 @@ const DashboardPage = () => {
             Organization Websites
             ================================ */}
 
-        <div className="mt-6 w-full min-w-0">
+        <div className="mt-6 w-full min-w-0 sm:mt-7">
           <WebsiteCard />
         </div>
 
       </div>
-
     </AppLayout>
   );
 };

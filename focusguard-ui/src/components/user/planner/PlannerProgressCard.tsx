@@ -1,37 +1,24 @@
-import {
-  Target,
-  TrendingUp,
-} from "lucide-react";
-
-import {
-  usePlannerProgress,
-} from "../../../hooks/usePlanner";
+import { useTranslation } from "../../../hooks/useTranslation";
+import { usePlannerProgress } from "../../../hooks/usePlanner";
 
 const PlannerProgressCard = () => {
-  const {
-    data,
-    isLoading,
-  } = usePlannerProgress();
+  const { data, isLoading } = usePlannerProgress();
+
+  const loadingText = useTranslation("Loading progress...");
+  const noProgressText = useTranslation("No progress available.");
+
+  const titleText = useTranslation("Planner Progress");
+  const goalText = useTranslation("Goal");
+  const completedText = useTranslation("Completed");
+  const goalCompletionText = useTranslation("Goal Completion");
+  const focusScoreText = useTranslation("Focus Score");
+  const minutesText = useTranslation("min");
 
   if (isLoading) {
     return (
-      <div
-        className="
-          rounded-3xl
-          border
-          border-slate-200
-          bg-white
-          p-5
-
-          dark:border-slate-700
-          dark:bg-slate-900
-          dark:shadow-black/20
-
-          sm:p-6
-        "
-      >
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Loading progress...
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {loadingText}
         </p>
       </div>
     );
@@ -39,169 +26,84 @@ const PlannerProgressCard = () => {
 
   if (!data) {
     return (
-      <div
-        className="
-          rounded-3xl
-          border
-          border-slate-200
-          bg-white
-          p-5
-
-          dark:border-slate-700
-          dark:bg-slate-900
-          dark:shadow-black/20
-
-          sm:p-6
-        "
-      >
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          No progress available.
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {noProgressText}
         </p>
       </div>
     );
   }
 
+  const goalMinutes = data.goal_minutes ?? 0;
+  const completedMinutes = data.completed_minutes ?? 0;
+
+  // Backend field is goal_completion_percentage
+  const goalCompletionPercentage =
+    data.goal_completion_percentage ?? 0;
+
+  const focusScore = data.focus_score ?? 0;
+
   return (
-    <div
-      className="
-        overflow-hidden
-        rounded-3xl
-        border
-        border-slate-200
-        bg-white
-        shadow-sm
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <h3 className="mb-5 text-lg font-semibold text-gray-900 dark:text-white">
+        {titleText}
+      </h3>
 
-        dark:border-slate-700
-        dark:bg-slate-900
-        dark:shadow-black/20
-      "
-    >
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/60">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {goalText}
+          </p>
 
-      {/* Header */}
+          <p className="mt-1 text-xl font-bold text-gray-900 dark:text-white">
+            {goalMinutes} {minutesText}
+          </p>
+        </div>
 
-      <div className="border-b border-slate-200 p-5 dark:border-slate-700 sm:p-6">
+        <div className="rounded-xl bg-gray-50 p-4 dark:bg-gray-800/60">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            {completedText}
+          </p>
 
-        <h2 className="flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
+          <p className="mt-1 text-xl font-bold text-gray-900 dark:text-white">
+            {completedMinutes} {minutesText}
+          </p>
+        </div>
+      </div>
 
-          <Target
-            size={22}
-            className="shrink-0 text-indigo-600 dark:text-indigo-400"
-          />
-
-          <span>
-            Planner Progress
+      <div className="mt-5">
+        <div className="mb-2 flex items-center justify-between gap-3">
+          <span className="text-sm text-gray-600 dark:text-gray-400">
+            {goalCompletionText}
           </span>
 
-        </h2>
-
-      </div>
-
-      {/* Summary */}
-
-      <div className="grid grid-cols-1 gap-5 p-5 sm:grid-cols-2 sm:gap-6 sm:p-6">
-
-        <div>
-
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Goal
-          </p>
-
-          <h3 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
-            {data.goal_minutes} min
-          </h3>
-
+          <span className="text-sm font-semibold text-gray-900 dark:text-white">
+            {goalCompletionPercentage}%
+          </span>
         </div>
 
-        <div>
-
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Completed
-          </p>
-
-          <h3 className="mt-1 text-2xl font-bold text-green-600 dark:text-green-400 sm:text-3xl">
-            {data.completed_minutes} min
-          </h3>
-
-        </div>
-
-      </div>
-
-      {/* Progress */}
-
-      <div className="px-5 sm:px-6">
-
-        <div className="h-3 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800">
-
+        <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
           <div
-            className="h-full rounded-full bg-indigo-600 transition-all duration-500 dark:bg-indigo-500"
+            className="h-full rounded-full bg-indigo-600 transition-all duration-300"
             style={{
               width: `${Math.min(
-                data.goal_completion_percentage,
+                Math.max(goalCompletionPercentage, 0),
                 100
               )}%`,
             }}
           />
-
         </div>
-
       </div>
 
-      {/* Footer */}
+      <div className="mt-5 flex items-center justify-between">
+        <span className="text-sm text-gray-500 dark:text-gray-400">
+          {focusScoreText}
+        </span>
 
-      <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-
-        <div>
-
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Goal Completion
-          </p>
-
-          <h3 className="text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
-            {data.goal_completion_percentage.toFixed(
-              1
-            )}
-            %
-          </h3>
-
-        </div>
-
-        <div
-          className="
-            flex
-            items-center
-            gap-3
-            rounded-2xl
-            bg-indigo-100
-            px-4
-            py-3
-
-            dark:bg-indigo-950/40
-
-            sm:px-5
-          "
-        >
-
-          <TrendingUp
-            size={20}
-            className="shrink-0 text-indigo-700 dark:text-indigo-400"
-          />
-
-          <div>
-
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Focus Score
-            </p>
-
-            <h3 className="font-bold text-indigo-700 dark:text-indigo-400">
-              {data.focus_score}%
-            </h3>
-
-          </div>
-
-        </div>
-
+        <span className="text-2xl font-bold text-gray-900 dark:text-white">
+          {focusScore}
+        </span>
       </div>
-
     </div>
   );
 };

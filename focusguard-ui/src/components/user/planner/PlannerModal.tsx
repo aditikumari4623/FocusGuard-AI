@@ -21,6 +21,8 @@ import type {
   TodayPlannerResponse,
 } from "../../../api/planner.api";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -34,6 +36,23 @@ interface PlannerTask {
   start_time: string;
   end_time: string;
 }
+
+interface CategoryOptionProps {
+  category: string;
+}
+
+const CategoryOption = ({
+  category,
+}: CategoryOptionProps) => {
+  const translatedCategory =
+    useTranslation(category);
+
+  return (
+    <option value={category}>
+      {translatedCategory}
+    </option>
+  );
+};
 
 const PlannerModal = ({
   open,
@@ -67,6 +86,60 @@ const PlannerModal = ({
       },
     ]);
 
+  const closeLabel = useTranslation(
+    "Close planner modal"
+  );
+
+  const createTitle = useTranslation(
+    "Create Today's Planner"
+  );
+
+  const editTitle = useTranslation(
+    "Edit Today's Planner"
+  );
+
+  const description = useTranslation(
+    "Plan your work and stay focused."
+  );
+
+  const plannerDateText = useTranslation(
+    "Planner Date"
+  );
+
+  const categoryText = useTranslation(
+    "Category"
+  );
+
+  const selectCategoryText =
+    useTranslation("Select Category");
+
+  const plannedMinutesText =
+    useTranslation("Planned Minutes");
+
+  const startTimeText =
+    useTranslation("Start Time");
+
+  const endTimeText =
+    useTranslation("End Time");
+
+  const addTaskText =
+    useTranslation("Add Task");
+
+  const cancelText =
+    useTranslation("Cancel");
+
+  const creatingText =
+    useTranslation("Creating...");
+
+  const updatingText =
+    useTranslation("Updating...");
+
+  const createPlannerText =
+    useTranslation("Create Planner");
+
+  const updatePlannerText =
+    useTranslation("Update Planner");
+
   useEffect(() => {
     if (
       mode === "edit" &&
@@ -88,7 +161,9 @@ const PlannerModal = ({
     }
   }, [mode, planner]);
 
-  if (!open) return null;
+  if (!open) {
+    return null;
+  }
 
   const addTask = () => {
     setTasks([
@@ -127,93 +202,83 @@ const PlannerModal = ({
     setTasks(updated);
   };
 
-  const handleSubmit =
-    async () => {
-      if (tasks.length === 0) {
+  const handleSubmit = async () => {
+    if (tasks.length === 0) {
+      toast.error(
+        "Please add at least one task."
+      );
+      return;
+    }
+
+    for (const task of tasks) {
+      if (
+        !task.category ||
+        !task.start_time ||
+        !task.end_time
+      ) {
         toast.error(
-          "Please add at least one task."
+          "Please fill all task fields."
         );
         return;
       }
 
-      for (const task of tasks) {
-        if (
-          !task.category ||
-          !task.start_time ||
-          !task.end_time
-        ) {
-          toast.error(
-            "Please fill all task fields."
-          );
-          return;
-        }
-
-        if (
-          task.planned_minutes <=
-          0
-        ) {
-          toast.error(
-            "Planned minutes must be greater than zero."
-          );
-          return;
-        }
-      }
-
-      const totalGoal =
-        tasks.reduce(
-          (sum, task) =>
-            sum +
-            task.planned_minutes,
-          0
-        );
-
-      try {
-        if (
-          mode === "create"
-        ) {
-          await createPlanner.mutateAsync(
-            {
-              plan_date:
-                planDate,
-              total_goal_minutes:
-                totalGoal,
-              plans: tasks,
-            }
-          );
-
-          toast.success(
-            "Planner created successfully."
-          );
-        } else {
-          if (!planner)
-            return;
-
-          await updatePlanner.mutateAsync(
-            {
-              planId:
-                planner.plan_id,
-              payload: {
-                total_goal_minutes:
-                  totalGoal,
-                plans: tasks,
-              },
-            }
-          );
-
-          toast.success(
-            "Planner updated successfully."
-          );
-        }
-
-        onClose();
-      } catch (error: any) {
+      if (
+        task.planned_minutes <= 0
+      ) {
         toast.error(
-          error?.response?.data
-            ?.detail ??
-            "Something went wrong."
+          "Planned minutes must be greater than zero."
+        );
+        return;
+      }
+    }
+
+    const totalGoal =
+      tasks.reduce(
+        (sum, task) =>
+          sum +
+          task.planned_minutes,
+        0
+      );
+
+    try {
+      if (mode === "create") {
+        await createPlanner.mutateAsync({
+          plan_date: planDate,
+          total_goal_minutes:
+            totalGoal,
+          plans: tasks,
+        });
+
+        toast.success(
+          "Planner created successfully."
+        );
+      } else {
+        if (!planner) {
+          return;
+        }
+
+        await updatePlanner.mutateAsync({
+          planId: planner.plan_id,
+          payload: {
+            total_goal_minutes:
+              totalGoal,
+            plans: tasks,
+          },
+        });
+
+        toast.success(
+          "Planner updated successfully."
         );
       }
-    };
+
+      onClose();
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.detail ??
+          "Something went wrong."
+      );
+    }
+  };
 
   const isSubmitting =
     createPlanner.isPending ||
@@ -237,7 +302,6 @@ const PlannerModal = ({
         sm:p-4
       "
     >
-
       <div
         className="
           flex
@@ -258,7 +322,6 @@ const PlannerModal = ({
           sm:rounded-3xl
         "
       >
-
         {/* Header */}
 
         <div
@@ -277,27 +340,22 @@ const PlannerModal = ({
             sm:p-6
           "
         >
-
           <div className="min-w-0">
-
             <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-2xl">
-
               {mode === "create"
-                ? "Create Today's Planner"
-                : "Edit Today's Planner"}
-
+                ? createTitle
+                : editTitle}
             </h2>
 
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 sm:text-sm">
-              Plan your work and stay focused.
+              {description}
             </p>
-
           </div>
 
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close planner modal"
+            aria-label={closeLabel}
             className="
               flex
               h-9
@@ -318,21 +376,17 @@ const PlannerModal = ({
           >
             <X size={22} />
           </button>
-
         </div>
 
         {/* Body */}
 
         <div className="flex-1 overflow-y-auto">
-
           <div className="space-y-5 p-4 sm:space-y-6 sm:p-6">
-
             {/* Planner Date */}
 
             <div>
-
               <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                Planner Date
+                {plannerDateText}
               </label>
 
               <input
@@ -366,7 +420,6 @@ const PlannerModal = ({
                   dark:focus:ring-indigo-950
                 "
               />
-
             </div>
 
             {/* Tasks */}
@@ -387,11 +440,9 @@ const PlannerModal = ({
                     sm:p-5
                   "
                 >
-
                   {/* Task Header */}
 
                   <div className="mb-5 flex items-center justify-between gap-3">
-
                     <h3 className="font-semibold text-slate-900 dark:text-white">
                       Task {index + 1}
                     </h3>
@@ -404,7 +455,9 @@ const PlannerModal = ({
                             index
                           )
                         }
-                        aria-label={`Remove task ${index + 1}`}
+                        aria-label={`Remove task ${
+                          index + 1
+                        }`}
                         className="
                           flex
                           h-9
@@ -425,19 +478,16 @@ const PlannerModal = ({
                         />
                       </button>
                     )}
-
                   </div>
 
                   {/* Task Fields */}
 
                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-
                     {/* Category */}
 
                     <div className="min-w-0">
-
                       <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Category
+                        {categoryText}
                       </label>
 
                       <select
@@ -475,29 +525,25 @@ const PlannerModal = ({
                         "
                       >
                         <option value="">
-                          Select Category
+                          {selectCategoryText}
                         </option>
 
                         {data?.categories.map(
                           (category) => (
-                            <option
+                            <CategoryOption
                               key={category}
-                              value={category}
-                            >
-                              {category}
-                            </option>
+                              category={category}
+                            />
                           )
                         )}
                       </select>
-
                     </div>
 
                     {/* Planned Minutes */}
 
                     <div>
-
                       <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Planned Minutes
+                        {plannedMinutesText}
                       </label>
 
                       <input
@@ -538,15 +584,13 @@ const PlannerModal = ({
                           dark:focus:ring-indigo-950
                         "
                       />
-
                     </div>
 
                     {/* Start Time */}
 
                     <div>
-
                       <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                        Start Time
+                        {startTimeText}
                       </label>
 
                       <input
@@ -584,15 +628,13 @@ const PlannerModal = ({
                           dark:focus:ring-indigo-950
                         "
                       />
-
                     </div>
 
                     {/* End Time */}
 
                     <div>
-
                       <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                        End Time
+                        {endTimeText}
                       </label>
 
                       <input
@@ -630,11 +672,8 @@ const PlannerModal = ({
                           dark:focus:ring-indigo-950
                         "
                       />
-
                     </div>
-
                   </div>
-
                 </div>
               )
             )}
@@ -670,11 +709,9 @@ const PlannerModal = ({
             >
               <Plus size={18} />
 
-              Add Task
+              {addTaskText}
             </button>
-
           </div>
-
         </div>
 
         {/* Footer */}
@@ -697,7 +734,6 @@ const PlannerModal = ({
             sm:p-6
           "
         >
-
           <button
             type="button"
             onClick={onClose}
@@ -720,7 +756,7 @@ const PlannerModal = ({
               sm:w-auto
             "
           >
-            Cancel
+            {cancelText}
           </button>
 
           <button
@@ -749,17 +785,14 @@ const PlannerModal = ({
           >
             {isSubmitting
               ? mode === "create"
-                ? "Creating..."
-                : "Updating..."
+                ? creatingText
+                : updatingText
               : mode === "create"
-              ? "Create Planner"
-              : "Update Planner"}
+              ? createPlannerText
+              : updatePlannerText}
           </button>
-
         </div>
-
       </div>
-
     </div>
   );
 };

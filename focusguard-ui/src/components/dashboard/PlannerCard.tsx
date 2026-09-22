@@ -5,11 +5,51 @@ import {
 
 import { useTodayPlanner } from "../../hooks/usePlanner";
 
+import {
+  useTranslation,
+} from "../../hooks/useTranslation";
+
+
 const PlannerCard = () => {
+
   const {
     data,
     isLoading,
   } = useTodayPlanner();
+
+
+  // Translated UI text
+
+  const loadingPlanner =
+    useTranslation(
+      "Loading Planner..."
+    );
+
+  const todaysPlanner =
+    useTranslation(
+      "Today's Planner"
+    );
+
+  const goal =
+    useTranslation(
+      "Goal"
+    );
+
+  const min =
+    useTranslation(
+      "min"
+    );
+
+  const noPlannerCreated =
+    useTranslation(
+      "No planner created for today."
+    );
+
+  const minutes =
+    useTranslation(
+      "minutes"
+    );
+
 
   if (isLoading) {
     return (
@@ -30,12 +70,22 @@ const PlannerCard = () => {
           sm:p-6
         "
       >
-        <div className="animate-pulse text-sm text-slate-500 dark:text-slate-400">
-          Loading Planner...
+
+        <div
+          className="
+            animate-pulse
+            text-sm
+            text-slate-500
+            dark:text-slate-400
+          "
+        >
+          {loadingPlanner}
         </div>
+
       </div>
     );
   }
+
 
   return (
     <div
@@ -65,7 +115,16 @@ const PlannerCard = () => {
 
       {/* Header */}
 
-      <div className="mb-6 flex min-w-0 items-start justify-between gap-4">
+      <div
+        className="
+          mb-6
+          flex
+          min-w-0
+          items-start
+          justify-between
+          gap-4
+        "
+      >
 
         <div className="min-w-0">
 
@@ -79,8 +138,9 @@ const PlannerCard = () => {
               sm:text-xl
             "
           >
-            Today's Planner
+            {todaysPlanner}
           </h2>
+
 
           <p
             className="
@@ -90,10 +150,13 @@ const PlannerCard = () => {
               dark:text-slate-400
             "
           >
-            Goal {data?.total_goal_minutes ?? 0} min
+            {goal}{" "}
+            {data?.total_goal_minutes ?? 0}{" "}
+            {min}
           </p>
 
         </div>
+
 
         <CalendarDays
           size={22}
@@ -106,11 +169,13 @@ const PlannerCard = () => {
 
       </div>
 
+
       {/* Plans */}
 
       <div className="space-y-4">
 
         {data?.plans.length === 0 && (
+
           <div
             className="
               rounded-xl
@@ -123,99 +188,109 @@ const PlannerCard = () => {
               dark:text-slate-400
             "
           >
-            No planner created for today.
+            {noPlannerCreated}
           </div>
+
         )}
 
-        {data?.plans.map((plan, index) => (
-          <div
-            key={index}
-            className="
-              rounded-2xl
-              border
-              border-slate-200
-              p-4
-              transition
 
-              hover:border-indigo-300
-              hover:bg-slate-50
-
-              dark:border-slate-700
-              dark:hover:border-indigo-500
-              dark:hover:bg-slate-800
-            "
-          >
+        {data?.plans.map(
+          (plan, index) => (
 
             <div
+              key={index}
               className="
-                flex
-                flex-col
-                gap-3
+                rounded-2xl
+                border
+                border-slate-200
+                p-4
+                transition
 
-                sm:flex-row
-                sm:items-center
-                sm:justify-between
+                hover:border-indigo-300
+                hover:bg-slate-50
+
+                dark:border-slate-700
+                dark:hover:border-indigo-500
+                dark:hover:bg-slate-800
               "
             >
-
-              <div className="min-w-0">
-
-                <h3
-                  className="
-                    break-words
-                    font-semibold
-                    text-slate-900
-                    dark:text-white
-                  "
-                >
-                  {plan.category}
-                </h3>
-
-                <p
-                  className="
-                    mt-1
-                    text-sm
-                    text-slate-500
-                    dark:text-slate-400
-                  "
-                >
-                  {plan.planned_minutes} minutes
-                </p>
-
-              </div>
 
               <div
                 className="
                   flex
-                  shrink-0
-                  items-center
-                  gap-2
-                  text-sm
-                  text-slate-500
+                  flex-col
+                  gap-3
 
-                  dark:text-slate-400
+                  sm:flex-row
+                  sm:items-center
+                  sm:justify-between
                 "
               >
 
-                <Clock3 size={16} />
+                <div className="min-w-0">
 
-                <span>
-                  {plan.start_time.slice(0, 5)}
-                  {" - "}
-                  {plan.end_time.slice(0, 5)}
-                </span>
+                  <h3
+                    className="
+                      break-words
+                      font-semibold
+                      text-slate-900
+                      dark:text-white
+                    "
+                  >
+                    {plan.category}
+                  </h3>
+
+
+                  <p
+                    className="
+                      mt-1
+                      text-sm
+                      text-slate-500
+                      dark:text-slate-400
+                    "
+                  >
+                    {plan.planned_minutes}{" "}
+                    {minutes}
+                  </p>
+
+                </div>
+
+
+                <div
+                  className="
+                    flex
+                    shrink-0
+                    items-center
+                    gap-2
+                    text-sm
+                    text-slate-500
+
+                    dark:text-slate-400
+                  "
+                >
+
+                  <Clock3 size={16} />
+
+                  <span>
+                    {plan.start_time.slice(0, 5)}
+                    {" - "}
+                    {plan.end_time.slice(0, 5)}
+                  </span>
+
+                </div>
 
               </div>
 
             </div>
 
-          </div>
-        ))}
+          )
+        )}
 
       </div>
 
     </div>
   );
 };
+
 
 export default PlannerCard;

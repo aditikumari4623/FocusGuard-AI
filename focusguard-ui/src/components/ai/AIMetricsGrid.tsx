@@ -7,6 +7,8 @@ import {
 
 import { useAIRecommendation } from "../../hooks/useAIRecommendation";
 
+import { useTranslation } from "../../hooks/useTranslation";
+
 import Card from "../common/Card";
 import Skeleton from "../common/Skeleton";
 
@@ -16,6 +18,37 @@ const AIMetricsGrid = () => {
     isLoading,
     isError,
   } = useAIRecommendation();
+
+  const unableToLoadMetricsText =
+    useTranslation(
+      "Unable to load AI metrics."
+    );
+
+  const focusScoreText =
+    useTranslation("Focus Score");
+
+  const activeTimeText =
+    useTranslation("Active Time");
+
+  const idleTimeText =
+    useTranslation("Idle Time");
+
+  const browserTimeText =
+    useTranslation("Browser Time");
+
+  const overallFocusText =
+    useTranslation("Overall focus level");
+
+  const activeWorkingText =
+    useTranslation("Time actively working");
+
+  const idleMarkedText =
+    useTranslation("Time marked as idle");
+
+  const browserActivityText =
+    useTranslation(
+      "Total browser activity"
+    );
 
   if (isLoading) {
     return (
@@ -71,7 +104,7 @@ const AIMetricsGrid = () => {
             dark:text-slate-400
           "
         >
-          Unable to load AI metrics.
+          {unableToLoadMetricsText}
         </p>
       </Card>
     );
@@ -79,9 +112,9 @@ const AIMetricsGrid = () => {
 
   const metrics = [
     {
-      title: "Focus Score",
+      title: focusScoreText,
       value: `${data.focus_score.toFixed(1)}%`,
-      subtitle: "Overall focus level",
+      subtitle: overallFocusText,
       icon: Target,
       iconColor:
         "text-indigo-600 dark:text-indigo-400",
@@ -89,9 +122,9 @@ const AIMetricsGrid = () => {
         "bg-indigo-100 dark:bg-indigo-950/50",
     },
     {
-      title: "Active Time",
+      title: activeTimeText,
       value: data.active_time,
-      subtitle: "Time actively working",
+      subtitle: activeWorkingText,
       icon: Activity,
       iconColor:
         "text-green-600 dark:text-green-400",
@@ -99,9 +132,9 @@ const AIMetricsGrid = () => {
         "bg-green-100 dark:bg-green-950/50",
     },
     {
-      title: "Idle Time",
+      title: idleTimeText,
       value: data.idle_time,
-      subtitle: "Time marked as idle",
+      subtitle: idleMarkedText,
       icon: Clock3,
       iconColor:
         "text-orange-600 dark:text-orange-400",
@@ -109,9 +142,9 @@ const AIMetricsGrid = () => {
         "bg-orange-100 dark:bg-orange-950/50",
     },
     {
-      title: "Browser Time",
+      title: browserTimeText,
       value: data.browser_time,
-      subtitle: "Total browser activity",
+      subtitle: browserActivityText,
       icon: Monitor,
       iconColor:
         "text-violet-600 dark:text-violet-400",

@@ -6,11 +6,9 @@ import DeactivationRequests from "../../../components/organization/DeactivationR
 const RequestsPage = () => {
   return (
     <AppLayout>
-
       <RequestsHeader />
 
       <DeactivationRequests />
-
     </AppLayout>
   );
 };

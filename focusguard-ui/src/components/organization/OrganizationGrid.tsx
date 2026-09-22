@@ -8,6 +8,10 @@ import {
   useOrganizations,
 } from "../../hooks/useOrganization";
 
+import {
+  useTranslation,
+} from "../../hooks/useTranslation";
+
 const OrganizationGrid = () => {
   const {
     data,
@@ -15,9 +19,38 @@ const OrganizationGrid = () => {
     error,
   } = useOrganizations();
 
+  const failedToLoadText =
+    useTranslation(
+      "Failed to Load Organizations"
+    );
+
+  const refreshText =
+    useTranslation(
+      "Please refresh the page and try again."
+    );
+
+  const noOrganizationsText =
+    useTranslation(
+      "No Organizations Found"
+    );
+
+  const createFirstOrganizationText =
+    useTranslation(
+      "Create your first organization to start managing teams and organization users."
+    );
+
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <div
+        className="
+          grid
+          grid-cols-1
+          gap-5
+
+          md:grid-cols-2
+          xl:grid-cols-3
+        "
+      >
         {[1, 2, 3, 4, 5, 6].map(
           (item) => (
             <div
@@ -48,25 +81,44 @@ const OrganizationGrid = () => {
           border
           border-red-200
           bg-red-50
-          p-8
+          p-6
           text-center
 
           dark:border-red-900/50
           dark:bg-red-950/30
+
+          sm:p-8
         "
       >
-        <h2 className="text-lg font-bold text-red-700 dark:text-red-300">
-          Failed to Load Organizations
+        <h2
+          className="
+            text-lg
+            font-bold
+            text-red-700
+            dark:text-red-300
+          "
+        >
+          {failedToLoadText}
         </h2>
 
-        <p className="mt-2 text-sm text-red-600/80 dark:text-red-400">
-          Please refresh the page and try again.
+        <p
+          className="
+            mt-2
+            text-sm
+            text-red-600/80
+            dark:text-red-400
+          "
+        >
+          {refreshText}
         </p>
       </div>
     );
   }
 
-  if (!data || data.length === 0) {
+  if (
+    !data ||
+    data.length === 0
+  ) {
     return (
       <div
         className="
@@ -75,7 +127,7 @@ const OrganizationGrid = () => {
           border-dashed
           border-slate-300
           bg-white
-          p-10
+          p-8
           text-center
 
           dark:border-slate-700
@@ -100,29 +152,63 @@ const OrganizationGrid = () => {
         >
           <Building2
             size={36}
-            className="text-indigo-500 dark:text-indigo-400"
+            className="
+              text-indigo-500
+              dark:text-indigo-400
+            "
           />
         </div>
 
-        <h2 className="mt-6 text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
-          No Organizations Found
+        <h2
+          className="
+            mt-6
+            text-xl
+            font-bold
+            text-slate-900
+            dark:text-white
+
+            sm:text-2xl
+          "
+        >
+          {noOrganizationsText}
         </h2>
 
-        <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500 dark:text-slate-400">
-          Create your first organization to start managing teams and organization users.
+        <p
+          className="
+            mx-auto
+            mt-3
+            max-w-md
+            text-sm
+            leading-6
+            text-slate-500
+            dark:text-slate-400
+          "
+        >
+          {createFirstOrganizationText}
         </p>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-      {data.map((organization) => (
-        <OrganizationCard
-          key={organization.id}
-          organization={organization}
-        />
-      ))}
+    <div
+      className="
+        grid
+        grid-cols-1
+        gap-5
+
+        md:grid-cols-2
+        xl:grid-cols-3
+      "
+    >
+      {data.map(
+        (organization) => (
+          <OrganizationCard
+            key={organization.id}
+            organization={organization}
+          />
+        )
+      )}
     </div>
   );
 };

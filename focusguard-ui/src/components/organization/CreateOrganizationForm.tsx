@@ -1,21 +1,47 @@
 import { useState } from "react";
 
+import {
+  useTranslation,
+} from "../../hooks/useTranslation";
+
 interface Props {
   loading: boolean;
-  onSubmit: (organizationName: string) => void;
+  onSubmit: (
+    organizationName: string
+  ) => void;
 }
 
 const CreateOrganizationForm = ({
   loading,
   onSubmit,
 }: Props) => {
-  const [organizationName, setOrganizationName] =
-    useState("");
+  const [
+    organizationName,
+    setOrganizationName,
+  ] = useState("");
+
+  const organizationNameText =
+    useTranslation(
+      "Organization Name"
+    );
+
+  const organizationPlaceholder =
+    useTranslation(
+      "e.g. Infosys"
+    );
+
+  const creatingText =
+    useTranslation("Creating...");
+
+  const createOrganizationText =
+    useTranslation(
+      "Create Organization"
+    );
 
   const handleSubmit = (
-    e: React.FormEvent
+    event: React.FormEvent
   ) => {
-    e.preventDefault();
+    event.preventDefault();
 
     const trimmedName =
       organizationName.trim();
@@ -42,19 +68,21 @@ const CreateOrganizationForm = ({
             dark:text-slate-200
           "
         >
-          Organization Name
+          {organizationNameText}
         </label>
 
         <input
           id="organization-name"
           type="text"
           value={organizationName}
-          onChange={(e) =>
+          onChange={(event) =>
             setOrganizationName(
-              e.target.value
+              event.target.value
             )
           }
-          placeholder="e.g. Infosys"
+          placeholder={
+            organizationPlaceholder
+          }
           disabled={loading}
           className="
             h-12
@@ -119,8 +147,8 @@ const CreateOrganizationForm = ({
         "
       >
         {loading
-          ? "Creating..."
-          : "Create Organization"}
+          ? creatingText
+          : createOrganizationText}
       </button>
     </form>
   );

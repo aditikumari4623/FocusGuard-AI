@@ -2,7 +2,17 @@ import {
   BrainCircuit,
 } from "lucide-react";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 const AIHeader = () => {
+  const title = useTranslation(
+    "AI Productivity Insights"
+  );
+
+  const description = useTranslation(
+    "Personalized recommendations generated from your productivity data."
+  );
+
   return (
     <div
       className="
@@ -27,9 +37,6 @@ const AIHeader = () => {
         md:gap-5
       "
     >
-
-      {/* Icon */}
-
       <div
         className="
           flex
@@ -58,11 +65,7 @@ const AIHeader = () => {
         />
       </div>
 
-
-      {/* Text */}
-
       <div className="min-w-0">
-
         <h1
           className="
             text-2xl
@@ -73,7 +76,7 @@ const AIHeader = () => {
             lg:text-4xl
           "
         >
-          AI Productivity Insights
+          {title}
         </h1>
 
         <p
@@ -87,11 +90,9 @@ const AIHeader = () => {
             sm:text-base
           "
         >
-          Personalized recommendations generated from your productivity data.
+          {description}
         </p>
-
       </div>
-
     </div>
   );
 };

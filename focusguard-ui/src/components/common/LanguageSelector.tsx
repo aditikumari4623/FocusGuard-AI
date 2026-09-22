@@ -1,39 +1,213 @@
-import { Languages } from "lucide-react";
-import { useLanguage } from "../../context/LanguageContext";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  Languages,
+} from "lucide-react";
+
+import {
+  useLanguage,
+} from "../../context/LanguageContext";
+
+import {
+  getSupportedLanguages,
+} from "../../api/translation.api";
+
+
+interface SupportedLanguage {
+  id: string;
+  name: string;
+  native_name: string;
+}
+
 
 export default function LanguageSelector() {
-  const { language, setLanguage } = useLanguage();
+
+  const {
+    language,
+    setLanguage,
+  } = useLanguage();
+
+
+  const [
+    languages,
+    setLanguages,
+  ] =
+    useState<
+      SupportedLanguage[]
+    >(
+      []
+    );
+
+
+  const [
+    loading,
+    setLoading,
+  ] =
+    useState(true);
+
+
+  useEffect(() => {
+
+    const loadLanguages =
+      async () => {
+
+        try {
+
+          const response =
+            await getSupportedLanguages();
+
+
+          setLanguages(
+            response.languages
+          );
+
+        } catch (error) {
+
+          console.error(
+            "Failed to load languages:",
+            error
+          );
+
+        } finally {
+
+          setLoading(
+            false
+          );
+
+        }
+
+      };
+
+
+    loadLanguages();
+
+  }, []);
+
 
   return (
+
     <div className="relative">
-      <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+
+      <div
+        className="
+          flex
+          items-center
+          gap-2
+          rounded-xl
+          border
+          border-slate-200
+          bg-white
+          px-3
+          py-2
+          shadow-sm
+          transition
+
+          dark:border-slate-700
+          dark:bg-slate-800
+        "
+      >
+
         <Languages
           size={18}
-          className="text-indigo-600 dark:text-indigo-400"
+          className="
+            shrink-0
+            text-indigo-600
+
+            dark:text-indigo-400
+          "
         />
 
+
         <select
+
           value={language}
-          onChange={(e) =>
-            setLanguage(
-              e.target.value as "en" | "hi" | "ta" | "ml"
-            )
-          }
+
+          disabled={loading}
+
+          onChange={async (e) => {
+
+            await setLanguage(
+              e.target.value
+            );
+
+          }}
+
           className="
+            min-w-0
+            flex-1
+            cursor-pointer
+            appearance-none
             bg-transparent
             text-sm
             font-medium
+            text-slate-800
             outline-none
-            cursor-pointer
+
+            disabled:cursor-not-allowed
+            disabled:opacity-60
+
+            dark:bg-slate-800
             dark:text-white
           "
+
         >
-          <option value="en">🇬🇧 English</option>
-          <option value="hi">🇮🇳 हिन्दी</option>
-          <option value="ta">தமிழ்</option>
-          <option value="ml">മലയാളം</option>
+
+          {loading ? (
+
+            <option
+              value=""
+              className="
+                bg-white
+                text-slate-900
+
+                dark:bg-slate-800
+                dark:text-white
+              "
+            >
+              Loading...
+            </option>
+
+          ) : (
+
+            languages.map(
+              (item) => (
+
+                <option
+
+                  key={item.id}
+
+                  value={item.id}
+
+                  className="
+                    bg-white
+                    text-slate-900
+
+                    dark:bg-slate-800
+                    dark:text-white
+                  "
+
+                >
+
+                  {item.native_name}
+                  {" — "}
+                  {item.name}
+
+                </option>
+
+              )
+            )
+
+          )}
+
         </select>
+
       </div>
+
     </div>
+
   );
+
 }

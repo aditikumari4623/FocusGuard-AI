@@ -9,6 +9,8 @@ import {
   useAnalyticsSummary,
 } from "../../../hooks/useAnalytics";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 const formatTime = (seconds: number) => {
   const hours = Math.floor(seconds / 3600);
 
@@ -28,6 +30,11 @@ const AnalyticsSummaryCards = () => {
     data,
     isLoading,
   } = useAnalyticsSummary();
+
+  const browserTime = useTranslation("Browser Time");
+  const productiveTime = useTranslation("Productive Time");
+  const nonProductive = useTranslation("Non Productive");
+  const tabSwitches = useTranslation("Tab Switches");
 
   if (isLoading) {
     return (
@@ -57,34 +64,28 @@ const AnalyticsSummaryCards = () => {
 
   const cards = [
     {
-      title: "Browser Time",
-      value: formatTime(
-        data.browser_time_seconds
-      ),
+      title: browserTime,
+      value: formatTime(data.browser_time_seconds),
       icon: Globe,
       color:
         "bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400",
     },
     {
-      title: "Productive Time",
-      value: formatTime(
-        data.productive_time_seconds
-      ),
+      title: productiveTime,
+      value: formatTime(data.productive_time_seconds),
       icon: Briefcase,
       color:
         "bg-green-100 text-green-600 dark:bg-green-950/40 dark:text-green-400",
     },
     {
-      title: "Non Productive",
-      value: formatTime(
-        data.non_productive_time_seconds
-      ),
+      title: nonProductive,
+      value: formatTime(data.non_productive_time_seconds),
       icon: TriangleAlert,
       color:
         "bg-red-100 text-red-600 dark:bg-red-950/40 dark:text-red-400",
     },
     {
-      title: "Tab Switches",
+      title: tabSwitches,
       value: data.tab_switches,
       icon: ArrowRightLeft,
       color:
@@ -94,12 +95,12 @@ const AnalyticsSummaryCards = () => {
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-      {cards.map((card) => {
+      {cards.map((card, index) => {
         const Icon = card.icon;
 
         return (
           <div
-            key={card.title}
+            key={index}
             className="
               rounded-3xl
               border

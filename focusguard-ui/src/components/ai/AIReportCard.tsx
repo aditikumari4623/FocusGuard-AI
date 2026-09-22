@@ -10,6 +10,8 @@ import {
 
 import { useAIRecommendation } from "../../hooks/useAIRecommendation";
 
+import { useTranslation } from "../../hooks/useTranslation";
+
 import Card from "../common/Card";
 import Skeleton from "../common/Skeleton";
 
@@ -19,6 +21,89 @@ const AIReportCard = () => {
     isLoading,
     isError,
   } = useAIRecommendation();
+
+  const unableToLoadText =
+    useTranslation(
+      "Unable to load AI report."
+    );
+
+  const noRecommendationText =
+    useTranslation(
+      "No recommendation available."
+    );
+
+  const aiProductivityReportText =
+    useTranslation(
+      "AI Productivity Report"
+    );
+
+  const productiveTimeText =
+    useTranslation("Productive Time");
+
+  const nonProductiveText =
+    useTranslation("Non-Productive");
+
+  const focusScoreText =
+    useTranslation("Focus Score");
+
+  const tabSwitchesText =
+    useTranslation("Tab Switches");
+
+  const productiveWebsitesText =
+    useTranslation("Productive Websites");
+
+  const distractingWebsitesText =
+    useTranslation(
+      "Distracting Websites"
+    );
+
+  const noProductiveWebsitesText =
+    useTranslation(
+      "No productive websites identified."
+    );
+
+  const noDistractingWebsitesText =
+    useTranslation(
+      "No distracting websites identified."
+    );
+
+  const topCategoriesText =
+    useTranslation(
+      "Top Activity Categories"
+    );
+
+  const noCategoriesText =
+    useTranslation(
+      "No categories available."
+    );
+
+  const mostUsedWebsitesText =
+    useTranslation(
+      "Most Used Websites"
+    );
+
+  const noWebsiteDataText =
+    useTranslation(
+      "No website data available."
+    );
+
+  const aiRecommendationText =
+    useTranslation(
+      "AI Recommendation"
+    );
+
+  const footerText =
+    useTranslation(
+      "This report is generated using recent activity and AI-based productivity analysis."
+    );
+
+  /*
+   * Dynamic AI recommendation.
+   */
+  const translatedRecommendation =
+    useTranslation(
+      data?.recommendation ?? ""
+    );
 
   if (isLoading) {
     return (
@@ -64,17 +149,15 @@ const AIReportCard = () => {
             dark:text-slate-400
           "
         >
-          Unable to load AI report.
+          {unableToLoadText}
         </p>
       </Card>
     );
   }
 
   const recommendation =
-    data.recommendation
-      ?.replaceAll("**", "")
-      .trim() ||
-    "No recommendation available.";
+    translatedRecommendation.trim() ||
+    noRecommendationText;
 
   return (
     <Card
@@ -141,7 +224,7 @@ const AIReportCard = () => {
                 sm:text-xl
               "
             >
-              AI Productivity Report
+              {aiProductivityReportText}
             </h2>
 
             <p
@@ -214,7 +297,7 @@ const AIReportCard = () => {
               dark:text-green-300
             "
           >
-            Productive Time
+            {productiveTimeText}
           </p>
 
           <p
@@ -248,7 +331,7 @@ const AIReportCard = () => {
               dark:text-orange-300
             "
           >
-            Non-Productive
+            {nonProductiveText}
           </p>
 
           <p
@@ -282,7 +365,7 @@ const AIReportCard = () => {
               dark:text-indigo-300
             "
           >
-            Focus Score
+            {focusScoreText}
           </p>
 
           <p
@@ -316,7 +399,7 @@ const AIReportCard = () => {
               dark:text-violet-300
             "
           >
-            Tab Switches
+            {tabSwitchesText}
           </p>
 
           <p
@@ -371,7 +454,7 @@ const AIReportCard = () => {
                 dark:text-green-300
               "
             >
-              Productive Websites
+              {productiveWebsitesText}
             </h3>
           </div>
 
@@ -425,7 +508,7 @@ const AIReportCard = () => {
                   dark:text-slate-400
                 "
               >
-                No productive websites identified.
+                {noProductiveWebsitesText}
               </p>
             )}
           </div>
@@ -458,7 +541,7 @@ const AIReportCard = () => {
                 dark:text-orange-300
               "
             >
-              Distracting Websites
+              {distractingWebsitesText}
             </h3>
           </div>
 
@@ -512,7 +595,7 @@ const AIReportCard = () => {
                   dark:text-slate-400
                 "
               >
-                No distracting websites identified.
+                {noDistractingWebsitesText}
               </p>
             )}
           </div>
@@ -535,7 +618,7 @@ const AIReportCard = () => {
               dark:text-white
             "
           >
-            Top Activity Categories
+            {topCategoriesText}
           </h3>
         </div>
 
@@ -579,7 +662,7 @@ const AIReportCard = () => {
                 dark:text-slate-400
               "
             >
-              No categories available.
+              {noCategoriesText}
             </p>
           )}
         </div>
@@ -601,7 +684,7 @@ const AIReportCard = () => {
               dark:text-white
             "
           >
-            Most Used Websites
+            {mostUsedWebsitesText}
           </h3>
         </div>
 
@@ -648,7 +731,7 @@ const AIReportCard = () => {
                 dark:text-slate-400
               "
             >
-              No website data available.
+              {noWebsiteDataText}
             </p>
           )}
         </div>
@@ -682,7 +765,7 @@ const AIReportCard = () => {
               dark:text-violet-300
             "
           >
-            AI Recommendation
+            {aiRecommendationText}
           </h3>
         </div>
 
@@ -725,8 +808,7 @@ const AIReportCard = () => {
         />
 
         <span>
-          This report is generated using recent
-          activity and AI-based productivity analysis.
+          {footerText}
         </span>
       </div>
     </Card>

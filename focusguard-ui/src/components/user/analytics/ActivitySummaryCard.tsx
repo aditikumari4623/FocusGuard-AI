@@ -8,12 +8,10 @@ import {
   useActivitySummary,
 } from "../../../hooks/useAnalytics";
 
-const formatTime = (
-  seconds: number
-) => {
-  const hours = Math.floor(
-    seconds / 3600
-  );
+import { useTranslation } from "../../../hooks/useTranslation";
+
+const formatTime = (seconds: number) => {
+  const hours = Math.floor(seconds / 3600);
 
   const minutes = Math.floor(
     (seconds % 3600) / 60
@@ -31,6 +29,11 @@ const ActivitySummaryCard = () => {
     data,
     isLoading,
   } = useActivitySummary();
+
+  const activitySummary = useTranslation("Activity Summary");
+  const activeTime = useTranslation("Active Time");
+  const idleTime = useTranslation("Idle Time");
+  const focusScore = useTranslation("Focus Score");
 
   if (isLoading) {
     return (
@@ -83,12 +86,11 @@ const ActivitySummaryCard = () => {
     >
       <div className="border-b border-slate-200 p-5 dark:border-slate-700 sm:p-6">
         <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-          Activity Summary
+          {activitySummary}
         </h2>
       </div>
 
       <div className="grid gap-4 p-5 sm:gap-6 sm:p-6 md:grid-cols-3">
-
         {/* Active */}
         <div
           className="
@@ -109,14 +111,12 @@ const ActivitySummaryCard = () => {
             />
 
             <span className="font-semibold text-slate-800 dark:text-slate-200">
-              Active Time
+              {activeTime}
             </span>
           </div>
 
           <h3 className="text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
-            {formatTime(
-              data.active_time_seconds
-            )}
+            {formatTime(data.active_time_seconds)}
           </h3>
         </div>
 
@@ -140,14 +140,12 @@ const ActivitySummaryCard = () => {
             />
 
             <span className="font-semibold text-slate-800 dark:text-slate-200">
-              Idle Time
+              {idleTime}
             </span>
           </div>
 
           <h3 className="text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
-            {formatTime(
-              data.idle_time_seconds
-            )}
+            {formatTime(data.idle_time_seconds)}
           </h3>
         </div>
 
@@ -171,7 +169,7 @@ const ActivitySummaryCard = () => {
             />
 
             <span className="font-semibold text-slate-800 dark:text-slate-200">
-              Focus Score
+              {focusScore}
             </span>
           </div>
 
@@ -179,7 +177,6 @@ const ActivitySummaryCard = () => {
             {data.focus_score}%
           </h3>
         </div>
-
       </div>
     </div>
   );

@@ -13,11 +13,28 @@ import {
   useWeeklyReport,
 } from "../../../hooks/useReports";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 const WeeklyReportChart = () => {
   const {
     data,
     isLoading,
   } = useWeeklyReport();
+
+  const loadingText = useTranslation(
+    "Loading weekly report..."
+  );
+
+  const noDataText = useTranslation(
+    "No weekly data available."
+  );
+
+  const titleText = useTranslation(
+    "Weekly Activity"
+  );
+
+  const activeText = useTranslation("Active");
+  const idleText = useTranslation("Idle");
 
   if (isLoading) {
     return (
@@ -35,7 +52,7 @@ const WeeklyReportChart = () => {
         "
       >
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Loading weekly report...
+          {loadingText}
         </p>
       </div>
     );
@@ -58,7 +75,7 @@ const WeeklyReportChart = () => {
         "
       >
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          No weekly data available.
+          {noDataText}
         </p>
       </div>
     );
@@ -81,7 +98,7 @@ const WeeklyReportChart = () => {
       "
     >
       <h2 className="mb-5 text-lg font-bold text-slate-900 dark:text-white sm:mb-6 sm:text-xl">
-        Weekly Activity
+        {titleText}
       </h2>
 
       <div className="h-[280px] w-full min-w-0 sm:h-[320px]">
@@ -123,6 +140,17 @@ const WeeklyReportChart = () => {
             <Tooltip />
 
             <Legend
+              formatter={(value) => {
+                if (value === "Active") {
+                  return activeText;
+                }
+
+                if (value === "Idle") {
+                  return idleText;
+                }
+
+                return value;
+              }}
               wrapperStyle={{
                 fontSize: "12px",
               }}

@@ -1,31 +1,40 @@
 import {
-  Globe,
-  BarChart3,
-  BrainCircuit,
+  Activity,
+  Brain,
+  Lightbulb,
   Target,
 } from "lucide-react";
 
-const steps = [
+import { useTranslation } from "../../hooks/useTranslation";
+
+interface Step {
+  number: string;
+  title: string;
+  description: string;
+  icon: React.ElementType;
+}
+
+const steps: Step[] = [
   {
     number: "01",
     title: "Track Activity",
     description:
       "The Chrome Extension securely tracks websites, tab switches, and active work sessions.",
-    icon: Globe,
+    icon: Activity,
   },
   {
     number: "02",
     title: "Analyze Behaviour",
     description:
       "FocusGuard AI processes productivity metrics, focus score, and activity patterns.",
-    icon: BarChart3,
+    icon: Brain,
   },
   {
     number: "03",
     title: "Generate AI Insights",
     description:
       "Our AI analyzes your work habits and generates personalized recommendations.",
-    icon: BrainCircuit,
+    icon: Lightbulb,
   },
   {
     number: "04",
@@ -36,134 +45,87 @@ const steps = [
   },
 ];
 
-const HowItWorks = () => {
+interface StepCardProps {
+  step: Step;
+}
+
+const StepCard = ({
+  step,
+}: StepCardProps) => {
+  const titleText = useTranslation(step.title);
+  const descriptionText = useTranslation(
+    step.description
+  );
+
+  const Icon = step.icon;
+
   return (
-    <section className="relative bg-slate-50 py-24">
-      <div className="mx-auto max-w-7xl px-6">
+    <div className="relative flex h-full min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-slate-800 dark:bg-slate-900 sm:p-6">
+      {/* Step Number */}
+      <div className="mb-5 flex items-center justify-between">
+        <span className="text-sm font-bold tracking-wider text-indigo-600 dark:text-indigo-400">
+          {step.number}
+        </span>
 
-        {/* Header */}
+        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400">
+          <Icon size={22} />
+        </div>
+      </div>
 
-        <div className="text-center">
+      {/* Title */}
+      <h3 className="break-words text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
+        {titleText}
+      </h3>
 
-          <span className="text-sm font-semibold uppercase tracking-widest text-indigo-600">
-            Workflow
-          </span>
+      {/* Description */}
+      <p className="mt-3 break-words text-sm leading-6 text-slate-600 dark:text-slate-400 sm:text-base sm:leading-7">
+        {descriptionText}
+      </p>
+    </div>
+  );
+};
 
-          <h2 className="mt-6 text-5xl font-bold tracking-tight text-slate-900">
-            How FocusGuard AI Works
-          </h2>
+const HowItWorks = () => {
+  const workflowText = useTranslation("Workflow");
 
-          <p className="mx-auto mt-6 max-w-3xl text-lg text-slate-600">
-            A seamless workflow that transforms browsing activity into
-            actionable productivity insights.
+  const headingText = useTranslation(
+    "How FocusGuard AI Works"
+  );
+
+  const descriptionText = useTranslation(
+    "A seamless workflow that transforms browsing activity into actionable productivity insights."
+  );
+
+  return (
+    <section
+      id="how-it-works"
+      className="scroll-mt-20 bg-white py-16 dark:bg-slate-950 sm:py-20 lg:py-24"
+    >
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+        {/* Section Header */}
+        <div className="mx-auto mb-12 max-w-3xl text-center sm:mb-16">
+          <p className="text-sm font-semibold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 sm:text-base">
+            {workflowText}
           </p>
 
+          <h2 className="mt-3 break-words text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl lg:text-5xl">
+            {headingText}
+          </h2>
+
+          <p className="mt-4 break-words text-base leading-7 text-slate-600 dark:text-slate-400 sm:text-lg sm:leading-8">
+            {descriptionText}
+          </p>
         </div>
 
         {/* Steps */}
-
-        <div className="mt-20 grid gap-8 lg:grid-cols-4">
-
-          {steps.map((step) => {
-            const Icon = step.icon;
-
-            return (
-              <div
-                key={step.number}
-                className="
-                  group
-                  relative
-                  rounded-3xl
-                  border
-                  border-slate-200
-                  bg-white
-                  p-8
-                  shadow-sm
-                  transition-all
-                  duration-300
-                  hover:border-indigo-300
-                  hover:bg-indigo-50/60
-                  hover:shadow-[0_12px_35px_rgba(79,70,229,0.12)]
-                "
-              >
-
-                {/* Number */}
-
-                <span
-                  className="
-                    absolute
-                    right-6
-                    top-6
-                    text-5xl
-                    font-bold
-                    tracking-tight
-                    text-indigo-100
-                    transition-colors
-                    duration-300
-                    group-hover:text-indigo-200
-                  "
-                >
-                  {step.number}
-                </span>
-
-                {/* Icon */}
-
-                <div
-                  className="
-                    flex
-                    h-16
-                    w-16
-                    items-center
-                    justify-center
-                    rounded-2xl
-                    bg-indigo-100
-                    text-indigo-600
-                    transition-all
-                    duration-300
-                    group-hover:bg-indigo-600
-                    group-hover:text-white
-                  "
-                >
-                  <Icon size={30} />
-                </div>
-
-                {/* Title */}
-
-                <h3
-                  className="
-                    mt-8
-                    text-2xl
-                    font-semibold
-                    text-slate-900
-                    transition-colors
-                    duration-300
-                    group-hover:text-indigo-700
-                  "
-                >
-                  {step.title}
-                </h3>
-
-                {/* Description */}
-
-                <p
-                  className="
-                    mt-4
-                    leading-7
-                    text-slate-600
-                    transition-colors
-                    duration-300
-                    group-hover:text-slate-700
-                  "
-                >
-                  {step.description}
-                </p>
-
-              </div>
-            );
-          })}
-
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+          {steps.map((step) => (
+            <StepCard
+              key={step.number}
+              step={step}
+            />
+          ))}
         </div>
-
       </div>
     </section>
   );

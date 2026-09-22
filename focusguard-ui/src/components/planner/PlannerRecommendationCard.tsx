@@ -11,11 +11,64 @@ import {
   usePlannerRecommendation,
 } from "../../hooks/usePlanner";
 
+import { useTranslation } from "../../hooks/useTranslation";
+
+/* =========================================================
+   Dynamic translated text
+========================================================= */
+
+const TranslatedText = ({
+  text,
+}: {
+  text: string;
+}) => {
+  const translatedText =
+    useTranslation(text);
+
+  return <>{translatedText}</>;
+};
+
 const PlannerRecommendationCard = () => {
   const {
     data,
     isLoading,
   } = usePlannerRecommendation();
+
+  const noRecommendationText =
+    useTranslation(
+      "No recommendation available."
+    );
+
+  const aiPlannerInsightsText =
+    useTranslation(
+      "AI Planner Insights"
+    );
+
+  const personalizedRecommendationsText =
+    useTranslation(
+      "Personalized recommendations"
+    );
+
+  const focusScoreText =
+    useTranslation("Focus Score");
+
+  const aiSummaryText =
+    useTranslation("AI Summary");
+
+  const goalText =
+    useTranslation("Goal");
+
+  const completedText =
+    useTranslation("Completed");
+
+  const todaysPlannerText =
+    useTranslation("Today's Planner");
+
+  const plannedText =
+    useTranslation("Planned");
+
+  const minText =
+    useTranslation("min");
 
   if (isLoading) {
     return (
@@ -35,7 +88,7 @@ const PlannerRecommendationCard = () => {
     return (
       <Card className="flex min-h-[250px] items-center justify-center">
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          No recommendation available.
+          {noRecommendationText}
         </p>
       </Card>
     );
@@ -56,76 +109,61 @@ const PlannerRecommendationCard = () => {
 
   return (
     <Card className="min-w-0">
-
       {/* Header */}
 
       <div className="mb-6 flex min-w-0 items-center justify-between gap-3">
-
         <div className="flex min-w-0 items-center gap-3">
-
           <div className="shrink-0 rounded-xl bg-violet-100 p-3 dark:bg-violet-950/50">
-
             <BrainCircuit
               size={22}
               className="text-violet-600 dark:text-violet-400"
             />
-
           </div>
 
           <div className="min-w-0">
-
             <h2 className="truncate text-lg font-semibold text-slate-900 dark:text-white">
-              AI Planner Insights
+              {aiPlannerInsightsText}
             </h2>
 
             <p className="truncate text-sm text-slate-500 dark:text-slate-400">
-              Personalized recommendations
+              {personalizedRecommendationsText}
             </p>
-
           </div>
-
         </div>
 
         <Sparkles
           className="shrink-0 text-violet-600 dark:text-violet-400"
           size={20}
         />
-
       </div>
 
       {/* Focus Score */}
 
       <div className="rounded-2xl bg-violet-50 p-5 dark:bg-violet-950/30">
-
         <p className="text-sm font-medium text-violet-700 dark:text-violet-400">
-          Focus Score
+          {focusScoreText}
         </p>
 
         <h2 className="mt-2 text-3xl font-bold text-slate-900 dark:text-white sm:text-4xl">
           {data.focus_score}%
         </h2>
-
       </div>
 
       {/* AI Summary */}
 
       <div className="mt-6">
-
         <div className="mb-3 flex items-center gap-2">
-
           <Lightbulb
             size={18}
             className="shrink-0 text-amber-500"
           />
 
           <span className="text-sm font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
-            AI Summary
+            {aiSummaryText}
           </span>
-
         </div>
 
         <div className="space-y-4">
-
           {preview.map(
             (
               paragraph,
@@ -145,55 +183,49 @@ const PlannerRecommendationCard = () => {
                   dark:text-slate-300
                 "
               >
-                {paragraph}
+                <TranslatedText
+                  text={paragraph}
+                />
               </p>
             )
           )}
-
         </div>
-
       </div>
 
       {/* Planner Stats */}
 
       <div className="mt-6 grid grid-cols-1 gap-4 min-[400px]:grid-cols-2">
-
         <div className="rounded-2xl bg-indigo-50 p-4 dark:bg-indigo-950/30">
-
           <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            Goal
+            {goalText}
           </p>
 
           <h3 className="mt-2 text-xl font-bold text-slate-900 dark:text-white">
-            {data.goal_minutes} min
+            {data.goal_minutes}{" "}
+            {minText}
           </h3>
-
         </div>
 
         <div className="rounded-2xl bg-green-50 p-4 dark:bg-green-950/30">
-
           <p className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            Completed
+            {completedText}
           </p>
 
           <h3 className="mt-2 text-xl font-bold text-green-700 dark:text-green-400">
-            {data.completed_minutes} min
+            {data.completed_minutes}{" "}
+            {minText}
           </h3>
-
         </div>
-
       </div>
 
       {/* Planner Items */}
 
       <div className="mt-6">
-
         <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-          Today's Planner
+          {todaysPlannerText}
         </h3>
 
         <div className="space-y-3">
-
           {data.planner.map(
             (item) => (
               <div
@@ -213,19 +245,18 @@ const PlannerRecommendationCard = () => {
                   sm:justify-between
                 "
               >
-
                 <div className="min-w-0">
-
                   <h4 className="break-words font-semibold text-slate-900 dark:text-white">
-                    {item.category}
+                    <TranslatedText
+                      text={item.category}
+                    />
                   </h4>
 
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                    Planned:{" "}
+                    {plannedText}:{" "}
                     {item.planned_minutes}{" "}
-                    min
+                    {minText}
                   </p>
-
                 </div>
 
                 <span
@@ -246,17 +277,15 @@ const PlannerRecommendationCard = () => {
                     }
                   `}
                 >
-                  {item.status}
+                  <TranslatedText
+                    text={item.status}
+                  />
                 </span>
-
               </div>
             )
           )}
-
         </div>
-
       </div>
-
     </Card>
   );
 };

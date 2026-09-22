@@ -13,12 +13,23 @@ import {
 
 import { formatDuration } from "../../utils/time";
 
+import { useTranslation } from "../../hooks/useTranslation";
+
 const AnalyticsStats = () => {
   const {
     data,
     isLoading,
     isError,
   } = useActivitySummary();
+
+  const unableToLoadText = useTranslation(
+    "Unable to load your analytics."
+  );
+
+  const browserTimeText = useTranslation("Browser Time");
+  const focusScoreText = useTranslation("Focus Score");
+  const activeTimeText = useTranslation("Active Time");
+  const idleTimeText = useTranslation("Idle Time");
 
   if (isLoading) {
     return (
@@ -64,7 +75,7 @@ const AnalyticsStats = () => {
       >
         <div className="flex min-h-[120px] items-center justify-center text-center">
           <p className="text-sm text-slate-500 dark:text-slate-400 sm:text-base">
-            Unable to load your analytics.
+            {unableToLoadText}
           </p>
         </div>
       </Card>
@@ -85,7 +96,7 @@ const AnalyticsStats = () => {
 
   const stats = [
     {
-      title: "Browser Time",
+      title: browserTimeText,
       value: formatDuration(browserTime),
       icon: Globe,
       iconColor:
@@ -94,7 +105,7 @@ const AnalyticsStats = () => {
         "bg-indigo-50 dark:bg-indigo-950/40",
     },
     {
-      title: "Focus Score",
+      title: focusScoreText,
       value: `${focusScore.toFixed(2)}%`,
       icon: Activity,
       iconColor:
@@ -103,7 +114,7 @@ const AnalyticsStats = () => {
         "bg-green-50 dark:bg-green-950/40",
     },
     {
-      title: "Active Time",
+      title: activeTimeText,
       value: formatDuration(activeTime),
       icon: Clock3,
       iconColor:
@@ -112,7 +123,7 @@ const AnalyticsStats = () => {
         "bg-emerald-50 dark:bg-emerald-950/40",
     },
     {
-      title: "Idle Time",
+      title: idleTimeText,
       value: formatDuration(idleTime),
       icon: Moon,
       iconColor:

@@ -7,11 +7,94 @@ import {
   useMonthlyReport,
 } from "../../../hooks/useReports";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
+interface MonthlyWeekRowProps {
+  week: {
+    week: string;
+    active_time: string;
+    idle_time: string;
+  };
+}
+
+const MonthlyWeekRow = ({
+  week,
+}: MonthlyWeekRowProps) => {
+  const activeText = useTranslation("Active");
+  const idleText = useTranslation("Idle");
+
+  return (
+    <div
+      className="
+        flex
+        flex-col
+        gap-3
+        p-4
+        transition
+        hover:bg-slate-50
+        dark:hover:bg-slate-800/50
+        sm:flex-row
+        sm:items-center
+        sm:justify-between
+        sm:p-5
+      "
+    >
+      {/* Week */}
+
+      <div className="flex min-w-0 items-center gap-3">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-950/50">
+          <BarChart3
+            size={18}
+            className="text-indigo-600 dark:text-indigo-400"
+          />
+        </div>
+
+        <span className="break-words font-medium text-slate-800 dark:text-slate-200">
+          {week.week}
+        </span>
+      </div>
+
+      {/* Time */}
+
+      <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-500 dark:text-slate-400 sm:justify-end">
+        <span>
+          {activeText}:{" "}
+          <span className="font-medium text-slate-700 dark:text-slate-200">
+            {week.active_time}
+          </span>
+        </span>
+
+        <span>
+          {idleText}:{" "}
+          <span className="font-medium text-slate-700 dark:text-slate-200">
+            {week.idle_time}
+          </span>
+        </span>
+      </div>
+    </div>
+  );
+};
+
 const MonthlyReportCard = () => {
   const {
     data,
     isLoading,
   } = useMonthlyReport();
+
+  const loadingText = useTranslation(
+    "Loading monthly report..."
+  );
+
+  const titleText = useTranslation(
+    "Monthly Report"
+  );
+
+  const activeText = useTranslation("Active");
+  const idleText = useTranslation("Idle");
+  const totalText = useTranslation("Total");
+  const focusScoreText = useTranslation(
+    "Focus Score"
+  );
 
   if (isLoading) {
     return (
@@ -29,7 +112,7 @@ const MonthlyReportCard = () => {
         "
       >
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Loading monthly report...
+          {loadingText}
         </p>
       </div>
     );
@@ -59,7 +142,7 @@ const MonthlyReportCard = () => {
             className="shrink-0 text-indigo-600 dark:text-indigo-400"
           />
 
-          <span>Monthly Report</span>
+          <span>{titleText}</span>
         </h2>
       </div>
 
@@ -70,7 +153,7 @@ const MonthlyReportCard = () => {
 
         <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800 sm:p-5">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Active
+            {activeText}
           </p>
 
           <h3 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
@@ -82,7 +165,7 @@ const MonthlyReportCard = () => {
 
         <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800 sm:p-5">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Idle
+            {idleText}
           </p>
 
           <h3 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
@@ -94,7 +177,7 @@ const MonthlyReportCard = () => {
 
         <div className="rounded-2xl bg-slate-50 p-4 dark:bg-slate-800 sm:p-5">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Total
+            {totalText}
           </p>
 
           <h3 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
@@ -106,7 +189,7 @@ const MonthlyReportCard = () => {
 
         <div className="rounded-2xl bg-indigo-50 p-4 dark:bg-indigo-950/40 sm:p-5">
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Focus Score
+            {focusScoreText}
           </p>
 
           <h3 className="mt-1 text-2xl font-bold text-indigo-700 dark:text-indigo-400 sm:text-3xl">
@@ -119,55 +202,10 @@ const MonthlyReportCard = () => {
 
       <div className="divide-y divide-slate-100 border-t border-slate-100 dark:divide-slate-800 dark:border-slate-800">
         {data.weekly_breakdown.map((week) => (
-          <div
+          <MonthlyWeekRow
             key={week.week}
-            className="
-              flex
-              flex-col
-              gap-3
-              p-4
-              transition
-              hover:bg-slate-50
-              dark:hover:bg-slate-800/50
-              sm:flex-row
-              sm:items-center
-              sm:justify-between
-              sm:p-5
-            "
-          >
-            {/* Week */}
-
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-950/50">
-                <BarChart3
-                  size={18}
-                  className="text-indigo-600 dark:text-indigo-400"
-                />
-              </div>
-
-              <span className="font-medium text-slate-800 dark:text-slate-200">
-                {week.week}
-              </span>
-            </div>
-
-            {/* Time */}
-
-            <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-500 dark:text-slate-400 sm:justify-end">
-              <span>
-                Active:{" "}
-                <span className="font-medium text-slate-700 dark:text-slate-200">
-                  {week.active_time}
-                </span>
-              </span>
-
-              <span>
-                Idle:{" "}
-                <span className="font-medium text-slate-700 dark:text-slate-200">
-                  {week.idle_time}
-                </span>
-              </span>
-            </div>
-          </div>
+            week={week}
+          />
         ))}
       </div>
     </div>

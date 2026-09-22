@@ -21,6 +21,15 @@ class UserLogin(BaseModel):
     password: str
 
 
+class ChangePassword(BaseModel):
+
+    current_password: str
+
+    new_password: str
+
+    confirm_password: str
+
+
 class UserResponse(BaseModel):
 
     id: int
@@ -81,6 +90,8 @@ class InviteSubAdmin(BaseModel):
     full_name: str
 
     email: EmailStr
+
+    organization_id: int
 
 
 class AcceptInvitation(BaseModel):
@@ -321,3 +332,13 @@ class OrganizationUserResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class UpdateLanguageRequest(BaseModel):
+
+    language: str
+
+
+class DynamicTranslationRequest(BaseModel):
+
+    message: str

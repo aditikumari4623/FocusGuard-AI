@@ -2,7 +2,17 @@ import {
   Settings,
 } from "lucide-react";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 const UserSettingsHeader = () => {
+  const titleText = useTranslation(
+    "Settings"
+  );
+
+  const descriptionText = useTranslation(
+    "Manage your FocusGuard account and preferences."
+  );
+
   return (
     <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-5">
 
@@ -35,11 +45,11 @@ const UserSettingsHeader = () => {
       <div className="min-w-0">
 
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white sm:text-3xl lg:text-4xl">
-          Settings
+          {titleText}
         </h1>
 
         <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400 sm:text-base">
-          Manage your FocusGuard account and preferences.
+          {descriptionText}
         </p>
 
       </div>

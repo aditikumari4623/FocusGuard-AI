@@ -1,12 +1,42 @@
 # Virtual Environment
 venv/
+.venv/
+env/
 
 # Python Cache
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
 
-# Environment Variables
+# Environment Variables / Secrets
 .env
+.env.*
+!.env.example
 
-# SQLite Database (optional)
+# SQLite / Local Databases
 *.db
+*.sqlite
+*.sqlite3
+
+# Logs
+*.log
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Python tooling
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Build / Distribution
+build/
+dist/
+*.egg-info/
+
+# Local uploads / generated files
+uploads/

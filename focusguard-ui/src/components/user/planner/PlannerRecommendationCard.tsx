@@ -1,37 +1,35 @@
-import {
-  BrainCircuit,
-  Sparkles,
-} from "lucide-react";
-
-import {
-  usePlannerRecommendation,
-} from "../../../hooks/usePlanner";
+import { useTranslation } from "../../../hooks/useTranslation";
+import { usePlannerRecommendation } from "../../../hooks/usePlanner";
 
 const PlannerRecommendationCard = () => {
-  const {
-    data,
-    isLoading,
-  } = usePlannerRecommendation();
+  const { data, isLoading } = usePlannerRecommendation();
+
+  const loadingText = useTranslation(
+    "Loading AI recommendation..."
+  );
+
+  const noRecommendationText = useTranslation(
+    "No recommendation available."
+  );
+
+  const titleText = useTranslation("AI Recommendation");
+  const goalText = useTranslation("Goal");
+  const completedText = useTranslation("Completed");
+  const focusScoreText = useTranslation("Focus Score");
+  const tasksText = useTranslation("Tasks");
+  const suggestionText = useTranslation("AI Suggestion");
+  const minutesText = useTranslation("min");
+
+  // Dynamic AI recommendation
+  const recommendationText = useTranslation(
+    data?.recommendation ?? ""
+  );
 
   if (isLoading) {
     return (
-      <div
-        className="
-          rounded-3xl
-          border
-          border-slate-200
-          bg-white
-          p-5
-
-          dark:border-slate-700
-          dark:bg-slate-900
-          dark:shadow-black/20
-
-          sm:p-6
-        "
-      >
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Loading AI recommendation...
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {loadingText}
         </p>
       </div>
     );
@@ -39,158 +37,80 @@ const PlannerRecommendationCard = () => {
 
   if (!data) {
     return (
-      <div
-        className="
-          rounded-3xl
-          border
-          border-slate-200
-          bg-white
-          p-5
-
-          dark:border-slate-700
-          dark:bg-slate-900
-          dark:shadow-black/20
-
-          sm:p-6
-        "
-      >
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-          AI Recommendation
-        </h2>
-
-        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-          No recommendation available.
+      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          {noRecommendationText}
         </p>
       </div>
     );
   }
 
+  const goalMinutes = data.goal_minutes ?? 0;
+  const completedMinutes = data.completed_minutes ?? 0;
+  const focusScore = data.focus_score ?? 0;
+
+  // Backend returns planner[], not tasks
+  const taskCount = data.planner?.length ?? 0;
+
   return (
-    <div
-      className="
-        overflow-hidden
-        rounded-3xl
-        border
-        border-slate-200
-        bg-white
-        shadow-sm
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+      <h3 className="mb-5 text-lg font-semibold text-gray-900 dark:text-white">
+        {titleText}
+      </h3>
 
-        dark:border-slate-700
-        dark:bg-slate-900
-        dark:shadow-black/20
-      "
-    >
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="rounded-xl bg-gray-50 p-3 dark:bg-gray-800/60">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {goalText}
+          </p>
 
-      {/* Header */}
+          <p className="mt-1 font-semibold text-gray-900 dark:text-white">
+            {goalMinutes} {minutesText}
+          </p>
+        </div>
 
-      <div className="border-b border-slate-200 p-5 dark:border-slate-700 sm:p-6">
+        <div className="rounded-xl bg-gray-50 p-3 dark:bg-gray-800/60">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {completedText}
+          </p>
 
-        <h2 className="flex items-center gap-2 text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
+          <p className="mt-1 font-semibold text-gray-900 dark:text-white">
+            {completedMinutes} {minutesText}
+          </p>
+        </div>
 
-          <BrainCircuit
-            size={22}
-            className="shrink-0 text-indigo-600 dark:text-indigo-400"
-          />
+        <div className="rounded-xl bg-gray-50 p-3 dark:bg-gray-800/60">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {focusScoreText}
+          </p>
 
-          <span>
-            AI Recommendation
-          </span>
+          <p className="mt-1 font-semibold text-gray-900 dark:text-white">
+            {focusScore}
+          </p>
+        </div>
 
-        </h2>
+        <div className="rounded-xl bg-gray-50 p-3 dark:bg-gray-800/60">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            {tasksText}
+          </p>
 
+          <p className="mt-1 font-semibold text-gray-900 dark:text-white">
+            {taskCount}
+          </p>
+        </div>
       </div>
 
-      {/* Stats */}
-
-      <div className="grid grid-cols-2 gap-4 p-5 sm:gap-5 sm:p-6">
-
-        <div className="min-w-0">
-
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Goal
+      {data.recommendation && (
+        <div className="mt-5 rounded-xl bg-indigo-50 p-4 dark:bg-indigo-950/30">
+          <p className="text-sm font-semibold text-indigo-700 dark:text-indigo-300">
+            {suggestionText}
           </p>
 
-          <h3 className="mt-1 text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
-            {data.goal_minutes} min
-          </h3>
-
-        </div>
-
-        <div className="min-w-0">
-
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Completed
+          <p className="mt-2 text-sm leading-6 text-gray-700 dark:text-gray-300">
+            {recommendationText}
           </p>
-
-          <h3 className="mt-1 text-xl font-bold text-green-600 dark:text-green-400 sm:text-2xl">
-            {data.completed_minutes} min
-          </h3>
-
         </div>
-
-        <div className="min-w-0">
-
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Focus Score
-          </p>
-
-          <h3 className="mt-1 text-xl font-bold text-indigo-700 dark:text-indigo-400 sm:text-2xl">
-            {data.focus_score}%
-          </h3>
-
-        </div>
-
-        <div className="min-w-0">
-
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Tasks
-          </p>
-
-          <h3 className="mt-1 text-xl font-bold text-slate-900 dark:text-white sm:text-2xl">
-            {data.planner.length}
-          </h3>
-
-        </div>
-
-      </div>
-
-      {/* Recommendation */}
-
-      <div className="border-t border-slate-200 p-5 dark:border-slate-700 sm:p-6">
-
-        <div className="mb-4 flex items-center gap-2">
-
-          <Sparkles
-            size={18}
-            className="shrink-0 text-yellow-500 dark:text-yellow-400"
-          />
-
-          <h3 className="font-semibold text-slate-900 dark:text-white">
-            AI Suggestion
-          </h3>
-
-        </div>
-
-        <div
-          className="
-            rounded-2xl
-            bg-indigo-50
-            p-4
-
-            dark:bg-indigo-950/40
-
-            sm:p-5
-          "
-        >
-
-          <p className="whitespace-pre-wrap break-words text-sm leading-7 text-slate-700 dark:text-slate-300">
-            {data.recommendation}
-          </p>
-
-        </div>
-
-      </div>
-
+      )}
     </div>
   );
 };

@@ -2,7 +2,17 @@ import {
   FileBarChart,
 } from "lucide-react";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 const ReportsHeader = () => {
+  const titleText = useTranslation(
+    "Productivity Reports"
+  );
+
+  const descriptionText = useTranslation(
+    "View your daily, weekly and monthly productivity reports."
+  );
+
   return (
     <div
       className="
@@ -37,11 +47,11 @@ const ReportsHeader = () => {
 
       <div className="min-w-0">
         <h1 className="text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">
-          Productivity Reports
+          {titleText}
         </h1>
 
         <p className="mt-2 max-w-2xl text-sm leading-6 text-blue-100 sm:text-base">
-          View your daily, weekly and monthly productivity reports.
+          {descriptionText}
         </p>
       </div>
     </div>

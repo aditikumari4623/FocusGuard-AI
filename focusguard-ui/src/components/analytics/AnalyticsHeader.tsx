@@ -1,6 +1,14 @@
 import { BarChart3 } from "lucide-react";
 
+import { useTranslation } from "../../hooks/useTranslation";
+
 const AnalyticsHeader = () => {
+  const title = useTranslation("Analytics");
+
+  const description = useTranslation(
+    "Analyze your productivity, focus trends and browsing habits."
+  );
+
   return (
     <div
       className="
@@ -29,11 +37,11 @@ const AnalyticsHeader = () => {
     >
       <div className="min-w-0">
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Analytics
+          {title}
         </h1>
 
         <p className="mt-1 max-w-2xl text-sm leading-6 text-indigo-100 sm:text-base">
-          Analyze your productivity, focus trends and browsing habits.
+          {description}
         </p>
       </div>
 

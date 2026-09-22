@@ -8,24 +8,56 @@ import {
   useUpdatePlanner,
 } from "../../hooks/usePlanner";
 
+import { useTranslation } from "../../hooks/useTranslation";
+
 interface Props {
   open: boolean;
   onClose: () => void;
 }
 
+/* =========================================================
+   Dynamic translated toast message
+========================================================= */
+
+const TranslatedToastMessage = ({
+  message,
+}: {
+  message: string;
+}) => {
+  const translatedMessage = useTranslation(message);
+
+  return <>{translatedMessage}</>;
+};
+
 const CreatePlannerModal = ({
   open,
   onClose,
 }: Props) => {
-  const createPlanner =
-    useCreatePlanner();
+  const createPlanner = useCreatePlanner();
 
-  const updatePlanner =
-    useUpdatePlanner();
+  const updatePlanner = useUpdatePlanner();
 
   const {
     data: planner,
   } = useTodayPlanner();
+
+  const editFocusPlanText =
+    useTranslation("Edit Focus Plan");
+
+  const createFocusPlanText =
+    useTranslation("Create Focus Plan");
+
+  const closePlannerModalText =
+    useTranslation("Close planner modal");
+
+  const plannerUpdatedText =
+    useTranslation("Planner updated successfully.");
+
+  const plannerCreatedText =
+    useTranslation("Planner created successfully.");
+
+  const unableToSavePlannerText =
+    useTranslation("Unable to save planner.");
 
   if (!open) return null;
 
@@ -73,7 +105,6 @@ const CreatePlannerModal = ({
         {/* Header */}
 
         <div className="mb-6 flex items-start justify-between gap-4">
-
           <h2
             className="
               min-w-0
@@ -85,14 +116,14 @@ const CreatePlannerModal = ({
             "
           >
             {planner
-              ? "Edit Focus Plan"
-              : "Create Focus Plan"}
+              ? editFocusPlanText
+              : createFocusPlanText}
           </h2>
 
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close planner modal"
+            aria-label={closePlannerModalText}
             className="
               flex
               h-9
@@ -113,7 +144,6 @@ const CreatePlannerModal = ({
           >
             ✕
           </button>
-
         </div>
 
         <PlannerForm
@@ -124,8 +154,7 @@ const CreatePlannerModal = ({
           defaultValues={
             planner
               ? {
-                  plan_date:
-                    planner.date,
+                  plan_date: planner.date,
                   total_goal_minutes:
                     planner.total_goal_minutes,
                   plans: planner.plans,
@@ -135,34 +164,37 @@ const CreatePlannerModal = ({
           onSubmit={async (values) => {
             try {
               if (planner) {
-                await updatePlanner.mutateAsync(
-                  {
-                    planId:
-                      planner.plan_id,
+                await updatePlanner.mutateAsync({
+                  planId: planner.plan_id,
 
-                    payload: {
-                      total_goal_minutes:
-                        values.total_goal_minutes,
+                  payload: {
+                    total_goal_minutes:
+                      values.total_goal_minutes,
 
-                      plans: values.plans,
-                    },
-                  }
-                );
+                    plans: values.plans,
+                  },
+                });
 
                 toast.success(
-                  "Planner updated successfully."
+                  <TranslatedToastMessage
+                    message={
+                      "Planner updated successfully."
+                    }
+                  />
                 );
               } else {
-                await createPlanner.mutateAsync(
-                  {
-                    ...values,
+                await createPlanner.mutateAsync({
+                  ...values,
 
-                    plan_date: `${values.plan_date}T00:00:00`,
-                  }
-                );
+                  plan_date: `${values.plan_date}T00:00:00`,
+                });
 
                 toast.success(
-                  "Planner created successfully."
+                  <TranslatedToastMessage
+                    message={
+                      "Planner created successfully."
+                    }
+                  />
                 );
               }
 
@@ -170,15 +202,18 @@ const CreatePlannerModal = ({
             } catch (error: any) {
               console.error(error);
 
+              const errorMessage =
+                error?.response?.data?.detail ??
+                "Unable to save planner.";
+
               toast.error(
-                error?.response?.data
-                  ?.detail ??
-                  "Unable to save planner."
+                <TranslatedToastMessage
+                  message={errorMessage}
+                />
               );
             }
           }}
         />
-
       </div>
     </div>
   );

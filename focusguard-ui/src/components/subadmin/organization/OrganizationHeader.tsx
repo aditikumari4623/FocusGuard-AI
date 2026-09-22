@@ -1,9 +1,26 @@
 import { Building2 } from "lucide-react";
 
 import { useAuth } from "../../../context/AuthContext";
+import { useTranslation } from "../../../hooks/useTranslation";
 
 const OrganizationHeader = () => {
   const { user } = useAuth();
+
+  const titleText = useTranslation("My Organization");
+
+  const descriptionText = useTranslation(
+    "View your organization details and manage organization requests."
+  );
+
+  const loggedInAsText = useTranslation("Logged in as");
+
+  const roleSource = user?.role
+    ? user.role
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (character) => character.toUpperCase())
+    : "User";
+
+  const roleText = useTranslation(roleSource);
 
   return (
     <div
@@ -33,6 +50,7 @@ const OrganizationHeader = () => {
           justify-center
           rounded-2xl
           bg-indigo-100
+          dark:bg-indigo-950/60
 
           sm:h-16
           sm:w-16
@@ -41,7 +59,12 @@ const OrganizationHeader = () => {
       >
         <Building2
           size={30}
-          className="text-indigo-600 sm:h-[34px] sm:w-[34px]"
+          className="
+            text-indigo-600
+            dark:text-indigo-400
+            sm:h-[34px]
+            sm:w-[34px]
+          "
         />
       </div>
 
@@ -56,11 +79,12 @@ const OrganizationHeader = () => {
             text-2xl
             font-bold
             text-slate-900
+            dark:text-slate-100
 
             sm:text-3xl
           "
         >
-          My Organization
+          {titleText}
         </h1>
 
         <p
@@ -71,12 +95,12 @@ const OrganizationHeader = () => {
             text-sm
             leading-6
             text-slate-500
+            dark:text-slate-400
 
             sm:text-base
           "
         >
-          View your organization details and manage
-          organization requests.
+          {descriptionText}
         </p>
 
         {/* Role */}
@@ -94,14 +118,15 @@ const OrganizationHeader = () => {
               text-xs
               font-semibold
               text-indigo-700
+              dark:bg-indigo-950/60
+              dark:text-indigo-300
 
               sm:px-4
               sm:text-sm
             "
           >
             <span className="truncate">
-              Logged in as{" "}
-              {user?.role?.replace("_", " ")}
+              {loggedInAsText} {roleText}
             </span>
           </span>
         </div>

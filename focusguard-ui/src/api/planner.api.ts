@@ -117,6 +117,7 @@ export interface PlannerRecommendation {
   goal_minutes: number;
   completed_minutes: number;
   focus_score: number;
+
   planner: {
     category: string;
     planned_minutes: number;
@@ -136,8 +137,7 @@ export const getPlannerRecommendation =
     return response.data;
   };
 
-
-  /* ---------------- Create Planner ---------------- */
+/* ---------------- Create Planner ---------------- */
 
 export interface PlannerTaskRequest {
   category: string;

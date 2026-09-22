@@ -986,6 +986,12 @@ def role_website_analytics(
 ):
 
     # ---------------------------------------------
+    # Today's date
+    # ---------------------------------------------
+
+    today = datetime.now().date()
+
+    # ---------------------------------------------
     # Sub Admin → Organization users' data
     # ---------------------------------------------
 
@@ -1008,7 +1014,8 @@ def role_website_analytics(
             )
             .filter(
                 User.organization_id == current_user.organization_id,
-                User.role == "USER"
+                User.role == "USER",
+                func.date(ActivityLog.start_time) == today
             )
             .group_by(
                 ActivityLog.website_name
@@ -1035,7 +1042,8 @@ def role_website_analytics(
                 ActivityLog.user_id == User.id
             )
             .filter(
-                User.role == "USER"
+                User.role == "USER",
+                func.date(ActivityLog.start_time) == today
             )
             .group_by(
                 ActivityLog.website_name
@@ -1059,15 +1067,11 @@ def role_website_analytics(
 
         result.append({
             "website": website or "Unknown",
-            "duration_seconds": duration or 0
+            "duration_seconds": int(duration or 0)
         })
 
     return result
 
-
-# -----------------------------------------------------
-# Role-Based Activity Summary
-# -----------------------------------------------------
 
 @router.get("/role/activity-summary")
 def role_activity_summary(
@@ -1120,7 +1124,13 @@ def role_activity_summary(
         )
 
     # -------------------------------------------------
-    # Browser / Activity Time
+    # Today's date
+    # -------------------------------------------------
+
+    today = datetime.now().date()
+
+    # -------------------------------------------------
+    # Browser / Activity Time - TODAY
     # -------------------------------------------------
 
     browser_result = (
@@ -1131,7 +1141,8 @@ def role_activity_summary(
             )
         )
         .filter(
-            ActivityLog.user_id.in_(user_ids)
+            ActivityLog.user_id.in_(user_ids),
+            func.date(ActivityLog.start_time) == today
         )
         .scalar()
     )
@@ -1141,7 +1152,7 @@ def role_activity_summary(
     )
 
     # -------------------------------------------------
-    # Completed ACTIVE / IDLE durations
+    # Completed ACTIVE / IDLE durations - TODAY
     # -------------------------------------------------
 
     active_result = (
@@ -1153,7 +1164,8 @@ def role_activity_summary(
         )
         .filter(
             UserStatusLog.user_id.in_(user_ids),
-            UserStatusLog.status == "ACTIVE"
+            UserStatusLog.status == "ACTIVE",
+            func.date(UserStatusLog.start_time) == today
         )
         .scalar()
     )
@@ -1167,7 +1179,8 @@ def role_activity_summary(
         )
         .filter(
             UserStatusLog.user_id.in_(user_ids),
-            UserStatusLog.status == "IDLE"
+            UserStatusLog.status == "IDLE",
+            func.date(UserStatusLog.start_time) == today
         )
         .scalar()
     )
@@ -1181,14 +1194,15 @@ def role_activity_summary(
     )
 
     # -------------------------------------------------
-    # Add currently open status logs
+    # Add currently open status logs - TODAY
     # -------------------------------------------------
 
     open_status_logs = (
         db.query(UserStatusLog)
         .filter(
             UserStatusLog.user_id.in_(user_ids),
-            UserStatusLog.end_time == None
+            UserStatusLog.end_time == None,
+            func.date(UserStatusLog.start_time) == today
         )
         .all()
     )
@@ -1218,11 +1232,24 @@ def role_activity_summary(
     # Focus Score
     # -------------------------------------------------
 
-    focus_score = (
-        (active_time / browser_time) * 100
-        if browser_time > 0
-        else 0
+    total_status_time = (
+        active_time +
+        idle_time
     )
+
+    if total_status_time > 0:
+
+        focus_score = round(
+            (
+                active_time /
+                total_status_time
+            ) * 100,
+            2
+        )
+
+    else:
+
+        focus_score = 0
 
     # Keep score between 0 and 100
     focus_score = min(
@@ -1234,16 +1261,9 @@ def role_activity_summary(
         "browser_time_seconds": browser_time,
         "active_time_seconds": active_time,
         "idle_time_seconds": idle_time,
-        "focus_score": round(
-            focus_score,
-            2
-        )
+        "focus_score": focus_score
     }
 
-
-# -----------------------------------------------------
-# Role-Based Weekly / Monthly Activity Report
-# -----------------------------------------------------
 
 @router.get("/role/report")
 def role_activity_report(
@@ -1401,14 +1421,26 @@ def role_activity_report(
                 daily_breakdown[day]["idle_time"] += duration
 
         # -------------------------------------------------
-        # Monthly → Week-wise
+        # Monthly → Rolling 7-day buckets
         # -------------------------------------------------
 
         else:
 
+            days_from_start = (
+                log.start_time.date() -
+                start_date.date()
+            ).days
+
             week_number = (
-                (log.start_time.day - 1) // 7
+                days_from_start // 7
             ) + 1
+
+            # The 30-day window can contain at most
+            # five buckets: 0-6, 7-13, 14-20, 21-27, 28-29.
+            week_number = min(
+                max(week_number, 1),
+                5
+            )
 
             week = f"Week {week_number}"
 
@@ -1589,68 +1621,6 @@ def role_activity_report(
             breakdown
     }
 
-
-# =====================================================
-# INDIVIDUAL USER ANALYTICS FOR SUB ADMIN
-# =====================================================
-
-def verify_user_access(
-    db: Session,
-    current_user,
-    user_id: int
-):
-    """
-    Verify that the selected user belongs to the
-    same organization as the logged-in Sub Admin.
-    """
-
-    target_user = (
-        db.query(User)
-        .filter(
-            User.id == user_id,
-            User.role == "USER"
-        )
-        .first()
-    )
-
-    if target_user is None:
-        raise HTTPException(
-            status_code=404,
-            detail="User not found."
-        )
-
-    # Sub Admin can only see users
-    # from their own organization
-    if current_user.role == "SUB_ADMIN":
-
-        if current_user.organization_id is None:
-            raise HTTPException(
-                status_code=400,
-                detail="Sub Admin is not assigned to any organization."
-            )
-
-        if (
-            target_user.organization_id
-            != current_user.organization_id
-        ):
-            raise HTTPException(
-                status_code=403,
-                detail="You are not allowed to view this user's activity."
-            )
-
-    elif current_user.role != "SUPER_ADMIN":
-
-        raise HTTPException(
-            status_code=403,
-            detail="You are not allowed to view user analytics."
-        )
-
-    return target_user
-
-
-# =====================================================
-# Individual User Activity Summary
-# =====================================================
 
 @router.get("/users/{user_id}/activity-summary")
 def individual_user_activity_summary(

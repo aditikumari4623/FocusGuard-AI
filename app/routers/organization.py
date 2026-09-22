@@ -100,6 +100,30 @@ def create_organization(
 
     db.refresh(new_organization)
 
+
+    # -------------------------------------------------
+    # Notification to Super Admin
+    # -------------------------------------------------
+
+    notification_service.create_notification(
+
+        db=db,
+
+        user_id=current_user.id,
+
+        title="Organization Created",
+
+        message=(
+            f'Organization '
+            f'"{new_organization.organization_name}" '
+            f'was created successfully.'
+        ),
+
+        notification_type="ORGANIZATION_CREATED"
+
+    )
+
+
     return new_organization
 
 
@@ -626,6 +650,30 @@ def deactivate_user(
 
     db.refresh(user)
 
+
+    # -------------------------------------------------
+    # Notification to Deactivated User
+    # -------------------------------------------------
+
+    notification_service.create_notification(
+
+        db=db,
+
+        user_id=user.id,
+
+        title="Account Deactivated",
+
+        message=(
+            "Your FocusGuard account has been "
+            f"deactivated by Sub Admin "
+            f"{current_user.full_name}."
+        ),
+
+        notification_type="USER_DEACTIVATED"
+
+    )
+
+
     return {
 
         "message": "User deactivated successfully."
@@ -675,6 +723,43 @@ def activate_organization(
     db.commit()
 
     db.refresh(organization)
+
+
+    # -------------------------------------------------
+    # Notify Sub Admins of Activated Organization
+    # -------------------------------------------------
+
+    sub_admins = (
+        db.query(User)
+        .filter(
+            User.organization_id == organization.id,
+            User.role == "SUB_ADMIN",
+            User.is_active == True
+        )
+        .all()
+    )
+
+
+    for admin in sub_admins:
+
+        notification_service.create_notification(
+
+            db=db,
+
+            user_id=admin.id,
+
+            title="Organization Activated",
+
+            message=(
+                f'Organization '
+                f'"{organization.organization_name}" '
+                f'has been activated by Super Admin.'
+            ),
+
+            notification_type="ORGANIZATION_ACTIVATED"
+
+        )
+
 
     return {
 
@@ -762,6 +847,30 @@ def create_organization_user(
     db.commit()
 
     db.refresh(new_user)
+
+
+    # -------------------------------------------------
+    # Notification to Newly Created User
+    # -------------------------------------------------
+
+    notification_service.create_notification(
+
+        db=db,
+
+        user_id=new_user.id,
+
+        title="Welcome to FocusGuard",
+
+        message=(
+            f'Your FocusGuard account has been created '
+            f'by Sub Admin {current_user.full_name}. '
+            f'You can now log in and start using the platform.'
+        ),
+
+        notification_type="USER_CREATED"
+
+    )
+
 
     return {
 

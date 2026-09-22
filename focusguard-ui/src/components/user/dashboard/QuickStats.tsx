@@ -5,7 +5,11 @@ import {
   ArrowRightLeft,
 } from "lucide-react";
 
-import { useDashboardSummary } from "../../../hooks/useAnalytics";
+import {
+  useDashboardSummary,
+} from "../../../hooks/useAnalytics";
+
+import { useTranslation } from "../../../hooks/useTranslation";
 
 const QuickStats = () => {
   const {
@@ -13,9 +17,23 @@ const QuickStats = () => {
     isLoading,
   } = useDashboardSummary();
 
-  /* =========================
-     Loading State
-  ========================= */
+  const focusScore = useTranslation(
+    "Focus Score"
+  );
+
+  const browserTime = useTranslation(
+    "Browser Time"
+  );
+
+  const productiveTime = useTranslation(
+    "Productive Time"
+  );
+
+  const tabSwitches = useTranslation(
+    "Tab Switches"
+  );
+
+  const minText = useTranslation("min");
 
   if (isLoading) {
     return (
@@ -46,40 +64,43 @@ const QuickStats = () => {
 
   const stats = [
     {
-      title: "Focus Score",
+      title: focusScore,
       value: `${data.focus_score}%`,
       icon: Target,
-      color: "bg-green-100 text-green-600 dark:bg-green-950/40 dark:text-green-400",
+      color:
+        "bg-green-100 text-green-600 dark:bg-green-950/40 dark:text-green-400",
     },
     {
-      title: "Browser Time",
-      value: `${data.browser_time} min`,
+      title: browserTime,
+      value: `${data.browser_time} ${minText}`,
       icon: Globe,
-      color: "bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400",
+      color:
+        "bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400",
     },
     {
-      title: "Productive Time",
-      value: `${data.productive_time} min`,
+      title: productiveTime,
+      value: `${data.productive_time} ${minText}`,
       icon: Laptop2,
-      color: "bg-indigo-100 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400",
+      color:
+        "bg-indigo-100 text-indigo-600 dark:bg-indigo-950/40 dark:text-indigo-400",
     },
     {
-      title: "Tab Switches",
+      title: tabSwitches,
       value: data.total_tab_switches,
       icon: ArrowRightLeft,
-      color: "bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400",
+      color:
+        "bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400",
     },
   ];
 
   return (
     <div className="grid w-full min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-6 xl:grid-cols-4">
-
-      {stats.map((item) => {
+      {stats.map((item, index) => {
         const Icon = item.icon;
 
         return (
           <div
-            key={item.title}
+            key={index}
             className="
               min-w-0
               rounded-3xl
@@ -90,6 +111,7 @@ const QuickStats = () => {
               shadow-sm
               transition-all
               duration-300
+              hover:-translate-y-0.5
               hover:border-indigo-200
               hover:shadow-md
 
@@ -101,17 +123,16 @@ const QuickStats = () => {
               sm:p-6
             "
           >
-
-            {/* Icon */}
-
             <div
               className={`
                 mb-4
                 inline-flex
                 rounded-2xl
                 p-3
+
                 sm:mb-5
                 sm:p-4
+
                 ${item.color}
               `}
             >
@@ -121,22 +142,16 @@ const QuickStats = () => {
               />
             </div>
 
-            {/* Title */}
-
             <p className="truncate text-sm text-slate-500 dark:text-slate-400">
               {item.title}
             </p>
 
-            {/* Value */}
-
             <h2 className="mt-2 truncate text-2xl font-bold text-slate-900 dark:text-white sm:text-3xl">
               {item.value}
             </h2>
-
           </div>
         );
       })}
-
     </div>
   );
 };

@@ -7,11 +7,38 @@ import {
   useAIRecommendation,
 } from "../../../hooks/useAI";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 const AIRecommendationCard = () => {
   const {
     data,
     isLoading,
   } = useAIRecommendation();
+
+  const loadingText = useTranslation(
+    "Loading AI recommendation..."
+  );
+
+  const noDataText = useTranslation(
+    "No AI recommendation available."
+  );
+
+  const title = useTranslation(
+    "AI Recommendation"
+  );
+
+  const description = useTranslation(
+    "Personalized guidance based on your activity"
+  );
+
+  const insightTitle = useTranslation(
+    "Personalized Insight"
+  );
+
+  // Dynamic AI-generated recommendation
+  const recommendation = useTranslation(
+    data?.recommendation || ""
+  );
 
   if (isLoading) {
     return (
@@ -31,7 +58,7 @@ const AIRecommendationCard = () => {
         "
       >
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Loading AI recommendation...
+          {loadingText}
         </p>
       </div>
     );
@@ -55,7 +82,7 @@ const AIRecommendationCard = () => {
         "
       >
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          No AI recommendation available.
+          {noDataText}
         </p>
       </div>
     );
@@ -76,11 +103,6 @@ const AIRecommendationCard = () => {
         dark:shadow-black/20
       "
     >
-
-      {/* =========================================
-          HEADER
-      ========================================= */}
-
       <div
         className="
           border-b
@@ -112,39 +134,26 @@ const AIRecommendationCard = () => {
           />
 
           <span>
-            AI Recommendation
+            {title}
           </span>
         </h2>
 
         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-          Personalized guidance based on your activity
+          {description}
         </p>
       </div>
 
-
-      {/* =========================================
-          CONTENT
-      ========================================= */}
-
       <div className="p-5 sm:p-6">
-
-        {/* Insight heading */}
-
         <div className="mb-4 flex items-center gap-2">
-
           <Sparkles
             className="shrink-0 text-yellow-500 dark:text-yellow-400"
             size={20}
           />
 
           <span className="font-semibold text-slate-800 dark:text-slate-200">
-            Personalized Insight
+            {insightTitle}
           </span>
-
         </div>
-
-
-        {/* Recommendation */}
 
         <div
           className="
@@ -173,12 +182,10 @@ const AIRecommendationCard = () => {
               sm:leading-8
             "
           >
-            {data.recommendation}
+            {recommendation}
           </p>
         </div>
-
       </div>
-
     </div>
   );
 };

@@ -11,7 +11,10 @@ import {
   UserPlus,
 } from "lucide-react";
 
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+} from "react-router-dom";
 
 import toast from "react-hot-toast";
 
@@ -60,10 +63,6 @@ const RegisterPage = () => {
     event.preventDefault();
 
 
-    /* ----------------------------- */
-    /* Basic Validation */
-    /* ----------------------------- */
-
     if (
       !fullName.trim() ||
       !email.trim() ||
@@ -80,10 +79,6 @@ const RegisterPage = () => {
       return;
     }
 
-
-    /* ----------------------------- */
-    /* Password Validation */
-    /* ----------------------------- */
 
     if (password.length < 6) {
 
@@ -105,10 +100,6 @@ const RegisterPage = () => {
     }
 
 
-    /* ----------------------------- */
-    /* Age Validation */
-    /* ----------------------------- */
-
     const numericAge =
       Number(age);
 
@@ -126,10 +117,6 @@ const RegisterPage = () => {
       return;
     }
 
-
-    /* ----------------------------- */
-    /* Register */
-    /* ----------------------------- */
 
     try {
 
@@ -181,9 +168,44 @@ const RegisterPage = () => {
   };
 
 
+  const inputClassName = `
+    h-12
+    w-full
+    rounded-xl
+    border
+    border-slate-300
+    bg-white
+    pl-11
+    pr-4
+    text-slate-900
+    outline-none
+    transition
+    placeholder:text-slate-400
+    focus:border-indigo-500
+    focus:ring-2
+    focus:ring-indigo-100
+    dark:border-slate-700
+    dark:bg-slate-800
+    dark:text-slate-100
+    dark:placeholder:text-slate-500
+    dark:focus:border-indigo-400
+    dark:focus:ring-indigo-500/20
+  `;
+
+
+  const labelClassName = `
+    mb-2
+    block
+    text-sm
+    font-semibold
+    text-slate-700
+    dark:text-slate-300
+  `;
+
+
   return (
 
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 transition-colors duration-300 dark:bg-slate-950">
 
       <div className="flex min-h-screen">
 
@@ -192,7 +214,7 @@ const RegisterPage = () => {
         {/* Left Branding Section */}
         {/* ================================= */}
 
-        <div className="hidden w-1/2 bg-indigo-600 lg:flex">
+        <div className="hidden w-1/2 bg-indigo-600 lg:flex dark:bg-indigo-700">
 
           <div className="flex w-full flex-col justify-center px-16 text-white">
 
@@ -278,24 +300,24 @@ const RegisterPage = () => {
 
             <div className="mb-8">
 
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-100 dark:bg-indigo-500/20">
 
                 <UserPlus
                   size={24}
-                  className="text-indigo-600"
+                  className="text-indigo-600 dark:text-indigo-400"
                 />
 
               </div>
 
 
-              <h1 className="text-3xl font-bold text-slate-900">
+              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
 
                 Create Super Admin
 
               </h1>
 
 
-              <p className="mt-2 text-slate-500">
+              <p className="mt-2 text-slate-500 dark:text-slate-400">
 
                 Create the initial administrator account
                 for FocusGuard AI.
@@ -317,7 +339,7 @@ const RegisterPage = () => {
 
               <div>
 
-                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                <label className={labelClassName}>
 
                   Full Name
 
@@ -328,7 +350,7 @@ const RegisterPage = () => {
 
                   <User
                     size={18}
-                    className="absolute left-4 top-3.5 text-slate-400"
+                    className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500"
                   />
 
 
@@ -341,7 +363,7 @@ const RegisterPage = () => {
                       )
                     }
                     placeholder="Enter your full name"
-                    className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-4 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                    className={inputClassName}
                   />
 
                 </div>
@@ -353,7 +375,7 @@ const RegisterPage = () => {
 
               <div>
 
-                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                <label className={labelClassName}>
 
                   Email
 
@@ -364,7 +386,7 @@ const RegisterPage = () => {
 
                   <Mail
                     size={18}
-                    className="absolute left-4 top-3.5 text-slate-400"
+                    className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500"
                   />
 
 
@@ -377,7 +399,7 @@ const RegisterPage = () => {
                       )
                     }
                     placeholder="Enter your email"
-                    className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-4 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                    className={inputClassName}
                   />
 
                 </div>
@@ -394,7 +416,7 @@ const RegisterPage = () => {
 
                 <div>
 
-                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  <label className={labelClassName}>
 
                     Age
 
@@ -405,7 +427,7 @@ const RegisterPage = () => {
 
                     <Calendar
                       size={18}
-                      className="absolute left-4 top-3.5 text-slate-400"
+                      className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500"
                     />
 
 
@@ -420,7 +442,7 @@ const RegisterPage = () => {
                         )
                       }
                       placeholder="Age"
-                      className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-4 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                      className={inputClassName}
                     />
 
                   </div>
@@ -432,7 +454,7 @@ const RegisterPage = () => {
 
                 <div>
 
-                  <label className="mb-2 block text-sm font-semibold text-slate-700">
+                  <label className={labelClassName}>
 
                     Occupation
 
@@ -443,7 +465,7 @@ const RegisterPage = () => {
 
                     <Briefcase
                       size={18}
-                      className="absolute left-4 top-3.5 text-slate-400"
+                      className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500"
                     />
 
 
@@ -456,7 +478,7 @@ const RegisterPage = () => {
                         )
                       }
                       placeholder="Occupation"
-                      className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-4 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                      className={inputClassName}
                     />
 
                   </div>
@@ -470,7 +492,7 @@ const RegisterPage = () => {
 
               <div>
 
-                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                <label className={labelClassName}>
 
                   Password
 
@@ -481,7 +503,7 @@ const RegisterPage = () => {
 
                   <Lock
                     size={18}
-                    className="absolute left-4 top-3.5 text-slate-400"
+                    className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500"
                   />
 
 
@@ -498,7 +520,7 @@ const RegisterPage = () => {
                       )
                     }
                     placeholder="Create a password"
-                    className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-12 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                    className={`${inputClassName} pr-12`}
                   />
 
 
@@ -509,7 +531,7 @@ const RegisterPage = () => {
                         !showPassword
                       )
                     }
-                    className="absolute right-4 top-3 text-slate-400 hover:text-slate-600"
+                    className="absolute right-4 top-3 text-slate-400 transition hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
                   >
 
                     {showPassword ? (
@@ -529,7 +551,7 @@ const RegisterPage = () => {
 
               <div>
 
-                <label className="mb-2 block text-sm font-semibold text-slate-700">
+                <label className={labelClassName}>
 
                   Confirm Password
 
@@ -540,7 +562,7 @@ const RegisterPage = () => {
 
                   <Lock
                     size={18}
-                    className="absolute left-4 top-3.5 text-slate-400"
+                    className="absolute left-4 top-3.5 text-slate-400 dark:text-slate-500"
                   />
 
 
@@ -557,7 +579,7 @@ const RegisterPage = () => {
                       )
                     }
                     placeholder="Confirm your password"
-                    className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-12 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                    className={`${inputClassName} pr-12`}
                   />
 
 
@@ -568,7 +590,7 @@ const RegisterPage = () => {
                         !showConfirmPassword
                       )
                     }
-                    className="absolute right-4 top-3 text-slate-400 hover:text-slate-600"
+                    className="absolute right-4 top-3 text-slate-400 transition hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
                   >
 
                     {showConfirmPassword ? (
@@ -591,7 +613,7 @@ const RegisterPage = () => {
                 disabled={
                   registerMutation.isPending
                 }
-                className="flex h-12 w-full items-center justify-center rounded-xl bg-indigo-600 font-semibold text-white shadow-sm transition hover:bg-indigo-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex h-12 w-full items-center justify-center rounded-xl bg-indigo-600 font-semibold text-white shadow-sm transition hover:bg-indigo-700 hover:shadow-lg disabled:cursor-not-allowed disabled:opacity-60 dark:bg-indigo-500 dark:hover:bg-indigo-600"
               >
 
                 {registerMutation.isPending
@@ -606,13 +628,13 @@ const RegisterPage = () => {
 
             {/* Login */}
 
-            <p className="mt-6 text-center text-sm text-slate-500">
+            <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
 
               Already have an account?{" "}
 
               <Link
                 to="/login"
-                className="font-semibold text-indigo-600 hover:text-indigo-700"
+                className="font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
               >
                 Login
               </Link>
@@ -622,9 +644,9 @@ const RegisterPage = () => {
 
             {/* Notice */}
 
-            <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-500/20 dark:bg-amber-500/10">
 
-              <p className="text-center text-xs leading-5 text-amber-700">
+              <p className="text-center text-xs leading-5 text-amber-700 dark:text-amber-300">
 
                 Registration is available only for the
                 initial Super Admin account. Once an

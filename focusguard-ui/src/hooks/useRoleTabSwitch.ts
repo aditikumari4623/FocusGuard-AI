@@ -8,7 +8,10 @@ export const useRoleTabSwitchAnalytics = (
   date?: string
 ) =>
   useQuery({
-    queryKey: ["role-tab-switch-analytics", date],
+    queryKey: [
+      "role-tab-switch-analytics",
+      date,
+    ],
     queryFn: () =>
       getRoleTabSwitchAnalytics(date),
   });

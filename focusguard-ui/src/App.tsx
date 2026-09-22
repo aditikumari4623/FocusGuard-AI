@@ -3,6 +3,7 @@ import { Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/Landing/LandingPage";
 import LoginPage from "./pages/Auth/LoginPage";
 import RegisterPage from "./pages/Auth/RegisterPage";
+import AcceptInvitationPage from "./pages/Auth/AcceptInvitationPage";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
@@ -54,8 +55,9 @@ function App() {
   return (
     <Routes>
 
+      {/* ========================= */}
       {/* Public Routes */}
-
+      {/* ========================= */}
 
       <Route
         path="/about"
@@ -91,7 +93,6 @@ function App() {
         }
       />
 
-
       <Route
         path="/register"
         element={
@@ -101,6 +102,14 @@ function App() {
         }
       />
 
+      {/* ========================= */}
+      {/* Accept Invitation */}
+      {/* ========================= */}
+
+      <Route
+        path="/accept-invitation"
+        element={<AcceptInvitationPage />}
+      />
 
       {/* ========================= */}
       {/* Super Admin */}
@@ -216,7 +225,6 @@ function App() {
         }
       />
 
-
       {/* ========================= */}
       {/* Sub Admin */}
       {/* ========================= */}
@@ -301,8 +309,6 @@ function App() {
           </ProtectedRoute>
         }
       />
-
-
 
       {/* ========================= */}
       {/* User */}

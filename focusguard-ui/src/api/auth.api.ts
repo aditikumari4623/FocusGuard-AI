@@ -19,7 +19,6 @@ export interface RegisterResponse {
 export const registerUser = async (
   data: RegisterRequest
 ): Promise<RegisterResponse> => {
-
   const response = await api.post(
     "/auth/register",
     data
@@ -38,7 +37,6 @@ export interface LoginRequest {
   password: string;
 }
 
-
 export interface LoginResponse {
   access_token: string;
   refresh_token: string;
@@ -46,11 +44,9 @@ export interface LoginResponse {
   role: string;
 }
 
-
 export const loginUser = async (
   data: LoginRequest
 ): Promise<LoginResponse> => {
-
   const response = await api.post(
     "/auth/login",
     data
@@ -65,9 +61,34 @@ export const loginUser = async (
 ==================================== */
 
 export const getCurrentUser = async () => {
-
   const response = await api.get(
     "/users/me"
+  );
+
+  return response.data;
+};
+
+
+/* ====================================
+   Change Password
+==================================== */
+
+export interface ChangePasswordRequest {
+  current_password: string;
+  new_password: string;
+  confirm_password: string;
+}
+
+export interface ChangePasswordResponse {
+  message: string;
+}
+
+export const changePassword = async (
+  data: ChangePasswordRequest
+): Promise<ChangePasswordResponse> => {
+  const response = await api.patch(
+    "/auth/change-password",
+    data
   );
 
   return response.data;

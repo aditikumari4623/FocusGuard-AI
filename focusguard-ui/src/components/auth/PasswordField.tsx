@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+
+import {
+  Eye,
+  EyeOff,
+} from "lucide-react";
 
 interface PasswordFieldProps {
   value: string;
@@ -10,31 +14,92 @@ const PasswordField = ({
   value,
   onChange,
 }: PasswordFieldProps) => {
-  const [showPassword, setShowPassword] = useState(false);
+
+  const [showPassword, setShowPassword] =
+    useState(false);
 
   return (
     <div>
-      <label className="mb-2 block text-sm font-medium">
+
+      <label
+        className="
+          mb-2
+          block
+          text-sm
+          font-medium
+          text-slate-700
+          dark:text-slate-300
+        "
+      >
         Password
       </label>
 
       <div className="relative">
+
         <input
-          type={showPassword ? "text" : "password"}
+          type={
+            showPassword
+              ? "text"
+              : "password"
+          }
           value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="h-12 w-full rounded-2xl border border-slate-300 px-4 pr-12 outline-none transition focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+          onChange={(e) =>
+            onChange(e.target.value)
+          }
+          className="
+            h-12
+            w-full
+            rounded-2xl
+            border
+            border-slate-300
+            bg-white
+            px-4
+            pr-12
+            text-slate-900
+            outline-none
+            transition
+            placeholder:text-slate-400
+            focus:border-indigo-500
+            focus:ring-4
+            focus:ring-indigo-100
+            dark:border-slate-700
+            dark:bg-slate-800
+            dark:text-slate-100
+            dark:placeholder:text-slate-500
+            dark:focus:border-indigo-400
+            dark:focus:ring-indigo-500/20
+          "
           placeholder="Enter password"
         />
 
         <button
           type="button"
-          onClick={() => setShowPassword((prev) => !prev)}
-          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500"
+          onClick={() =>
+            setShowPassword(
+              (prev) => !prev
+            )
+          }
+          className="
+            absolute
+            right-4
+            top-1/2
+            -translate-y-1/2
+            text-slate-500
+            transition
+            hover:text-slate-700
+            dark:text-slate-400
+            dark:hover:text-slate-200
+          "
         >
-          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          {showPassword ? (
+            <EyeOff size={18} />
+          ) : (
+            <Eye size={18} />
+          )}
         </button>
+
       </div>
+
     </div>
   );
 };

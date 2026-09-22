@@ -9,6 +9,8 @@ import {
   useTabSwitchAnalytics,
 } from "../../../hooks/useAnalytics";
 
+import { useTranslation } from "../../../hooks/useTranslation";
+
 const TabSwitchAnalyticsCard = () => {
   const [selectedDate, setSelectedDate] =
     useState("");
@@ -18,6 +20,30 @@ const TabSwitchAnalyticsCard = () => {
     isLoading,
   } = useTabSwitchAnalytics(
     selectedDate || undefined
+  );
+
+  const title = useTranslation(
+    "Tab Switch Analytics"
+  );
+
+  const noData = useTranslation(
+    "No tab switch data available."
+  );
+
+  const switches = useTranslation("switches");
+  const filterByDate = useTranslation(
+    "Filter by date:"
+  );
+
+  const clear = useTranslation("Clear");
+
+  const noSelectedDateSwitches =
+    useTranslation(
+      "No tab switches found for the selected date."
+    );
+
+  const noRecentSwitches = useTranslation(
+    "No recent tab switches."
   );
 
   if (isLoading) {
@@ -62,11 +88,11 @@ const TabSwitchAnalyticsCard = () => {
         "
       >
         <h2 className="text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
-          Tab Switch Analytics
+          {title}
         </h2>
 
         <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-          No tab switch data available.
+          {noData}
         </p>
       </div>
     );
@@ -104,16 +130,13 @@ const TabSwitchAnalyticsCard = () => {
         "
       >
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-
           <h2 className="flex min-w-0 items-center gap-2 text-lg font-bold text-slate-900 dark:text-white sm:text-xl">
             <ArrowRightLeft
               size={22}
               className="shrink-0 text-indigo-600 dark:text-indigo-400"
             />
 
-            <span>
-              Tab Switch Analytics
-            </span>
+            <span>{title}</span>
           </h2>
 
           <div
@@ -128,21 +151,19 @@ const TabSwitchAnalyticsCard = () => {
             "
           >
             <span className="font-bold text-indigo-700 dark:text-indigo-400">
-              {data.total_switches} switches
+              {data.total_switches} {switches}
             </span>
           </div>
-
         </div>
 
         {/* Date Filter */}
 
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-
           <label
             htmlFor="tab-switch-date"
             className="text-sm font-medium text-slate-700 dark:text-slate-300"
           >
-            Filter by date:
+            {filterByDate}
           </label>
 
           <input
@@ -193,31 +214,24 @@ const TabSwitchAnalyticsCard = () => {
                 dark:hover:bg-slate-800
               "
             >
-              Clear
+              {clear}
             </button>
           )}
-
         </div>
-
       </div>
 
       {/* Switches */}
 
       <div className="divide-y divide-slate-100 dark:divide-slate-800">
-
         {data.recent_switches.length === 0 ? (
-
           <div className="p-5 text-sm text-slate-500 dark:text-slate-400 sm:p-6">
             {selectedDate
-              ? "No tab switches found for the selected date."
-              : "No recent tab switches."}
+              ? noSelectedDateSwitches
+              : noRecentSwitches}
           </div>
-
         ) : (
-
           data.recent_switches.map(
             (item, index) => (
-
               <div
                 key={`${item.time}-${index}`}
                 className="
@@ -236,9 +250,7 @@ const TabSwitchAnalyticsCard = () => {
                   sm:p-6
                 "
               >
-
                 <div className="flex min-w-0 items-start gap-3">
-
                   <div
                     className="
                       shrink-0
@@ -256,7 +268,6 @@ const TabSwitchAnalyticsCard = () => {
                   </div>
 
                   <div className="min-w-0">
-
                     <h3 className="break-all font-semibold text-slate-900 dark:text-slate-100">
                       {item.from}
                     </h3>
@@ -264,9 +275,7 @@ const TabSwitchAnalyticsCard = () => {
                     <p className="mt-1 break-all text-sm text-slate-500 dark:text-slate-400">
                       → {item.to}
                     </p>
-
                   </div>
-
                 </div>
 
                 <span className="self-start whitespace-nowrap text-xs text-slate-500 dark:text-slate-400 sm:self-auto sm:text-sm">
@@ -274,16 +283,11 @@ const TabSwitchAnalyticsCard = () => {
                     item.time
                   ).toLocaleTimeString()}
                 </span>
-
               </div>
-
             )
           )
-
         )}
-
       </div>
-
     </div>
   );
 };
