@@ -84,10 +84,13 @@ const Footer = () => {
   );
 
   const aboutUsText = useTranslation("About Us");
+
   const contactText = useTranslation("Contact");
+
   const privacyPolicyText = useTranslation(
     "Privacy Policy"
   );
+
   const termsOfServiceText = useTranslation(
     "Terms of Service"
   );
@@ -146,19 +149,19 @@ const Footer = () => {
 
   const companyLinks = [
     {
-      label: "About Us",
+      label: aboutUsText,
       href: "/about",
     },
     {
-      label: "Contact",
+      label: contactText,
       href: "/contact",
     },
     {
-      label: "Privacy Policy",
+      label: privacyPolicyText,
       href: "/privacy",
     },
     {
-      label: "Terms of Service",
+      label: termsOfServiceText,
       href: "/terms",
     },
   ];

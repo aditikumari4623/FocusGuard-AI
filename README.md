@@ -2,6 +2,33 @@
 
 ### Human Attention Preservation & Digital Distraction Intelligence Platform
 
+<p align="center">
+  <strong>AI-powered productivity and digital attention intelligence platform</strong>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.x-blue?logo=python" alt="Python">
+  <img src="https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi" alt="FastAPI">
+  <img src="https://img.shields.io/badge/React-Frontend-61DAFB?logo=react" alt="React">
+  <img src="https://img.shields.io/badge/TypeScript-3178C6?logo=typescript" alt="TypeScript">
+  <img src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql" alt="PostgreSQL">
+  <img src="https://img.shields.io/badge/pgvector-RAG-3B82F6" alt="pgvector">
+  <img src="https://img.shields.io/badge/LLM-Groq%20%7C%20Gemini-purple" alt="LLM">
+  <img src="https://img.shields.io/badge/RAG-Enabled-orange" alt="RAG">
+</p>
+
+<p align="center">
+  <a href="https://github.com/aditikumari4623/FocusGuard-AI">Repository</a>
+  ·
+  <a href="#-key-features">Features</a>
+  ·
+  <a href="#-retrieval-augmented-generation-rag">RAG</a>
+  ·
+  <a href="#-tech-stack">Tech Stack</a>
+</p>
+
+---
+
 FocusGuard AI is an AI-powered productivity and digital attention monitoring platform that analyzes users' digital activity, identifies distraction patterns, tracks focus behavior, and provides personalized recommendations to improve productivity.
 
 The platform combines a FastAPI backend, React frontend, PostgreSQL database, Chrome Extension, analytics, AI/LLM integration, and Retrieval-Augmented Generation (RAG) to provide both real-time and historical productivity insights.
@@ -84,6 +111,7 @@ Analytics include:
 - Monthly activity
 
 ---
+
 
 ## 🤖 AI-Powered Productivity Recommendations
 
@@ -216,7 +244,7 @@ The frontend provides a language selector and translation context, while the bac
 
 
 
-🎨 Modern Responsive UI
+### 🎨 Modern Responsive UI
 
 The frontend is built with:
 
@@ -514,7 +542,7 @@ Digital Attention Intelligence Platform
 
 
 
-👩‍💻 Developer
+## 👩‍💻 Developer
 
 Aditi Kumari
 

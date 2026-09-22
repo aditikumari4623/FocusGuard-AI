@@ -110,7 +110,7 @@ const UserProfileSettings = () => {
 
   const organizationName = user?.organization_id
     ? `Organization #${user.organization_id}`
-    : "Not assigned";
+    : notAssignedText;
 
   const translatedOrganization =
     useTranslation(organizationName);

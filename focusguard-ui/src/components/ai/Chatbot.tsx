@@ -122,8 +122,7 @@ const Chatbot = () => {
       {
         id: 1,
         sender: "ai",
-        text:
-          "Hi! I'm the FocusGuard AI Assistant. Ask me about your productivity, focus score, activity, reports, or recommendations.",
+        text: initialMessage,
       },
     ]);
 
@@ -177,7 +176,7 @@ const Chatbot = () => {
         sender: "ai",
         text:
           backendError ??
-          "Sorry, I couldn't process your request right now.",
+          errorMessageText,
       };
 
       setMessages((previous) => [

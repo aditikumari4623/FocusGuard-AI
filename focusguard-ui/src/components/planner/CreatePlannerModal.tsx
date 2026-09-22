@@ -177,9 +177,7 @@ const CreatePlannerModal = ({
 
                 toast.success(
                   <TranslatedToastMessage
-                    message={
-                      "Planner updated successfully."
-                    }
+                    message={plannerUpdatedText}
                   />
                 );
               } else {
@@ -191,9 +189,7 @@ const CreatePlannerModal = ({
 
                 toast.success(
                   <TranslatedToastMessage
-                    message={
-                      "Planner created successfully."
-                    }
+                    message={plannerCreatedText}
                   />
                 );
               }
@@ -203,12 +199,14 @@ const CreatePlannerModal = ({
               console.error(error);
 
               const errorMessage =
-                error?.response?.data?.detail ??
-                "Unable to save planner.";
+                error?.response?.data?.detail;
 
               toast.error(
                 <TranslatedToastMessage
-                  message={errorMessage}
+                  message={
+                    errorMessage ||
+                    unableToSavePlannerText
+                  }
                 />
               );
             }

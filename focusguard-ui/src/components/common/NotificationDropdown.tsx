@@ -34,7 +34,11 @@ const NotificationDropdown = ({
   const handleNotificationClick = (
     notificationId: number
   ) => {
-    markRead.mutate(notificationId);
+    markRead.mutate(notificationId, {
+      onSuccess: () => {
+        onClose();
+      },
+    });
   };
 
   const handleMarkAll = () => {
@@ -42,7 +46,11 @@ const NotificationDropdown = ({
       return;
     }
 
-    markAll.mutate();
+    markAll.mutate(undefined, {
+      onSuccess: () => {
+        onClose();
+      },
+    });
   };
 
   return (
