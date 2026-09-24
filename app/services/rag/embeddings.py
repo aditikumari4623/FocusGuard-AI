@@ -1,6 +1,14 @@
+import os
 from functools import lru_cache
+from typing import TYPE_CHECKING
 
-from sentence_transformers import SentenceTransformer
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["MKL_NUM_THREADS"] = "1"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+
+if TYPE_CHECKING:
+    from sentence_transformers import SentenceTransformer
 
 
 # Local embedding model.
@@ -9,14 +17,19 @@ MODEL_NAME = "all-MiniLM-L6-v2"
 
 
 @lru_cache(maxsize=1)
-def get_embedding_model() -> SentenceTransformer:
+def get_embedding_model() -> "SentenceTransformer":
     """
-    Load the embedding model once and reuse it.
+    Load the embedding model only when it is actually needed.
 
-    The model is cached so we don't reload it every time
-    an embedding is generated.
+    The import and model loading are both delayed until the first
+    embedding request. The model is then cached and reused.
     """
-    return SentenceTransformer(MODEL_NAME)
+    from sentence_transformers import SentenceTransformer
+
+    return SentenceTransformer(
+        MODEL_NAME,
+        device="cpu",
+    )
 
 
 def embed_text(text: str) -> list[float]:
