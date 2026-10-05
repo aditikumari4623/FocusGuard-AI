@@ -244,10 +244,9 @@ const RegisterPage = () => {
 
             <p className="mt-6 max-w-lg text-lg leading-8 text-indigo-100">
 
-              Create the first Super Admin account
-              to start managing organizations,
-              users, productivity analytics and
-              AI-powered insights.
+              Create your FocusGuard account
+              and start improving your focus,
+              productivity and digital attention.
 
             </p>
 
@@ -311,17 +310,13 @@ const RegisterPage = () => {
 
 
               <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-
-                Create Super Admin
-
+                Create Your Account
               </h1>
 
 
               <p className="mt-2 text-slate-500 dark:text-slate-400">
-
-                Create the initial administrator account
-                for FocusGuard AI.
-
+                Create your FocusGuard account and start
+                your productivity journey.
               </p>
 
             </div>
@@ -618,7 +613,7 @@ const RegisterPage = () => {
 
                 {registerMutation.isPending
                   ? "Creating Account..."
-                  : "Create Super Admin Account"}
+                  : "Create Account"}
 
               </button>
 
@@ -644,18 +639,7 @@ const RegisterPage = () => {
 
             {/* Notice */}
 
-            <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-500/20 dark:bg-amber-500/10">
-
-              <p className="text-center text-xs leading-5 text-amber-700 dark:text-amber-300">
-
-                Registration is available only for the
-                initial Super Admin account. Once an
-                administrator exists, new users must be
-                created through the administrator.
-
-              </p>
-
-            </div>
+            
 
 
           </div>
