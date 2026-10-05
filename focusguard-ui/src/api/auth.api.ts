@@ -20,7 +20,7 @@ export const registerUser = async (
   data: RegisterRequest
 ): Promise<RegisterResponse> => {
   const response = await api.post(
-    "/auth/register",
+    "/auth/register-user",
     data
   );
 

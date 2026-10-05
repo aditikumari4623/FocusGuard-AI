@@ -115,6 +115,70 @@ def register_user(
 
 
 # ---------------------------------------------------
+# Public User Registration
+# ---------------------------------------------------
+
+@router.post(
+    "/register-user",
+    response_model=Message
+)
+def register_public_user(
+
+    user: UserRegister,
+
+    db: Session = Depends(get_db)
+
+):
+
+    existing_user = db.query(User).filter(
+        User.email == user.email
+    ).first()
+
+    if existing_user:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Email already registered."
+        )
+
+    new_user = User(
+
+        full_name=user.full_name,
+
+        email=user.email,
+
+        hashed_password=hash_password(
+            user.password
+        ),
+
+        age=user.age,
+
+        occupation=user.occupation,
+
+        # IMPORTANT:
+        # Public registration can ONLY create USER.
+        role="USER",
+
+        # Public users are not automatically
+        # assigned to an organization.
+        organization_id=None,
+
+        is_active=True
+
+    )
+
+    db.add(new_user)
+
+    db.commit()
+
+    db.refresh(new_user)
+
+    return {
+        "message": "Account created successfully. You can now log in."
+    }
+
+
+# ---------------------------------------------------
 # Login
 # ---------------------------------------------------
 
