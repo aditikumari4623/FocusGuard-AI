@@ -17,6 +17,7 @@ import {
   Zap,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { Link } from "react-router-dom";
 
 import { Button } from "../../components/ui/button";
 
@@ -234,8 +235,8 @@ const ProjectShowcasePage = () => {
       {/* Navigation */}
       <header className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-xl">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <a
-            href="/"
+          <Link
+            to="/"
             className="flex items-center gap-2 font-semibold tracking-tight"
           >
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
@@ -243,19 +244,19 @@ const ProjectShowcasePage = () => {
             </div>
 
             <span>FocusGuard AI</span>
-          </a>
+          </Link>
 
           <div className="flex items-center gap-3">
-            <a href="/">
+            <Link to="/">
               <Button variant="ghost">Back to Home</Button>
-            </a>
+            </Link>
 
-            <a href="/login">
+            <Link to="/login">
               <Button>
                 Open Application
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -286,12 +287,12 @@ const ProjectShowcasePage = () => {
             </p>
 
             <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-              <a href="/login">
+              <Link to="/login">
                 <Button size="lg" className="w-full sm:w-auto">
                   Try the Application
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </a>
+              </Link>
 
               <a
                 href="https://github.com/aditikumari4623/FocusGuard-AI"
@@ -339,16 +340,9 @@ const ProjectShowcasePage = () => {
             ["03", "Intelligence", "Analytics + RAG + LLM"],
             ["04", "Security", "JWT + role-based access"],
           ].map(([number, title, description]) => (
-            <div
-              key={number}
-              className="rounded-2xl border bg-card p-5"
-            >
-              <p className="text-sm font-semibold text-primary">
-                {number}
-              </p>
-
+            <div key={number} className="rounded-2xl border bg-card p-5">
+              <p className="text-sm font-semibold text-primary">{number}</p>
               <p className="mt-2 font-semibold">{title}</p>
-
               <p className="mt-1 text-sm text-muted-foreground">
                 {description}
               </p>
@@ -438,9 +432,7 @@ const ProjectShowcasePage = () => {
                         <Icon className="h-5 w-5 text-primary" />
                       </div>
 
-                      <p className="mt-4 text-sm font-semibold">
-                        {title}
-                      </p>
+                      <p className="mt-4 text-sm font-semibold">{title}</p>
 
                       <p className="mt-2 text-xs leading-5 text-muted-foreground">
                         {description}
@@ -492,9 +484,7 @@ const ProjectShowcasePage = () => {
                   </span>
                 </div>
 
-                <h3 className="mt-5 text-lg font-semibold">
-                  {title}
-                </h3>
+                <h3 className="mt-5 text-lg font-semibold">{title}</h3>
 
                 <p className="mt-3 text-sm leading-7 text-muted-foreground">
                   {description}
@@ -572,9 +562,7 @@ const ProjectShowcasePage = () => {
 
               <ArrowRight className="h-4 w-4 text-muted-foreground" />
 
-              <span className="rounded-full border px-4 py-2">
-                Groq
-              </span>
+              <span className="rounded-full border px-4 py-2">Groq</span>
 
               <ArrowRight className="h-4 w-4 text-muted-foreground" />
 
@@ -817,9 +805,7 @@ const ProjectShowcasePage = () => {
                     {technology}
                   </p>
 
-                  <p className="mt-1 text-sm font-medium">
-                    {platform}
-                  </p>
+                  <p className="mt-1 text-sm font-medium">{platform}</p>
 
                   <p className="mt-4 text-sm leading-7 text-muted-foreground">
                     {description}
@@ -894,7 +880,7 @@ const ProjectShowcasePage = () => {
             </p>
 
             <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <a href="/login">
+              <Link to="/login">
                 <Button
                   size="lg"
                   variant="secondary"
@@ -903,7 +889,7 @@ const ProjectShowcasePage = () => {
                   Open Live Application
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </a>
+              </Link>
 
               <a
                 href="https://github.com/aditikumari4623/FocusGuard-AI"
@@ -920,7 +906,7 @@ const ProjectShowcasePage = () => {
                 </Button>
               </a>
 
-              <a href="/">
+              <Link to="/">
                 <Button
                   size="lg"
                   variant="outline"
@@ -928,7 +914,7 @@ const ProjectShowcasePage = () => {
                 >
                   Back to Portfolio
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -940,13 +926,13 @@ const ProjectShowcasePage = () => {
           <p>FocusGuard AI — Digital Attention Intelligence Platform</p>
 
           <div className="flex items-center gap-4">
-            <a href="/" className="hover:text-foreground">
+            <Link to="/" className="hover:text-foreground">
               Home
-            </a>
+            </Link>
 
-            <a href="/login" className="hover:text-foreground">
+            <Link to="/login" className="hover:text-foreground">
               Login
-            </a>
+            </Link>
           </div>
         </div>
       </footer>
