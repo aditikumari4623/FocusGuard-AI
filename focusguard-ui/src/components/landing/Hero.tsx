@@ -24,17 +24,6 @@ const Hero = () => {
   const averageFocusText = useTranslation("Average Focus");
   const teamsText = useTranslation("Teams");
 
-  const scrollToFeatures = () => {
-    const element = document.getElementById("features");
-
-    if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  };
-
   return (
     <section className="relative overflow-hidden bg-white dark:bg-slate-950">
       {/* Background decoration */}
@@ -95,13 +84,12 @@ const Hero = () => {
                 {getStartedText}
               </Link>
 
-              <button
-                type="button"
-                onClick={scrollToFeatures}
+              <Link
+                to="/project"
                 className="inline-flex min-h-12 items-center justify-center rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 sm:px-7 sm:text-base"
               >
                 {watchDemoText}
-              </button>
+              </Link>
             </div>
 
             {/* Stats */}
