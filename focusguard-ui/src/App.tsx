@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 
 import LandingPage from "./pages/Landing/LandingPage";
+import ProjectShowcasePage from "./pages/Project/ProjectShowcasePage";
 import LoginPage from "./pages/Auth/LoginPage";
 import RegisterPage from "./pages/Auth/RegisterPage";
 import AcceptInvitationPage from "./pages/Auth/AcceptInvitationPage";
@@ -82,6 +83,11 @@ function App() {
       <Route
         path="/"
         element={<LandingPage />}
+      />
+
+      <Route
+        path="/project"
+        element={<ProjectShowcasePage />}
       />
 
       <Route
