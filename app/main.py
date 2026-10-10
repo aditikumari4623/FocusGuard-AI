@@ -24,6 +24,8 @@ from app.services.rag.scheduler import (
     stop_rag_scheduler,
 )
 
+from app.seed_website_categories import seed_website_categories
+
 
 # ============================================================
 # DATABASE
@@ -41,18 +43,15 @@ Base.metadata.create_all(
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 
-    # ---------------------------------------
-    # START
-    # ---------------------------------------
+    # Initialize default website categories.
+    seed_website_categories()
 
+    # Start existing RAG scheduler.
     start_rag_scheduler()
 
     yield
 
-    # ---------------------------------------
-    # SHUTDOWN
-    # ---------------------------------------
-
+    # Stop existing RAG scheduler.
     stop_rag_scheduler()
 
 
