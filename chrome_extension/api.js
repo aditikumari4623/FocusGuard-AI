@@ -1,3 +1,4 @@
+
 import { API_BASE_URL } from "./config.js";
 
 import {
@@ -7,414 +8,202 @@ import {
     clearStorage
 } from "./storage.js";
 
+// Parse JSON safely, including Cloudflare HTML error pages.
+async function parseResponse(response) {
+    const text = await response.text();
 
-// -------------------------------------------------
-// Refresh Access Token
-// -------------------------------------------------
+    let data = null;
 
+    if (text) {
+        try {
+            data = JSON.parse(text);
+        } catch {
+            data = null;
+        }
+    }
+
+    if (!response.ok) {
+        const detail =
+            data?.detail ||
+            data?.message ||
+            (text && !data
+                ? `Server returned a non-JSON response (${response.status}).`
+                : `HTTP ${response.status}`);
+
+        const error = new Error(
+            `${response.status}: ${detail}`
+        );
+
+        error.status = response.status;
+        throw error;
+    }
+
+    if (text && data === null) {
+        throw new Error("Server returned invalid JSON.");
+    }
+
+    return data;
+}
+
+// Refresh access token.
 async function refreshAccessToken() {
-
     const refreshToken = await getRefreshToken();
 
     if (!refreshToken) {
-
-        throw new Error("Refresh Token Not Found");
-
+        throw new Error("NOT_LOGGED_IN");
     }
 
     const response = await fetch(
-
         `${API_BASE_URL}/auth/refresh-token`,
-
         {
-
             method: "POST",
-
             headers: {
-
                 "Content-Type": "application/json"
-
             },
-
             body: JSON.stringify({
-
                 refresh_token: refreshToken
-
             })
-
         }
-
     );
 
-    if (!response.ok) {
+    const data = await parseResponse(response);
 
-    await clearStorage();
-
-    throw new Error("Refresh Token Expired");
-
-}
-
-    const data = await response.json();
-
-    await saveAccessToken(
-
-        data.access_token
-
-    );
-
-    console.log("✅ Access Token Refreshed");
-
-    return data.access_token;
-
-}
-
-
-// -------------------------------------------------
-// Authenticated Fetch
-// -------------------------------------------------
-
-async function authenticatedFetch(url, options) {
-
-    let token = await getAccessToken();
-
-    // No access token
-    if (!token) {
-
-        console.log("No Access Token");
-
-        throw new Error("NOT_LOGGED_IN");
-
+    if (!data?.access_token) {
+        throw new Error("Refresh response has no access token.");
     }
 
-    options.headers = {
+    await saveAccessToken(data.access_token);
 
-        ...options.headers,
+    console.log("Access token refreshed.");
 
-        Authorization: `Bearer ${token}`
+    return data.access_token;
+}
 
-    };
+// Authenticated request with one refresh attempt after 401.
+async function authenticatedFetch(url, options = {}) {
+    let token = await getAccessToken();
 
-    let response = await fetch(
+    if (!token) {
+        throw new Error("NOT_LOGGED_IN");
+    }
 
-        url,
+    const makeRequest = (accessToken) =>
+        fetch(url, {
+            ...options,
+            headers: {
+                ...options.headers,
+                Authorization: `Bearer ${accessToken}`
+            }
+        });
 
-        options
+    let response = await makeRequest(token);
 
-    );
-
-    // Access Token Expired
     if (response.status === 401) {
-
-        console.log("Access Token Expired");
-
         try {
-
             token = await refreshAccessToken();
-
-            options.headers.Authorization =
-
-                `Bearer ${token}`;
-
-            response = await fetch(
-
-                url,
-
-                options
-
-            );
-
-        }
-
-        catch (error) {
-
-            console.log("Session Expired");
-
+        } catch (error) {
             await clearStorage();
-
             throw error;
-
         }
 
+        response = await makeRequest(token);
     }
 
     return response;
-
 }
 
-
-// -------------------------------------------------
-// Start Activity
-// -------------------------------------------------
+// Shared request helper.
+async function apiRequest(url, options = {}) {
+    const response = await authenticatedFetch(url, options);
+    return parseResponse(response);
+}
 
 export async function startActivity(activity) {
-
     try {
-
-        const response = await authenticatedFetch(
-
-            `${API_BASE_URL}/activity/start`,
-
-            {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type": "application/json"
-
-                },
-
-                body: JSON.stringify(activity)
-
-            }
-
-        );
-
-        return await response.json();
-
+        return await apiRequest(`${API_BASE_URL}/activity/start`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(activity)
+        });
+    } catch (error) {
+        console.error("startActivity failed:", error);
+        return null;
     }
-
-    catch (error) {
-
-        console.error(error);
-
-    }
-
 }
-
-
-// -------------------------------------------------
-// End Activity
-// -------------------------------------------------
 
 export async function endActivity(activityId) {
-
     try {
-
-        const response = await authenticatedFetch(
-
+        return await apiRequest(
             `${API_BASE_URL}/activity/end/${activityId}`,
-
-            {
-
-                method: "PUT",
-
-                headers: {}
-
-            }
-
+            { method: "PUT" }
         );
-
-        return await response.json();
-
+    } catch (error) {
+        console.error("endActivity failed:", error);
+        return null;
     }
-
-    catch (error) {
-
-        console.error(error);
-
-    }
-
 }
 
-
-// -------------------------------------------------
-// Save Tab Switch
-// -------------------------------------------------
-
-export async function saveTabSwitch(
-
-    fromWebsite,
-
-    toWebsite
-
-) {
-
+export async function saveTabSwitch(fromWebsite, toWebsite) {
     try {
-
-        const response = await authenticatedFetch(
-
-            `${API_BASE_URL}/activity/tab-switch`,
-
-            {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type": "application/json"
-
-                },
-
-                body: JSON.stringify({
-
-                    from_website: fromWebsite,
-
-                    to_website: toWebsite
-
-                })
-
-            }
-
-        );
-
-        return await response.json();
-
+        return await apiRequest(`${API_BASE_URL}/activity/tab-switch`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                from_website: fromWebsite,
+                to_website: toWebsite
+            })
+        });
+    } catch (error) {
+        console.error("saveTabSwitch failed:", error);
+        return null;
     }
-
-    catch (error) {
-
-        console.error(error);
-
-    }
-
 }
-
-
-// -------------------------------------------------
-// Update User Status
-// -------------------------------------------------
 
 export async function updateUserStatus(status) {
-
     try {
-
-        const response = await authenticatedFetch(
-
-            `${API_BASE_URL}/activity/status`,
-
-            {
-
-                method: "POST",
-
-                headers: {
-
-                    "Content-Type": "application/json"
-
-                },
-
-                body: JSON.stringify({
-
-                    status: status
-
-                })
-
-            }
-
-        );
-
-        return await response.json();
-
+        return await apiRequest(`${API_BASE_URL}/activity/status`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status })
+        });
+    } catch (error) {
+        console.error("updateUserStatus failed:", error);
+        return null;
     }
-
-    catch (error) {
-
-        console.error(error);
-
-    }
-
 }
-
-
-// -------------------------------------------------
-// Get Latest Notification
-// -------------------------------------------------
 
 export async function getLatestNotification() {
-
     try {
-
-        const response = await authenticatedFetch(
-
+        return await apiRequest(
             `${API_BASE_URL}/notifications/latest`,
-
-            {
-
-                method: "GET",
-
-                headers: {}
-
-            }
-
+            { method: "GET" }
         );
-
-        return await response.json();
-
+    } catch (error) {
+        console.error("getLatestNotification failed:", error);
+        return null;
     }
-
-    catch (error) {
-
-        console.error(error);
-
-    }
-
 }
-
-
-// -------------------------------------------------
-// Mark Notification As Read
-// -------------------------------------------------
 
 export async function markNotificationRead(notificationId) {
-
     try {
-
-        const response = await authenticatedFetch(
-
+        return await apiRequest(
             `${API_BASE_URL}/notifications/${notificationId}/read`,
-
-            {
-
-                method: "PATCH",
-
-                headers: {}
-
-            }
-
+            { method: "PATCH" }
         );
-
-        return await response.json();
-
+    } catch (error) {
+        console.error("markNotificationRead failed:", error);
+        return null;
     }
-
-    catch (error) {
-
-        console.error(error);
-
-    }
-
 }
 
-// -------------------------------------------------
-// Check Planner Focus
-// -------------------------------------------------
-
 export async function checkPlannerFocus() {
-
     try {
-
-        const response = await authenticatedFetch(
-
+        return await apiRequest(
             `${API_BASE_URL}/planner/check-focus`,
-
-            {
-
-                method: "POST",
-
-                headers: {}
-
-            }
-
+            { method: "POST" }
         );
-
-        return await response.json();
-
+    } catch (error) {
+        console.error("checkPlannerFocus failed:", error);
+        return null;
     }
-
-    catch (error) {
-
-        console.error(error);
-
-    }
-
 }

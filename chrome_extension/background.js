@@ -1,541 +1,438 @@
+
 import {
-
-    startActivity,
-
-    endActivity,
-
-    saveTabSwitch,
-
-    updateUserStatus,
-
-    getLatestNotification,
-
-    markNotificationRead,
-
-    checkPlannerFocus
-
+  startActivity,
+  endActivity,
+  saveTabSwitch,
+  updateUserStatus,
+  getLatestNotification,
+  markNotificationRead,
+  checkPlannerFocus,
 } from "./api.js";
 
 import {
-
-    getAccessToken,
-
-    getActivityId,
-
-    saveActivityId
-
+  getAccessToken,
+  getActivityId,
+  saveActivityId,
 } from "./storage.js";
 
+// ----------------------------------------------------
+// State
+// ----------------------------------------------------
 
 let currentTabId = null;
 let currentUrl = null;
 let previousWebsite = null;
 let currentStatus = "ACTIVE";
 
+const STATUS_ALARM = "focusguard-status-heartbeat";
+const NOTIFICATION_ALARM = "focusguard-notifications";
+const PLANNER_ALARM = "focusguard-planner-focus";
 
-// -------------------------------------------
+// ----------------------------------------------------
 // Ignore Internal Browser Pages
-// -------------------------------------------
+// ----------------------------------------------------
 
 function isValidUrl(url) {
+  if (!url) return false;
 
-    if (!url) return false;
-
-    return (
-
-        !url.startsWith("chrome://") &&
-        !url.startsWith("edge://") &&
-        !url.startsWith("about:") &&
-        !url.startsWith("chrome-extension://")
-
-    );
-
+  return (
+    url.startsWith("http://") ||
+    url.startsWith("https://")
+  );
 }
 
-
-// -------------------------------------------
+// ----------------------------------------------------
 // Start Tracking New Activity
-// -------------------------------------------
+// ----------------------------------------------------
 
 async function trackNewActivity(tab) {
+  if (!tab?.id || !isValidUrl(tab.url)) {
+    console.log("Ignored tab:", tab?.url);
+    return false;
+  }
 
-    if (!isValidUrl(tab.url)) {
+  const token = await getAccessToken();
 
-        console.log("Ignored:", tab.url);
+  if (!token) {
+    console.log("No access token. Tracking not started.");
+    return false;
+  }
 
-        return;
+  // Avoid restarting the same activity unnecessarily.
+  if (
+    currentTabId === tab.id &&
+    currentUrl === tab.url
+  ) {
+    return true;
+  }
 
-    }
+  const currentWebsite = tab.title || tab.url;
 
+  // End the previous activity before starting another.
+  const previousActivityId = await getActivityId();
+
+  if (previousActivityId) {
+    await endActivity(previousActivityId);
+    await saveActivityId(null);
+  }
+
+  // Record the tab switch when the website changes.
+  if (
+    previousWebsite !== null &&
+    previousWebsite !== currentWebsite
+  ) {
+    await saveTabSwitch(
+      previousWebsite,
+      currentWebsite
+    );
+  }
+
+  const response = await startActivity({
+    url: tab.url,
+    tab_title: tab.title || tab.url,
+    application: "Chrome",
+  });
+
+  if (!response?.activity_id) {
+    console.error(
+      "Activity was not started. Check the activity API response."
+    );
+
+    currentTabId = null;
+    currentUrl = null;
+
+    return false;
+  }
+
+  await saveActivityId(response.activity_id);
+
+  currentTabId = tab.id;
+  currentUrl = tab.url;
+  previousWebsite = currentWebsite;
+
+  console.log("Tracking started:", tab.url);
+  console.log("Activity ID:", response.activity_id);
+
+  return true;
+}
+
+// ----------------------------------------------------
+// Start Tracking the Currently Active Tab
+// ----------------------------------------------------
+
+async function trackActiveTab() {
+  try {
     const token = await getAccessToken();
 
     if (!token) {
-
-        console.log("No Access Token");
-
-        return;
-
+      console.log("No access token; waiting for login.");
+      return false;
     }
 
-    // ------------------------------------
-    // Current Website
-    // ------------------------------------
+    const tabs = await chrome.tabs.query({
+      active: true,
+      lastFocusedWindow: true,
+    });
 
-    const currentWebsite = tab.title;
+    const activeTab = tabs[0];
 
-    // ------------------------------------
-    // Save Tab Switch
-    // ------------------------------------
-
-    if (
-
-        previousWebsite !== null &&
-
-        previousWebsite !== currentWebsite
-
-    ) {
-
-        await saveTabSwitch(
-
-            
-
-            previousWebsite,
-
-            currentWebsite
-
-        );
-
+    if (!activeTab) {
+      console.log("No active tab found.");
+      return false;
     }
 
-    // ------------------------------------
-    // End Previous Activity
-    // ------------------------------------
-
-    const previousActivityId = await getActivityId();
-
-    if (previousActivityId) {
-
-        await endActivity(
-
-            
-
-            previousActivityId
-
-        );
-
-    }
-
-    // ------------------------------------
-    // Start New Activity
-    // ------------------------------------
-
-    const response = await startActivity(
-
-        
-
-        {
-
-            url: tab.url,
-
-            tab_title: tab.title,
-
-            application: "Chrome"
-
-        }
-
+    return await trackNewActivity(activeTab);
+  } catch (error) {
+    console.error(
+      "Could not track the active tab:",
+      error
     );
 
-    if (
-
-        response &&
-
-        response.activity_id
-
-    ) {
-
-        await saveActivityId(
-
-            response.activity_id
-
-        );
-
-    }
-
-    currentTabId = tab.id;
-
-    currentUrl = tab.url;
-
-    previousWebsite = currentWebsite;
-
-    console.log("Tracking:", tab.url);
-
+    return false;
+  }
 }
 
+// ----------------------------------------------------
+// Login Success Message from popup.js
+// ----------------------------------------------------
 
-// -------------------------------------------
-// Tab Changed
-// -------------------------------------------
+chrome.runtime.onMessage.addListener(
+  (message, sender, sendResponse) => {
+    if (
+      message?.type !== "FOCUSGUARD_START_TRACKING"
+    ) {
+      return;
+    }
+
+    trackActiveTab()
+      .then((started) => {
+        sendResponse({
+          ok: started,
+          error: started
+            ? null
+            : "Tracking could not start. Check the service worker console.",
+        });
+      })
+      .catch((error) => {
+        console.error(
+          "Login tracking initialization failed:",
+          error
+        );
+
+        sendResponse({
+          ok: false,
+          error: error.message || "Tracking initialization failed.",
+        });
+      });
+
+    // Keep the message channel open for the async response.
+    return true;
+  }
+);
+
+// ----------------------------------------------------
+// Tab Activated
+// ----------------------------------------------------
 
 chrome.tabs.onActivated.addListener(
+  async (activeInfo) => {
+    try {
+      const tab = await chrome.tabs.get(
+        activeInfo.tabId
+      );
 
-    async (activeInfo) => {
-
-        try {
-
-            const tab = await chrome.tabs.get(
-
-                activeInfo.tabId
-
-            );
-
-            await trackNewActivity(tab);
-
-        }
-
-        catch (error) {
-
-            console.error(error);
-
-        }
-
+      await trackNewActivity(tab);
+    } catch (error) {
+      console.error(
+        "Tab activation tracking error:",
+        error
+      );
     }
-
+  }
 );
 
-
-// -------------------------------------------
-// URL Changed Inside Same Tab
-// -------------------------------------------
+// ----------------------------------------------------
+// URL Changed in the Current Tab
+// ----------------------------------------------------
 
 chrome.tabs.onUpdated.addListener(
-
-    async (
-
-        tabId,
-
-        changeInfo,
-
-        tab
-
-    ) => {
-
-        if (
-
-            changeInfo.status !== "complete"
-
-        ) {
-
-            return;
-
-        }
-
-        if (
-
-            tabId !== currentTabId
-
-        ) {
-
-            return;
-
-        }
-
-        if (
-
-            tab.url === currentUrl
-
-        ) {
-
-            return;
-
-        }
-
-        await trackNewActivity(tab);
-
+  async (tabId, changeInfo, tab) => {
+    if (changeInfo.status !== "complete") {
+      return;
     }
 
+    if (!tab.active) {
+      return;
+    }
+
+    if (
+      tabId === currentTabId &&
+      tab.url === currentUrl
+    ) {
+      return;
+    }
+
+    try {
+      await trackNewActivity(tab);
+    } catch (error) {
+      console.error(
+        "Tab update tracking error:",
+        error
+      );
+    }
+  }
 );
 
-
-// -------------------------------------------
+// ----------------------------------------------------
 // Tab Closed
-// -------------------------------------------
+// ----------------------------------------------------
 
 chrome.tabs.onRemoved.addListener(
-
-    async (tabId) => {
-
-        if (
-
-            tabId !== currentTabId
-
-        ) {
-
-            return;
-
-        }
-
-        const token = await getAccessToken();
-
-        const activityId = await getActivityId();
-
-        if (
-
-            token &&
-
-            activityId
-
-        ) {
-
-            await endActivity(
-
-                
-
-                activityId
-
-            );
-
-        }
-
+  async (tabId) => {
+    if (tabId !== currentTabId) {
+      return;
     }
 
+    try {
+      const token = await getAccessToken();
+      const activityId = await getActivityId();
+
+      if (token && activityId) {
+        await endActivity(activityId);
+        await saveActivityId(null);
+      }
+
+      currentTabId = null;
+      currentUrl = null;
+    } catch (error) {
+      console.error(
+        "Tab close tracking error:",
+        error
+      );
+    }
+  }
 );
 
-// -------------------------------------------
+// ----------------------------------------------------
 // Idle Detection
-// -------------------------------------------
+// ----------------------------------------------------
 
-// User becomes IDLE after 60 seconds
 chrome.idle.setDetectionInterval(60);
 
 chrome.idle.onStateChanged.addListener(
-
-    async (state) => {
-
-        const token = await getAccessToken();
-
-        if (!token) return;
-
-        if (state === "active") {
-
-            if (currentStatus !== "ACTIVE") {
-
-                currentStatus = "ACTIVE";
-
-                await updateUserStatus(
-
-                    
-
-                    "ACTIVE"
-
-                );
-
-                console.log("User is ACTIVE");
-
-            }
-
-        }
-
-        else {
-
-            if (currentStatus !== "IDLE") {
-
-                currentStatus = "IDLE";
-
-                await updateUserStatus(
-
-                    
-
-                    "IDLE"
-
-                );
-
-                console.log("User is IDLE");
-
-            }
-
-        }
-
-    }
-
-);
-
-
-// -------------------------------------------
-// Status Heartbeat
-// -------------------------------------------
-
-// Keep the backend status session updated
-// even when the user's status does not change.
-
-setInterval(
-    async () => {
-
-        try {
-
-            const token = await getAccessToken();
-
-            if (!token) {
-                return;
-            }
-
-            await updateUserStatus(currentStatus);
-
-            console.log(
-                "Status heartbeat:",
-                currentStatus
-            );
-
-        }
-
-        catch (error) {
-
-            console.error(
-                "Status heartbeat error:",
-                error
-            );
-
-        }
-
-    },
-    5 * 60 * 1000
-);
-
-
-// -------------------------------------------
-// Browser Notifications
-// -------------------------------------------
-
-async function checkNotifications() {
-
+  async (state) => {
     try {
+      const token = await getAccessToken();
 
-        const token = await getAccessToken();
+      if (!token) return;
 
-        if (!token) {
+      const newStatus =
+        state === "active" ? "ACTIVE" : "IDLE";
 
-            return;
+      if (currentStatus === newStatus) {
+        return;
+      }
 
-        }
+      currentStatus = newStatus;
 
-        const notification = await getLatestNotification();
+      await updateUserStatus(currentStatus);
 
-        if (
-
-            !notification ||
-
-            !notification.id
-
-        ) {
-
-            return;
-
-        }
-
-        chrome.notifications.create(
-
-            `focusguard-${notification.id}`,
-
-            {
-
-                type: "basic",
-
-                iconUrl: chrome.runtime.getURL("icon.png"),
-
-                title: notification.title,
-
-                message: notification.message,
-
-                requireInteraction: true,
-
-                priority: 2
-
-            }
-
-        );
-
-        await markNotificationRead(
-
-            notification.id
-
-        );
-
+      console.log("User status:", currentStatus);
+    } catch (error) {
+      console.error(
+        "Idle status update failed:",
+        error
+      );
     }
-
-    catch (error) {
-
-        console.error(error);
-
-    }
-
-}
-
-
-// -------------------------------------------
-// Check Notifications Every 30 Seconds
-// -------------------------------------------
-
-setInterval(
-
-    checkNotifications,
-
-    30000
-
+  }
 );
-
-
-// Run Immediately On Extension Startup
-
-checkNotifications();
-
 
 // ----------------------------------------------------
-// Check Planner Focus
+// Status Heartbeat
+// ----------------------------------------------------
+
+async function sendStatusHeartbeat() {
+  try {
+    const token = await getAccessToken();
+
+    if (!token) return;
+
+    await updateUserStatus(currentStatus);
+
+    console.log(
+      "Status heartbeat:",
+      currentStatus
+    );
+  } catch (error) {
+    console.error(
+      "Status heartbeat error:",
+      error
+    );
+  }
+}
+
+// ----------------------------------------------------
+// Browser Notifications
+// ----------------------------------------------------
+
+async function checkNotifications() {
+  try {
+    const token = await getAccessToken();
+
+    if (!token) return;
+
+    const notification = await getLatestNotification();
+
+    if (!notification?.id) return;
+
+    await chrome.notifications.create(
+      `focusguard-${notification.id}`,
+      {
+        type: "basic",
+        iconUrl: chrome.runtime.getURL("icon.png"),
+        title: notification.title || "FocusGuard AI",
+        message: notification.message || "You have a new notification.",
+        requireInteraction: true,
+        priority: 2,
+      }
+    );
+
+    await markNotificationRead(notification.id);
+  } catch (error) {
+    console.error(
+      "Notification check failed:",
+      error
+    );
+  }
+}
+
+// ----------------------------------------------------
+// Planner Focus Check
 // ----------------------------------------------------
 
 async function checkFocus() {
+  try {
+    const token = await getAccessToken();
 
-    try {
+    if (!token) return;
 
-        const token = await getAccessToken();
+    const data = await checkPlannerFocus();
 
-        if (!token) {
-
-            return;
-
-        }
-
-        const data = await checkPlannerFocus();
-
-        if (!data) {
-
-            return;
-
-        }
-
-        console.log("Planner:", data.status);
-
+    if (data) {
+      console.log("Planner focus:", data.status, data);
     }
-
-    catch (error) {
-
-        console.error(error);
-
-    }
-
+  } catch (error) {
+    console.error(
+      "Planner focus check failed:",
+      error
+    );
+  }
 }
 
 // ----------------------------------------------------
-// Check Planner Every 2 Minutes
+// Chrome Alarms
 // ----------------------------------------------------
 
-setInterval(
+function configureAlarms() {
+  chrome.alarms.create(STATUS_ALARM, {
+    periodInMinutes: 5,
+  });
 
-    checkFocus,
+  chrome.alarms.create(NOTIFICATION_ALARM, {
+    periodInMinutes: 0.5,
+  });
 
-    60000
+  chrome.alarms.create(PLANNER_ALARM, {
+    periodInMinutes: 1,
+  });
+}
 
-);
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === STATUS_ALARM) {
+    sendStatusHeartbeat();
+  } else if (alarm.name === NOTIFICATION_ALARM) {
+    checkNotifications();
+  } else if (alarm.name === PLANNER_ALARM) {
+    checkFocus();
+  }
+});
 
-// Run once when extension starts
+// ----------------------------------------------------
+// Extension Lifecycle
+// ----------------------------------------------------
 
+chrome.runtime.onInstalled.addListener(() => {
+  configureAlarms();
+  trackActiveTab();
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  configureAlarms();
+  trackActiveTab();
+});
+
+// Restore alarms and tracking when the service worker starts.
+configureAlarms();
+trackActiveTab();
+checkNotifications();
 checkFocus();

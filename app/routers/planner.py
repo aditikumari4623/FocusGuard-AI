@@ -1,42 +1,120 @@
 from fastapi import APIRouter, Depends, HTTPException
+
 from sqlalchemy.orm import Session
+
 from sqlalchemy import func
+
 from datetime import datetime, time, timedelta
 
+from zoneinfo import ZoneInfo
 
 from app.database import SessionLocal
+
 from app.dependencies import get_current_user
+
 from app.services.analytics_service import (
+
     get_dashboard_metrics,
+
     get_category_time_summary
+
 )
 
 from app.services.prompts import build_focus_planner_prompt
+
 from app.services.llm import llm_service
+
 from app.services.translation_service import TranslationService
 
 from app.models import (
+
     FocusPlan,
+
     FocusPlanItem,
+
     WebsiteCategory,
+
     ActivityLog,
+
     Notification
+
 )
 
 from app.schemas import (
+
     FocusPlanCreate,
+
     FocusPlanUpdate,
+
     FocusPlanResponse
+
 )
+
+IST = ZoneInfo("Asia/Kolkata")
+
+
+def normalize_plan_date(value: datetime) -> datetime:
+    """Normalize a requested plan date to midnight in the India-local calendar."""
+    if value.tzinfo is not None:
+        value = value.astimezone(IST)
+    return datetime.combine(value.date(), time.min)
+
+
+def get_plan_for_date(db: Session, user_id: int, target_date):
+    """
+    Find a plan for an India-local calendar date.
+
+    The date() match supports plans stored at local midnight. The UTC-naive
+    range also supports older rows saved as UTC timestamps in a timezone-naive
+    PostgreSQL DateTime column.
+    """
+    start_utc_naive = (
+        datetime.combine(target_date, time.min, tzinfo=IST)
+        .astimezone(ZoneInfo("UTC"))
+        .replace(tzinfo=None)
+    )
+    end_utc_naive = (
+        datetime.combine(target_date + timedelta(days=1), time.min, tzinfo=IST)
+        .astimezone(ZoneInfo("UTC"))
+        .replace(tzinfo=None)
+    )
+
+    return (
+        db.query(FocusPlan)
+        .filter(
+            FocusPlan.user_id == user_id,
+            (
+                (func.date(FocusPlan.plan_date) == target_date)
+                | (
+                    (FocusPlan.plan_date >= start_utc_naive)
+                    & (FocusPlan.plan_date < end_utc_naive)
+                )
+            ),
+        )
+        .order_by(FocusPlan.id.desc())
+        .first()
+    )
+
+
+def get_plan_for_ist_today(db: Session, user_id: int):
+    now_ist = datetime.now(IST)
+    today = now_ist.date()
+    plan = get_plan_for_date(db, user_id, today)
+    return today, now_ist, plan
+
 
 router = APIRouter(
+
     prefix="/planner",
+
     tags=["Focus Planner"]
+
 )
 
-
 # -----------------------------------------------------
+
 # Database Dependency
+
 # -----------------------------------------------------
 
 def get_db():
@@ -44,17 +122,21 @@ def get_db():
     db = SessionLocal()
 
     try:
+
         yield db
 
     finally:
+
         db.close()
 
-
 # -----------------------------------------------------
+
 # Create Focus Plan
+
 # -----------------------------------------------------
 
 @router.post("")
+
 def create_focus_plan(
 
     request: FocusPlanCreate,
@@ -65,31 +147,26 @@ def create_focus_plan(
 
 ):
 
-    existing_plan = (
-
-        db.query(FocusPlan)
-
-        .filter(
-            FocusPlan.user_id == current_user.id,
-            func.date(FocusPlan.plan_date) == request.plan_date.date()
-        )
-
-        .first()
-
+    normalized_plan_date = normalize_plan_date(request.plan_date)
+    existing_plan = get_plan_for_date(
+        db, current_user.id, normalized_plan_date.date()
     )
 
     if existing_plan:
 
         raise HTTPException(
+
             status_code=400,
+
             detail="Focus plan already exists for this date."
+
         )
 
     plan = FocusPlan(
 
         user_id=current_user.id,
 
-        plan_date=request.plan_date,
+        plan_date=normalized_plan_date,
 
         total_goal_minutes=request.total_goal_minutes
 
@@ -112,7 +189,9 @@ def create_focus_plan(
                 category=item.category,
 
                 planned_minutes=item.planned_minutes,
+
                 start_time=item.start_time,
+
                 end_time=item.end_time
 
             )
@@ -129,12 +208,14 @@ def create_focus_plan(
 
     }
 
-
 # -----------------------------------------------------
+
 # Update Focus Plan
+
 # -----------------------------------------------------
 
 @router.put("/{plan_id}")
+
 def update_focus_plan(
 
     plan_id: int,
@@ -152,8 +233,11 @@ def update_focus_plan(
         db.query(FocusPlan)
 
         .filter(
+
             FocusPlan.id == plan_id,
+
             FocusPlan.user_id == current_user.id
+
         )
 
         .first()
@@ -216,12 +300,14 @@ def update_focus_plan(
 
     }
 
-
 # -----------------------------------------------------
+
 # Get Today's Plan
+
 # -----------------------------------------------------
 
 @router.get("/today")
+
 def get_today_plan(
 
     db: Session = Depends(get_db),
@@ -230,23 +316,7 @@ def get_today_plan(
 
 ):
 
-    today = datetime.now().date()
-
-    plan = (
-
-        db.query(FocusPlan)
-
-        .filter(
-
-            FocusPlan.user_id == current_user.id,
-
-            func.date(FocusPlan.plan_date) == today
-
-        )
-
-        .first()
-
-    )
+    today, now_ist, plan = get_plan_for_ist_today(db, current_user.id)
 
     if not plan:
 
@@ -287,7 +357,9 @@ def get_today_plan(
                 "category": item.category,
 
                 "planned_minutes": item.planned_minutes,
+
                 "start_time": item.start_time,
+
                 "end_time": item.end_time
 
             }
@@ -298,12 +370,14 @@ def get_today_plan(
 
     }
 
-
 # -----------------------------------------------------
+
 # Available Planner Categories
+
 # -----------------------------------------------------
 
 @router.get("/categories")
+
 def get_planner_categories(
 
     db: Session = Depends(get_db),
@@ -346,12 +420,14 @@ def get_planner_categories(
 
     }
 
-
 # -----------------------------------------------------
+
 # Planner Progress
+
 # -----------------------------------------------------
 
 @router.get("/progress")
+
 def get_focus_plan_progress(
 
     db: Session = Depends(get_db),
@@ -360,26 +436,16 @@ def get_focus_plan_progress(
 
 ):
 
-    today = datetime.now().date()
-
-    plan = (
-
-        db.query(FocusPlan)
-
-        .filter(
-            FocusPlan.user_id == current_user.id,
-            func.date(FocusPlan.plan_date) == today
-        )
-
-        .first()
-
-    )
+    today, now_ist, plan = get_plan_for_ist_today(db, current_user.id)
 
     if not plan:
 
         raise HTTPException(
+
             status_code=404,
+
             detail="No focus plan found for today."
+
         )
 
     plan_items = (
@@ -387,7 +453,9 @@ def get_focus_plan_progress(
         db.query(FocusPlanItem)
 
         .filter(
+
             FocusPlanItem.plan_id == plan.id
+
         )
 
         .all()
@@ -433,8 +501,11 @@ def get_focus_plan_progress(
             item.category.lower(),
 
             {
+
                 "minutes": 0,
+
                 "seconds": 0
+
             }
 
         )
@@ -452,6 +523,7 @@ def get_focus_plan_progress(
         completion = round(
 
             min(actual_minutes, item.planned_minutes)
+
             / item.planned_minutes * 100,
 
             2
@@ -522,12 +594,14 @@ def get_focus_plan_progress(
 
     }
 
-
 # -----------------------------------------------------
+
 # AI Planner Recommendation
+
 # -----------------------------------------------------
 
 @router.get("/recommendation")
+
 def get_planner_recommendation(
 
     db: Session = Depends(get_db),
@@ -536,26 +610,16 @@ def get_planner_recommendation(
 
 ):
 
-    today = datetime.now().date()
-
-    plan = (
-
-        db.query(FocusPlan)
-
-        .filter(
-            FocusPlan.user_id == current_user.id,
-            func.date(FocusPlan.plan_date) == today
-        )
-
-        .first()
-
-    )
+    today, now_ist, plan = get_plan_for_ist_today(db, current_user.id)
 
     if not plan:
 
         raise HTTPException(
+
             status_code=404,
+
             detail="No focus plan found for today."
+
         )
 
     plan_items = (
@@ -563,7 +627,9 @@ def get_planner_recommendation(
         db.query(FocusPlanItem)
 
         .filter(
+
             FocusPlanItem.plan_id == plan.id
+
         )
 
         .all()
@@ -609,7 +675,9 @@ def get_planner_recommendation(
             item.category.lower(),
 
             {
+
                 "minutes": 0
+
             }
 
         )
@@ -683,10 +751,13 @@ def get_planner_recommendation(
     }
 
 # -----------------------------------------------------
+
 # Current Focus Session
+
 # -----------------------------------------------------
 
 @router.get("/current-session")
+
 def get_current_session(
 
     db: Session = Depends(get_db),
@@ -695,28 +766,17 @@ def get_current_session(
 
 ):
 
-    today = datetime.now().date()
-
-    current_time = datetime.now().time()
-
-    plan = (
-
-        db.query(FocusPlan)
-
-        .filter(
-            FocusPlan.user_id == current_user.id,
-            func.date(FocusPlan.plan_date) == today
-        )
-
-        .first()
-
-    )
+    today, now_ist, plan = get_plan_for_ist_today(db, current_user.id)
+    current_time = now_ist.time()
 
     if not plan:
 
         raise HTTPException(
+
             status_code=404,
+
             detail="No focus plan found for today."
+
         )
 
     session = (
@@ -724,7 +784,9 @@ def get_current_session(
         db.query(FocusPlanItem)
 
         .filter(
+
             FocusPlanItem.plan_id == plan.id
+
         )
 
         .all()
@@ -736,17 +798,25 @@ def get_current_session(
     for item in session:
 
         if (
+
             item.start_time is not None
+
             and item.end_time is not None
+
             and item.start_time <= current_time <= item.end_time
+
         ):
+
             current_item = item
+
             break
 
     if current_item is None:
 
         return {
+
             "message": "No active focus session right now."
+
         }
 
     remaining_seconds = (
@@ -760,8 +830,11 @@ def get_current_session(
     ).seconds
 
     remaining_minutes = round(
+
         remaining_seconds / 60,
+
         2
+
     )
 
     return {
@@ -778,12 +851,14 @@ def get_current_session(
 
     }
 
-
 # -----------------------------------------------------
+
 # Live Planner Status
+
 # -----------------------------------------------------
 
 @router.get("/live-status")
+
 def get_live_status(
 
     language: str = "en",
@@ -794,28 +869,17 @@ def get_live_status(
 
 ):
 
-    today = datetime.now().date()
-
-    current_time = datetime.now().time()
-
-    plan = (
-
-        db.query(FocusPlan)
-
-        .filter(
-            FocusPlan.user_id == current_user.id,
-            func.date(FocusPlan.plan_date) == today
-        )
-
-        .first()
-
-    )
+    today, now_ist, plan = get_plan_for_ist_today(db, current_user.id)
+    current_time = now_ist.time()
 
     if not plan:
 
         raise HTTPException(
+
             status_code=404,
+
             detail="No focus plan found for today."
+
         )
 
     current_session = None
@@ -825,7 +889,9 @@ def get_live_status(
         db.query(FocusPlanItem)
 
         .filter(
+
             FocusPlanItem.plan_id == plan.id
+
         )
 
         .all()
@@ -855,9 +921,13 @@ def get_live_status(
             "status": "NO_SESSION",
 
             "message": TranslationService.get_translation(
+
                     db,
+
                     "NO_ACTIVE_SESSION",
+
                     language
+
                 )
 
         }
@@ -867,11 +937,15 @@ def get_live_status(
         db.query(ActivityLog)
 
         .filter(
+
             ActivityLog.user_id == current_user.id
+
         )
 
         .order_by(
+
             ActivityLog.start_time.desc()
+
         )
 
         .first()
@@ -887,9 +961,13 @@ def get_live_status(
             "planned_category": current_session.category,
 
             "message": TranslationService.get_translation(
+
                     db,
+
                     "NO_ACTIVITY",
+
                     language
+
                 )
 
         }
@@ -907,26 +985,35 @@ def get_live_status(
         status = "ON_TRACK"
 
         message = TranslationService.get_translation(
+
                 db,
+
                 "ON_TRACK",
+
                 language
+
             )
 
     else:
 
         status = "OFF_TRACK"
 
-        
-
         english_message = (
+
             f"You planned {current_session.category} "
+
             f"but currently using {latest_activity.category}."
+
         )
 
         message = TranslationService.translate_dynamic_message(
+
             db=db,
+
             message=english_message,
+
             language=language,
+
         )
 
     return {
@@ -945,12 +1032,14 @@ def get_live_status(
 
     }
 
-
 # -----------------------------------------------------
+
 # Focus Check
+
 # -----------------------------------------------------
 
 @router.post("/check-focus")
+
 def check_focus(
 
     db: Session = Depends(get_db),
@@ -959,22 +1048,8 @@ def check_focus(
 
 ):
 
-    today = datetime.now().date()
-
-    current_time = datetime.now()
-
-    plan = (
-
-        db.query(FocusPlan)
-
-        .filter(
-            FocusPlan.user_id == current_user.id,
-            func.date(FocusPlan.plan_date) == today
-        )
-
-        .first()
-
-    )
+    today, now_ist, plan = get_plan_for_ist_today(db, current_user.id)
+    current_time = now_ist.replace(tzinfo=None)
 
     if not plan:
 
@@ -993,7 +1068,9 @@ def check_focus(
         db.query(FocusPlanItem)
 
         .filter(
+
             FocusPlanItem.plan_id == plan.id
+
         )
 
         .all()
@@ -1031,11 +1108,15 @@ def check_focus(
         db.query(ActivityLog)
 
         .filter(
+
             ActivityLog.user_id == current_user.id
+
         )
 
         .order_by(
+
             ActivityLog.start_time.desc()
+
         )
 
         .first()
@@ -1069,7 +1150,9 @@ def check_focus(
         }
 
     # -----------------------------------------------------
+
     # Check if recent notification already exists
+
     # -----------------------------------------------------
 
     recent_notification = (
@@ -1077,14 +1160,21 @@ def check_focus(
         db.query(Notification)
 
         .filter(
+
             Notification.user_id == current_user.id,
+
             Notification.notification_type == "FOCUS",
+
             Notification.is_read == False,
+
             Notification.created_at >= current_time - timedelta(seconds=20)
+
         )
 
         .order_by(
+
             Notification.created_at.desc()
+
         )
 
         .first()
@@ -1108,10 +1198,13 @@ def check_focus(
         }
 
     # -----------------------------------------------------
+
     # Generate AI Reminder
+
     # -----------------------------------------------------
 
     prompt = f"""
+
 You are FocusGuard AI.
 
 The user planned to work on:
@@ -1121,24 +1214,33 @@ The user planned to work on:
 Current activity:
 
 Website:
+
 {latest.website_name}
 
 Category:
+
 {current_category}
 
 Generate one short motivational reminder.
 
 Rules:
+
 - Maximum 40 words.
+
 - Encourage the user to return to the planned task.
+
 - Friendly and supportive.
+
 - No markdown.
+
 """
 
     ai_message = llm_service.ask_llm(prompt)
 
     # -----------------------------------------------------
+
     # Save Notification
+
     # -----------------------------------------------------
 
     notification = Notification(

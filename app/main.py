@@ -66,32 +66,41 @@ app = FastAPI(
 )
 
 
+
 # ============================================================
 # CORS
 # ============================================================
 
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv(
+        "CORS_ORIGINS",
+        (
+            "http://localhost:5173,"
+            "http://127.0.0.1:5173,"
+            "https://focus-guard-ai-ten.vercel.app"
+        ),
+    ).split(",")
+    if origin.strip()
+]
+
+# Add the Chrome extension origin.
+extension_id = os.getenv("CHROME_EXTENSION_ID", "").strip()
+
+if extension_id:
+    extension_origin = f"chrome-extension://{extension_id}"
+    if extension_origin not in cors_origins:
+        cors_origins.append(extension_origin)
+
+# Register CORS middleware only once.
 app.add_middleware(
     CORSMiddleware,
-
-    allow_origins=[
-        origin.strip()
-        for origin in os.getenv(
-            "CORS_ORIGINS",
-            "http://localhost:5173,http://127.0.0.1:5173",
-        ).split(",")
-        if origin.strip()
-    ],
-
+    allow_origins=cors_origins,
     allow_credentials=True,
-
-    allow_methods=[
-        "*"
-    ],
-
-    allow_headers=[
-        "*"
-    ],
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
+
 
 
 # ============================================================
